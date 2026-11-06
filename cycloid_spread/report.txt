@@ -1,0 +1,69 @@
+cycloid.py - 37:1 cycloidal drive on the 17HS19 (z = 0 at the motor face)
+Ring: 38 pins 3 mm on a 56 circle; eccentricity 0.368 (K1 0.50), lobe height 0.74; disc profile pulled in 0.1; 8 output pins on a 41 circle in 3.84 holes.
+Body 70.5 OD; motor face to the output disc seat 59.2 mm. Output 6808s SPREAD 14 apart (ball rows 21 apart, was 7) by a printed sleeve between the outer races (51.8 / 46) and one between the inner races (44 / 40.2).
+
+Motion, input turned 0..360 deg in 1 deg steps, both discs (720 poses):
+  disc never inside a ring pin: PASS; least gap to a ring pin 0.100 mm (designed 0.1)
+  ring pins within 0.12 of the disc at once: 38 .. 38 of 38 (in a perfect print all share the load; in practice about half)
+  disc to the housing wall 0.46 mm; contact on the ring pins up to 30 deg off 'straight in' (the wall leaves 75 deg of each pin exposed)
+  output pins in the disc holes: gap 0.050 mm all the way round
+  backlash with the motor held: 1.13 deg at the output (disc 0.85 + output pin holes 0.28) = 9.6 mm at the wrist from joint 3 (487 mm)
+  disc material: bearing bore 19 -> output holes 9.1 mm, output holes -> lobe roots 3.6 mm
+  ring pin grooves wrap 211 deg of each pin (opening 2.89 < 3: pins can't fall inwards)
+
+Disc spline vs the exact profile: area 2187.86 vs 2187.89 mm^2 (-0.002 %)
+
+Part overlaps (every pair, common volume > 0.001 mm^3), assembled at three input angles:
+  steel pins   input   0.0 deg: none
+  steel pins   input  47.0 deg: none
+  steel pins   input 200.0 deg: none
+  printed pins input   0.0 deg: none
+  printed pins input  47.0 deg: none
+  printed pins input 200.0 deg: none
+
+Loads at joint 3's design torque 9.38 N*m (gear_ratio.py: straight out, gripper + piece, x1.5); stall 14.2 N*m (0.59 N*m x 37 x 0.65):
+  most loaded ring pin per disc 36 N (0.41 x where the tested printed drive gave up); grooves carry it along the whole pin
+  most loaded output pin per disc 114 N; pin held at both ends, bending 134 MPa (stall 203): fine for hardened dowels; a PRINTED 3 mm pin is good for roughly 1.8 N*m (25 MPa) - testing only
+  each 6800: about 530 N (input torque 0.39 N*m over e 0.368); 802 N at stall - check against the static rating on your bearings' listing
+  input 0.39 N*m from a motor that gives 0.4 at 300 rpm; output 49 deg/s at 300 rpm
+  each output insert (M3 x 4 x 5, if the clamp's friction carried none): 208 N sideways, 10.4 MPa on the nylon (stall 15.8; allowable 20.7, half moulded nylon's 41.4); knurl wall 2.50 to the centre pocket, 2.45 to the journal OD
+
+Printed parts (solid nylon, g):
+  housing (steel pins)                   50.6
+  housing (printed pins)                 56.5
+  pin ring                               12.7
+  lid                                    51.7
+  disc (x2)                              12.0
+  eccentric lower                         0.6
+  eccentric upper                         0.4
+  output flange                          39.6
+  output support ring (steel pins)        3.5
+  output support ring (printed pins)      4.7
+  clamp ring                              1.7
+  outer race spacer                       6.9
+  inner race spacer                       3.9
+  set with steel pins: 196 g printed + 46 dowels 51 g + 2 x 6808 + 2 x 6800 + screws (the 5:1 gearbox it replaces: 201 g without the motor)
+
+Hardware per joint: 46 dowels 3 x 20 (38 ring + 8 output) | 2 x 6800 10x19x5 | 2 x 6808 40x52x7 |
+  4 x M3 x 8 motor screws (from inside, 4.0 into the motor's 4.5 deep threads) |
+  6 x M3 x 55 socket head cap screws, PARTLY threaded (18 thread, ISO 4762), heads on the lid step at z 55.7: the plain shank through lid + pin ring + a 3.4 clearance in the housing's top down to z 18.0 (shank ends at 18.7), the thread self-tapping the 2.5 hole below: 17.3 mm of thread in the housing, tip 0.7 above its underside |
+     (fully threaded, for comparison: x20 too short, x25 too short, x30 too short, x35 too short, x40 7.5 into the housing, x45 12.5 into the housing, x50 17.5 into the housing, x55 22.5 into the housing, x60 sticks out 4.3 under the floor, x65 sticks out 9.3 under the floor; the tips come out beside the motor) |
+  3 x M3 output screws through your 24 mm disc + the 2 mm clamp ring: M3 x 30 bites 3.9 into the insert, M3 x 40 ends 14.7 above the hole bottom | 3 x M3 x 4 x 5 heat-set inserts in 4.2 holes 4.5 deep, 0.3 lead-in, flush with the flange face
+  Discs: print solid (100 % infill, 4+ walls) - the tested printed drive cracked round its eccentric bearing first.
+
+Assembly:
+  1  Drill the printed pin holes to 3.0 (housing floor sockets, support ring, flange sockets) so the dowels press in.
+  2  Motor to the housing: 4 x M3 x 8 from inside, heads into the counterbores.
+  3  Steel pins: press the 38 ring pins down the wall grooves into the floor (tops stand 0.5 above the housing).
+  4  Lower eccentric onto the motor shaft, D to D, down to 0.3 above the floor.
+  5  Press the 8 output pins into the support ring (flush underneath) and drop it in over the hub.
+  6  Press a 6800 into each disc, grease the lobes. Disc 1 down onto the lower cam and over the output pins;
+     upper eccentric onto the shaft, its star socket down over the lower one's star (they lock 180 deg apart);
+     disc 2 onto the upper cam, turned 180 deg
+     (the same part; its lobes then fall between the pins).
+  7  Onto the flange journal: a 6808, the inner race spacer, the other 6808; push the lot up into the lid from
+     below with the outer race spacer between the two outer races (the lip stops the top race);
+     pin ring under the lid; lower the three together so the flange sockets take the output pin tops.
+  8  6 lid screws through lid + pin ring into the housing.  9  Clamp ring on the upper inner race, your disc
+     on top, 3 x M3 into the flange inserts: this clamps both inner races to the flange.
+  Fits to tune after a test print: --clear (backlash), --hub-bore, --cam-d, --ecc-bore, --pin-hole, --insert-hole.

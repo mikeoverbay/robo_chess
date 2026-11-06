@@ -1,0 +1,103 @@
+#!/usr/bin/env python3
+"""
+cycloid_exploded.py - the spread cycloid gearbox (cycloid.py --spread 14) as an EXPLODED view (Mike 2026-11-06: "produce
+me a step file of the new gearbox in an exploded view ... something similar to this [a hand-drawn exploded tape measure].
+All pushed up along the axis.")
+
+    python cycloid_exploded.py [--gap 12]
+
+Reads cycloid_spread/step/assembly_steel_pins.step (run cycloid.py --spread 14 first) and writes
+cycloid_spread/step/assembly_exploded.step: every part slid straight up the motor axis from where it sits assembled,
+in the order it goes on, each level GAP above the one below. Screws, pins and inserts float just above the part they
+go into, still pointing in. Nothing is turned or moved sideways, so each part is still on its own axis line.
+"""
+import argparse
+import os
+import sys
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
+import cadquery as cq  # noqa: E402
+from cadquery import Vector as V  # noqa: E402
+
+from regroup_assembly import write_flat  # noqa: E402
+from view_step import read_step  # noqa: E402
+
+SRC = os.path.join(os.path.dirname(HERE), "cycloid_spread", "step", "assembly_steel_pins.step")
+DST = os.path.join(os.path.dirname(HERE), "cycloid_spread", "step", "assembly_exploded.step")
+BLUE, ORANGE, ORANGE2, GREEN, GREEN2 = (0.2, 0.45, 0.85), (0.9, 0.5, 0.1), (0.95, 0.65, 0.2), (0.3, 0.75, 0.3), (0.4, 0.85, 0.4)
+NAVY, STEEL, BRASS, BLACK, GREY = (0.2, 0.3, 0.6), (0.75, 0.75, 0.78), (0.8, 0.65, 0.2), (0.15, 0.15, 0.15), (0.6, 0.6, 0.62)
+# bottom to top: (name prefix(es), colour). Each level is everything whose name starts with one of its prefixes.
+LEVELS = [
+    (("motor body", "motor shaft"), BLACK),       # stays put
+    (("housing",), BLUE),
+    (("motor screw",), BLACK),                     # from inside the housing, down into the motor
+    (("ring pin",), STEEL),                        # down the wall grooves into the floor
+    (("eccentric lower",), GREEN),
+    (("output support ring",), NAVY),
+    (("output pin",), STEEL),                      # pressed into the support ring
+    (("disc 1",), ORANGE),
+    (("6800 in disc 1",), STEEL),
+    (("eccentric upper",), GREEN2),                # star socket down over the lower one's star
+    (("disc 2",), ORANGE2),
+    (("6800 in disc 2",), STEEL),
+    (("pin ring",), BLUE),
+    (("output flange",), NAVY),
+    (("insert",), BRASS),                          # heat-set into the flange face
+    (("6808 1",), STEEL),
+    (("inner race spacer", "outer race spacer"), NAVY),
+    (("6808 2",), STEEL),
+    (("lid",), BLUE),
+    (("lid screw",), BLACK),
+    (("clamp ring",), NAVY),
+    (("your output disc",), GREY),
+    (("output screw",), BLACK),
+]
+
+
+def label(name, s):
+    """bought parts already carry their spec from cycloid.py ("lid screw 1: M3 x 55 ..."); printed ones get their
+    material and size here (Mike 2026-11-06: "explain what their names, their sizes"). The assembly files keep the
+    plain printed names because print_parts.py looks them up by name."""
+    if ":" in name:
+        return name
+    b = s.BoundingBox()
+    solid = " solid (100 % infill)" if name.startswith("disc") else ""
+    return f"{name}: printed PA12{solid}, {max(b.xlen, b.ylen):.1f} across x {b.zlen:.1f} tall"
+
+
+def level_of(name):
+    """the level whose prefix matches the name longest ("lid screw M3x55 2" is a lid screw, not the lid)"""
+    hits = [(len(p), i) for i, (prefixes, _) in enumerate(LEVELS) for p in prefixes if name.startswith(p)]
+    if not hits:
+        raise ValueError(f"no level for part {name!r}: add it to LEVELS")
+    return max(hits)[1]
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--gap", type=float, default=12.0, help="mm between one level's top and the next one's bottom")
+    a = ap.parse_args()
+    parts = read_step(SRC)
+    by_level = [[] for _ in LEVELS]
+    for name, s, _ in parts:
+        by_level[level_of(name)].append((name, s))
+    out = []
+    top = None
+    for i, items in enumerate(by_level):
+        if not items:
+            raise ValueError(f"level {LEVELS[i][0]} is empty: a part was renamed in cycloid.py?")
+        z0 = min(s.BoundingBox().zmin for _, s in items)
+        z1 = max(s.BoundingBox().zmax for _, s in items)
+        dz = 0.0 if top is None else top + a.gap - z0
+        top = z1 + dz
+        col = cq.Color(*LEVELS[i][1])
+        for name, s in items:
+            out.append((label(name, s), s.translate(V(0, 0, dz)) if dz else s, col))
+        print(f"{' / '.join(LEVELS[i][0]):40s} x{len(items):<3d} up {dz:6.1f}  ->  z {z0 + dz:6.1f} .. {top:6.1f}")
+    write_flat(out, DST)
+    print(f"{len(out)} bodies, {top - min(s.BoundingBox().zmin for _, s, _ in out):.0f} mm tall -> {DST}")
+
+
+if __name__ == "__main__":
+    main()

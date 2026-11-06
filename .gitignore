@@ -1,0 +1,19 @@
+# Robo Chess - local backup repository (set up 2026-11-06)
+# Python caches
+__pycache__/
+*.pyc
+# FEA solver files (~240 MB): tools/fea.py rebuilds them; the viewer only reads result.json
+tools/viewer_session/fea/*
+!tools/viewer_session/fea/result.json
+# micro-Max build intermediates (umax_cli.exe itself is kept)
+tools/umax/build/
+tools/umax/build_trace/
+# sliced print files: the slicer rebuilds them from the models
+*.gcode
+# session worktrees the Claude app may make
+.claude/worktrees/
+# Windows clutter
+Thumbs.db
+desktop.ini
+# NTFS junction to robo_chess/cycloid (same files, backed up there; recreate with: mklink /J "complete assembly\cycloid gearbox" cycloid)
+complete assembly/cycloid gearbox/

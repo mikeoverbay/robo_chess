@@ -1,0 +1,499 @@
+{
+ "models": [
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\complete assembly\\arm_2_part_chevron.step",
+   "name": "link A"
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\complete assembly\\servo_mount.step",
+   "name": "servo mount"
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\complete assembly\\arm_2_part_chevron.step",
+   "offset": [
+    -200,
+    0,
+    0
+   ],
+   "name": "link B"
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\complete assembly\\arm_base.step",
+   "name": "base (J1)"
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\chessboard\\board_layout.step",
+   "name": "board",
+   "color": "#5b3a24",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\board_light.stl",
+   "name": "board light squares",
+   "part_name": "board light squares",
+   "color": "#f0d9b5",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\board_dark.stl",
+   "name": "board dark squares",
+   "part_name": "board dark squares",
+   "color": "#a8784f",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\complete assembly\\swivel_fixed.step",
+   "name": "swivel (fixed)"
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\complete assembly\\swivel_turntable.step",
+   "name": "swivel turntable"
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\cycloid\\cycloid_drive_standin.step",
+   "offset": [
+    -200,
+    0,
+    0
+   ],
+   "name": "drive J2 (x -200)"
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\cycloid\\cycloid_drive_standin.step",
+   "offset": [
+    -400,
+    0,
+    0
+   ],
+   "name": "drive J3 (x -400)"
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\complete assembly\\arm2.step",
+   "solids": [
+    0
+   ],
+   "offset": [
+    200,
+    0,
+    0
+   ],
+   "name": "6808 J1",
+   "part_name": "6808"
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\complete assembly\\arm2.step",
+   "solids": [
+    0
+   ],
+   "name": "6808 J2",
+   "part_name": "6808"
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\complete assembly\\arm2.step",
+   "solids": [
+    0
+   ],
+   "offset": [
+    -200,
+    0,
+    0
+   ],
+   "name": "6808 J3",
+   "part_name": "6808"
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\complete assembly\\arm_2_part_chevron.step",
+   "offset": [
+    -400,
+    0,
+    0
+   ],
+   "name": "link C"
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\cycloid\\cycloid_drive_standin.step",
+   "offset": [
+    -600,
+    0,
+    0
+   ],
+   "name": "drive J4 (x -600)"
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\complete assembly\\arm2.step",
+   "solids": [
+    0
+   ],
+   "offset": [
+    -400,
+    0,
+    0
+   ],
+   "name": "6808 J4",
+   "part_name": "6808"
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\gripper\\claw_on_wrist.step",
+   "offset": [
+    -600,
+    0,
+    0
+   ],
+   "name": "claw on wrist"
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\pieces_white.stl",
+   "name": "white pieces",
+   "part_name": "white pieces",
+   "color": "#ece4d0",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\pieces_black.stl",
+   "name": "black pieces",
+   "part_name": "black pieces",
+   "color": "#2c2c31",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\piece_white_knight_g1.stl",
+   "name": "white knight g1",
+   "part_name": "white knight g1",
+   "color": "#ece4d0",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\complete assembly\\mockups\\mockup_link_plus.step",
+   "name": "mockup plus link",
+   "offset": [
+    0.0,
+    100.0,
+    330.0
+   ],
+   "measure": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\complete assembly\\mockups\\mockup_drive_spread.step",
+   "name": "mockup drive at pivot",
+   "offset": [
+    0.0,
+    100.0,
+    330.0
+   ],
+   "measure": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\complete assembly\\mockups\\mockup_drive_spread.step",
+   "name": "mockup drive at elbow",
+   "offset": [
+    -200.0,
+    100.0,
+    330.0
+   ],
+   "measure": false
+  }
+ ],
+ "joints": [
+  {
+   "name": "J0 swivel",
+   "at": [
+    0,
+    0,
+    30.6
+   ],
+   "axis": [
+    0,
+    -1,
+    0
+   ],
+   "min": -170,
+   "max": 170,
+   "models": [
+    "base (J1)",
+    "swivel turntable"
+   ],
+   "home": 90
+  },
+  {
+   "name": "J1 shoulder",
+   "at": [
+    0,
+    0,
+    0
+   ],
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "min": -14,
+   "max": 194,
+   "models": [
+    "link A",
+    "drive J2 (x -200)",
+    "6808 J1",
+    "servo mount"
+   ],
+   "home": 135,
+   "parent": "J0 swivel"
+  },
+  {
+   "name": "J2 elbow",
+   "at": [
+    -200,
+    0,
+    0
+   ],
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "parent": "J1 shoulder",
+   "min": -104,
+   "max": 96,
+   "models": [
+    "link B",
+    "drive J3 (x -400)",
+    "6808 J2"
+   ],
+   "home": -90
+  },
+  {
+   "name": "J3",
+   "at": [
+    -400,
+    0,
+    0
+   ],
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "parent": "J2 elbow",
+   "min": -104,
+   "max": 104,
+   "models": [
+    "link C",
+    "drive J4 (x -600)",
+    "6808 J3"
+   ],
+   "home": -90
+  },
+  {
+   "name": "J4 wrist",
+   "at": [
+    -600,
+    0,
+    0
+   ],
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "parent": "J3",
+   "min": -33,
+   "max": 180,
+   "models": [
+    "claw on wrist",
+    "6808 J4"
+   ],
+   "home": 90
+  }
+ ],
+ "frame": {
+  "rotate_deg": [
+   -90,
+   0,
+   180
+  ],
+  "order": "ZYX",
+  "why": "stand the arm up (joint axes along world y), then turn it 180 about vertical so it reaches toward +x; + angle lifts"
+ },
+ "poses": [
+  {
+   "name": "home",
+   "joints": {
+    "J0 swivel": 90,
+    "J1 shoulder": 135,
+    "J2 elbow": -90,
+    "J3": -90,
+    "J4 wrist": 90
+   },
+   "note": "park (Mike): swung 90 deg clear of the board, arm folded back and up, claw curled in"
+  },
+  {
+   "name": "nearest square",
+   "joints": {
+    "J0 swivel": 0,
+    "J1 shoulder": 91.3,
+    "J2 elbow": -102.8,
+    "J3": -104.0,
+    "J4 wrist": 160.5
+   },
+   "note": "piece down on the squares next to the robot (d8/e8 side), 155 mm out"
+  },
+  {
+   "name": "rank 1",
+   "joints": {
+    "J0 swivel": 0,
+    "J1 shoulder": 15.8,
+    "J2 elbow": 3.6,
+    "J3": -64.4,
+    "J4 wrist": 90.0
+   },
+   "note": "piece down on your back rank, straight out, 572 mm"
+  },
+  {
+   "name": "rank 1 lifted",
+   "joints": {
+    "J0 swivel": 0,
+    "J1 shoulder": 25.3,
+    "J2 elbow": 9.0,
+    "J3": -62.3,
+    "J4 wrist": 73.0
+   },
+   "note": "same square, piece lifted 125 mm"
+  },
+  {
+   "name": "corner h1",
+   "joints": {
+    "J0 swivel": 20.2,
+    "J1 shoulder": 8.6,
+    "J2 elbow": 7.5,
+    "J3": -48.1,
+    "J4 wrist": 77.0
+   },
+   "note": "far corner, 609 mm out, swivel 20.2 deg"
+  }
+ ],
+ "ik": {
+  "yaw": "J0 swivel",
+  "chain": [
+   "J1 shoulder",
+   "J2 elbow",
+   "J3"
+  ],
+  "wrist": "J4 wrist",
+  "link": 200,
+  "tool": [
+   49.5,
+   -211.5
+  ],
+  "wrist_sum": 45,
+  "yaw_axis": [
+   0,
+   30.6
+  ],
+  "board_y": 232,
+  "grab": [
+   "piece",
+   "claw"
+  ]
+ },
+ "moves": [
+  {
+   "name": "Knight g1-f3",
+   "part": "white knight g1",
+   "fromSq": "g1",
+   "from": [
+    -572.0,
+    232.0,
+    -119.4
+   ],
+   "to": [
+    -452.0,
+    232.0,
+    -59.4
+   ],
+   "lift": 125
+  }
+ ],
+ "claw": {
+  "fingers": [
+   {
+    "part": "claw finger0",
+    "pivot": [
+     -550.503,
+     88.385,
+     27.0
+    ],
+    "axis": [
+     -0.0,
+     -0.0,
+     -1.0
+    ]
+   },
+   {
+    "part": "claw finger1",
+    "pivot": [
+     -573.837,
+     111.719,
+     46.053
+    ],
+    "axis": [
+     0.61237,
+     -0.61237,
+     0.5
+    ]
+   },
+   {
+    "part": "claw finger2",
+    "pivot": [
+     -573.837,
+     111.719,
+     7.947
+    ],
+    "axis": [
+     -0.61237,
+     0.61237,
+     0.5
+    ]
+   }
+  ],
+  "open_deg": 6.0,
+  "plunger": {
+   "part": "claw plunger",
+   "dir": [
+    -0.70711,
+    -0.70711,
+    0.0
+   ],
+   "travel": 6.0
+  },
+  "piece": "claw piece_stand_in"
+ },
+ "print_color": "#b9bcc2",
+ "colors": [
+  {
+   "match": "6808",
+   "color": "#c9ccd2"
+  },
+  {
+   "match": "end caps",
+   "color": "#c5c8cd"
+  },
+  {
+   "match": "NEMA|motor",
+   "color": "#2a2c30"
+  },
+  {
+   "match": "servo \\(",
+   "color": "#1b1b1e"
+  },
+  {
+   "match": "servo horn",
+   "color": "#f2f2f2"
+  },
+  {
+   "match": "piece_stand_in",
+   "color": "#55585f"
+  },
+  {
+   "match": ".",
+   "color": "#b9bcc2"
+  }
+ ]
+}

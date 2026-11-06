@@ -1,0 +1,16 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "robot-studio",
+      "runtimeExecutable": "C:\\Users\\theco\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+      "runtimeArgs": [
+        "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\view_step.py",
+        "--serve",
+        "--no-browser"
+      ],
+      "port": 8765,
+      "autoPort": false
+    }
+  ]
+}

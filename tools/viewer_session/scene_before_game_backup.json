@@ -1,0 +1,522 @@
+{
+ "models": [
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\complete assembly\\mockups\\mockup_link_plus.step",
+   "name": "link A"
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\complete assembly\\mockups\\mockup_link_plus.step",
+   "offset": [
+    -200,
+    0,
+    0
+   ],
+   "name": "link B"
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\complete assembly\\arm_base_tube.step",
+   "name": "base (J1)"
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\chessboard\\board_layout.step",
+   "name": "board",
+   "color": "#5b3a24",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\board_light.stl",
+   "name": "board light squares",
+   "part_name": "board light squares",
+   "color": "#f0d9b5",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\board_dark.stl",
+   "name": "board dark squares",
+   "part_name": "board dark squares",
+   "color": "#a8784f",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\complete assembly\\swivel_fixed.step",
+   "name": "swivel (fixed)"
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\complete assembly\\swivel_turntable.step",
+   "name": "swivel turntable"
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\complete assembly\\mockups\\mockup_drive_spread.step",
+   "offset": [
+    -200,
+    0,
+    0
+   ],
+   "name": "drive J2 (x -200)"
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\complete assembly\\mockups\\mockup_drive_spread.step",
+   "offset": [
+    -400,
+    0,
+    0
+   ],
+   "name": "drive J3 (x -400)"
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\complete assembly\\mockups\\mockup_link_plus.step",
+   "offset": [
+    -400,
+    0,
+    0
+   ],
+   "name": "link C"
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\complete assembly\\mockups\\mockup_drive_spread_m23.step",
+   "offset": [
+    -600,
+    0,
+    0
+   ],
+   "name": "drive J4 (x -600)"
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\gripper\\claw_on_wrist_spread.step",
+   "offset": [
+    -600,
+    0,
+    0
+   ],
+   "name": "claw on wrist"
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\pieces_white.stl",
+   "name": "white pieces",
+   "part_name": "white pieces",
+   "color": "#ece4d0",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\pieces_black.stl",
+   "name": "black pieces",
+   "part_name": "black pieces",
+   "color": "#2c2c31",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\piece_white_knight_g1.stl",
+   "name": "white knight g1",
+   "part_name": "white knight g1",
+   "color": "#ece4d0",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\complete assembly\\servo_on_link_b.step",
+   "name": "claw servo"
+  }
+ ],
+ "joints": [
+  {
+   "name": "J0 swivel",
+   "at": [
+    0,
+    0,
+    30.6
+   ],
+   "axis": [
+    0,
+    -1,
+    0
+   ],
+   "min": -170,
+   "max": 170,
+   "models": [
+    "base (J1)",
+    "swivel turntable"
+   ],
+   "home": 90
+  },
+  {
+   "name": "J1 shoulder",
+   "at": [
+    0,
+    0,
+    0
+   ],
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "min": -14,
+   "max": 194,
+   "models": [
+    "link A",
+    "drive J2 (x -200)"
+   ],
+   "home": 135,
+   "parent": "J0 swivel"
+  },
+  {
+   "name": "J2 elbow",
+   "at": [
+    -200,
+    0,
+    0
+   ],
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "parent": "J1 shoulder",
+   "min": -104,
+   "max": 96,
+   "models": [
+    "link B",
+    "drive J3 (x -400)",
+    "claw servo"
+   ],
+   "home": -90
+  },
+  {
+   "name": "J3",
+   "at": [
+    -400,
+    0,
+    0
+   ],
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "parent": "J2 elbow",
+   "min": -104,
+   "max": 104,
+   "models": [
+    "link C",
+    "drive J4 (x -600)"
+   ],
+   "home": -90
+  },
+  {
+   "name": "J4 wrist",
+   "at": [
+    -600,
+    0,
+    0
+   ],
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "parent": "J3",
+   "min": 9,
+   "max": 171,
+   "models": [
+    "claw on wrist"
+   ],
+   "home": 90,
+   "why_range": "2026-11-05: the spread claw adapter clears tube link C from 9 to 171 deg (IK over the board needs 57..159.4)"
+  }
+ ],
+ "frame": {
+  "rotate_deg": [
+   -90,
+   0,
+   180
+  ],
+  "order": "ZYX",
+  "why": "stand the arm up (joint axes along world y), then turn it 180 about vertical so it reaches toward +x; + angle lifts"
+ },
+ "poses": [
+  {
+   "name": "home",
+   "joints": {
+    "J0 swivel": 90,
+    "J1 shoulder": 135,
+    "J2 elbow": -90,
+    "J3": -90,
+    "J4 wrist": 90
+   },
+   "note": "park (Mike): swung 90 deg clear of the board, arm folded back and up, claw curled in"
+  },
+  {
+   "name": "nearest square",
+   "joints": {
+    "J0 swivel": 0,
+    "J1 shoulder": 91.3,
+    "J2 elbow": -102.8,
+    "J3": -104.0,
+    "J4 wrist": 160.5
+   },
+   "note": "piece down on the squares next to the robot (d8/e8 side), 155 mm out"
+  },
+  {
+   "name": "rank 1",
+   "joints": {
+    "J0 swivel": 0,
+    "J1 shoulder": 15.8,
+    "J2 elbow": 3.6,
+    "J3": -64.4,
+    "J4 wrist": 90.0
+   },
+   "note": "piece down on your back rank, straight out, 572 mm"
+  },
+  {
+   "name": "rank 1 lifted",
+   "joints": {
+    "J0 swivel": 0,
+    "J1 shoulder": 25.3,
+    "J2 elbow": 9.0,
+    "J3": -62.3,
+    "J4 wrist": 73.0
+   },
+   "note": "same square, piece lifted 125 mm"
+  },
+  {
+   "name": "corner h1",
+   "joints": {
+    "J0 swivel": 20.2,
+    "J1 shoulder": 8.6,
+    "J2 elbow": 7.5,
+    "J3": -48.1,
+    "J4 wrist": 77.0
+   },
+   "note": "far corner, 609 mm out, swivel 20.2 deg"
+  }
+ ],
+ "ik": {
+  "yaw": "J0 swivel",
+  "chain": [
+   "J1 shoulder",
+   "J2 elbow",
+   "J3"
+  ],
+  "wrist": "J4 wrist",
+  "link": 200,
+  "tool": [
+   49.5,
+   -211.5
+  ],
+  "wrist_sum": 45,
+  "yaw_axis": [
+   0,
+   30.6
+  ],
+  "board_y": 232,
+  "grab": [
+   "claw"
+  ],
+  "motion": {
+   "why": "2026-11-05 (Mike: move as the motors really can, generous S-shaped speed-up / slow-down so nothing wobbles or skips). Joint output speeds deg/s and accelerations deg/s^2. A NEMA 17 keeps ~0.40 N.m at ~300 rpm (24 V, 2 A) = 48.6 deg/s through the 37:1 drive; loaded joints run well under that. Swivel: 4:1 bevel, limited by the arm's inertia (wobble), not torque.",
+   "J0 swivel": {
+    "v": 40,
+    "a": 40
+   },
+   "J1 shoulder": {
+    "v": 30,
+    "a": 40
+   },
+   "J2 elbow": {
+    "v": 35,
+    "a": 50
+   },
+   "J3": {
+    "v": 40,
+    "a": 70
+   },
+   "J4 wrist": {
+    "v": 45,
+    "a": 90
+   }
+  }
+ },
+ "moves": [
+  {
+   "name": "Knight g1-f3",
+   "part": "white knight g1",
+   "fromSq": "g1",
+   "from": [
+    -572.0,
+    232.0,
+    -119.4
+   ],
+   "to": [
+    -452.0,
+    232.0,
+    -59.4
+   ],
+   "lift": 125
+  }
+ ],
+ "claw": {
+  "fingers": [
+   {
+    "part": "claw finger0",
+    "pivot": [
+     -550.503,
+     88.385,
+     27.0
+    ],
+    "axis": [
+     -0.0,
+     -0.0,
+     -1.0
+    ]
+   },
+   {
+    "part": "claw finger1",
+    "pivot": [
+     -573.837,
+     111.719,
+     46.053
+    ],
+    "axis": [
+     0.61237,
+     -0.61237,
+     0.5
+    ]
+   },
+   {
+    "part": "claw finger2",
+    "pivot": [
+     -573.837,
+     111.719,
+     7.947
+    ],
+    "axis": [
+     -0.61237,
+     0.61237,
+     0.5
+    ]
+   }
+  ],
+  "open_deg": 6.0,
+  "plunger": {
+   "part": "claw plunger",
+   "dir": [
+    -0.70711,
+    -0.70711,
+    0.0
+   ],
+   "travel": 6.0
+  },
+  "piece": "claw piece_stand_in"
+ },
+ "print_color": "#b9bcc2",
+ "colors": [
+  {
+   "match": "6808",
+   "color": "#c9ccd2"
+  },
+  {
+   "match": "end caps",
+   "color": "#c5c8cd"
+  },
+  {
+   "match": "NEMA|motor",
+   "color": "#2a2c30"
+  },
+  {
+   "match": "servo \\(",
+   "color": "#1b1b1e"
+  },
+  {
+   "match": "servo horn",
+   "color": "#f2f2f2"
+  },
+  {
+   "match": "piece_stand_in",
+   "color": "#55585f"
+  },
+  {
+   "match": ".",
+   "color": "#b9bcc2"
+  }
+ ],
+ "arm_note": "2026-11-05: tube links (mockup_link.py) on spread gearboxes, base arm_tube.py, claw claw_adapter.py --spread; the box-link arm is in scene_boxlink_backup.json",
+ "motors_note": "2026-11-05 (Mike): J1 60 mm (73 N.cm), J2 48, J3 48, J4 23 mm pancake (15.5 N.cm), swivel 48",
+ "bowden": {
+  "why": "2026-11-05 (Mike): the claw's Bowden (PTFE 4 x 2) in the arm's plane along the OUTSIDE of the arch: straight up out of the claw adapter's 16 mm bore, up along link C's outside, a wide arc over the J3 knuckle (72 from its axis, clear of everything there, which reaches 54), down onto the back of link B into the servo's guide - the servo tilted 30 deg outward so the tube leaves already curving into the arc (servo spot is a placeholder until its mount is designed). The servo sits on link B by J2 in a 30 deg mount glued into two D16 side holes (servo_tube.py). Cubic Bezier chain through the anchors (p in the anchor's joint frame, d = tube direction, k = handle share); tuned so the tightest bend over the whole demo is r ~54 (PTFE min ~30). Length 452..541 mm over the demo.",
+  "od": 4.0,
+  "min_bend_r": 30.0,
+  "points": [
+   {
+    "joint": "J2 elbow",
+    "p": [
+     -322.07,
+     -130.85,
+     32.48
+    ],
+    "d": [
+     -0.8207,
+     -0.5,
+     -0.2766
+    ],
+    "note": "the PC4-M10 fitting's collet on the servo box's end wall (servo_tube.py), 30 deg out, turned 18.6 deg along link B's edge P2.E37"
+   },
+   {
+    "joint": "J2 elbow",
+    "p": [
+     -390.0,
+     -145.0,
+     20.0
+    ],
+    "d": [
+     -1,
+     0,
+     0
+    ],
+    "note": "arc over the J3 knuckle, 145 out (free, no clip) - re-tuned for the fitting's collet start: tightest r 54.3 over the demo"
+   },
+   {
+    "joint": "J3",
+    "p": [
+     -470,
+     -100,
+     27
+    ],
+    "d": [
+     -1,
+     0,
+     0
+    ],
+    "k": 0.4,
+    "note": "standoff clip on link C's back, 100 out"
+   },
+   {
+    "joint": "J4 wrist",
+    "p": [
+     -659.53,
+     10.47,
+     27.0
+    ],
+    "d": [
+     0.7071,
+     0.7071,
+     0
+    ],
+    "k": 0.6,
+    "note": "straight up out of the claw, 40 above the bore"
+   },
+   {
+    "joint": "J4 wrist",
+    "p": [
+     -631.25,
+     38.75,
+     27.0
+    ],
+    "d": [
+     0.7071,
+     0.7071,
+     0
+    ],
+    "note": "into the claw adapter's 16 mm bore"
+   }
+  ]
+ }
+}

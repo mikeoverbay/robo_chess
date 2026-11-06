@@ -1,0 +1,3466 @@
+{
+ "models": [
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\complete assembly\\mockups\\mockup_link_plus.step",
+   "name": "link A"
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\complete assembly\\mockups\\mockup_link_plus.step",
+   "offset": [
+    -200,
+    0,
+    0
+   ],
+   "name": "link B"
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\complete assembly\\arm_base_tube.step",
+   "name": "base (J1)"
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\chessboard\\board_layout.step",
+   "name": "board",
+   "color": "#5b3a24",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\board_light.stl",
+   "name": "board light squares",
+   "part_name": "board light squares",
+   "color": "#f0d9b5",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\board_dark.stl",
+   "name": "board dark squares",
+   "part_name": "board dark squares",
+   "color": "#a8784f",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\board_trays.stl",
+   "name": "capture trays",
+   "part_name": "capture trays",
+   "color": "#5b3a24",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\piece_rook.stl",
+   "name": "white rook a1",
+   "part_name": "white rook a1",
+   "color": "#ece4d0",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\piece_knight.stl",
+   "name": "white knight b1",
+   "part_name": "white knight b1",
+   "color": "#ece4d0",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\piece_bishop.stl",
+   "name": "white bishop c1",
+   "part_name": "white bishop c1",
+   "color": "#ece4d0",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\piece_queen.stl",
+   "name": "white queen d1",
+   "part_name": "white queen d1",
+   "color": "#ece4d0",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\piece_king.stl",
+   "name": "white king e1",
+   "part_name": "white king e1",
+   "color": "#ece4d0",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\piece_bishop.stl",
+   "name": "white bishop f1",
+   "part_name": "white bishop f1",
+   "color": "#ece4d0",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\piece_knight.stl",
+   "name": "white knight g1",
+   "part_name": "white knight g1",
+   "color": "#ece4d0",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\piece_rook.stl",
+   "name": "white rook h1",
+   "part_name": "white rook h1",
+   "color": "#ece4d0",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\piece_pawn.stl",
+   "name": "white pawn a2",
+   "part_name": "white pawn a2",
+   "color": "#ece4d0",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\piece_pawn.stl",
+   "name": "white pawn b2",
+   "part_name": "white pawn b2",
+   "color": "#ece4d0",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\piece_pawn.stl",
+   "name": "white pawn c2",
+   "part_name": "white pawn c2",
+   "color": "#ece4d0",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\piece_pawn.stl",
+   "name": "white pawn d2",
+   "part_name": "white pawn d2",
+   "color": "#ece4d0",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\piece_pawn.stl",
+   "name": "white pawn e2",
+   "part_name": "white pawn e2",
+   "color": "#ece4d0",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\piece_pawn.stl",
+   "name": "white pawn f2",
+   "part_name": "white pawn f2",
+   "color": "#ece4d0",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\piece_pawn.stl",
+   "name": "white pawn g2",
+   "part_name": "white pawn g2",
+   "color": "#ece4d0",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\piece_pawn.stl",
+   "name": "white pawn h2",
+   "part_name": "white pawn h2",
+   "color": "#ece4d0",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\piece_queen.stl",
+   "name": "white queen spare",
+   "part_name": "white queen spare",
+   "color": "#ece4d0",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\piece_rook.stl",
+   "name": "black rook a8",
+   "part_name": "black rook a8",
+   "color": "#2c2c31",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\piece_knight.stl",
+   "name": "black knight b8",
+   "part_name": "black knight b8",
+   "color": "#2c2c31",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\piece_bishop.stl",
+   "name": "black bishop c8",
+   "part_name": "black bishop c8",
+   "color": "#2c2c31",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\piece_queen.stl",
+   "name": "black queen d8",
+   "part_name": "black queen d8",
+   "color": "#2c2c31",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\piece_king.stl",
+   "name": "black king e8",
+   "part_name": "black king e8",
+   "color": "#2c2c31",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\piece_bishop.stl",
+   "name": "black bishop f8",
+   "part_name": "black bishop f8",
+   "color": "#2c2c31",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\piece_knight.stl",
+   "name": "black knight g8",
+   "part_name": "black knight g8",
+   "color": "#2c2c31",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\piece_rook.stl",
+   "name": "black rook h8",
+   "part_name": "black rook h8",
+   "color": "#2c2c31",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\piece_pawn.stl",
+   "name": "black pawn a7",
+   "part_name": "black pawn a7",
+   "color": "#2c2c31",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\piece_pawn.stl",
+   "name": "black pawn b7",
+   "part_name": "black pawn b7",
+   "color": "#2c2c31",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\piece_pawn.stl",
+   "name": "black pawn c7",
+   "part_name": "black pawn c7",
+   "color": "#2c2c31",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\piece_pawn.stl",
+   "name": "black pawn d7",
+   "part_name": "black pawn d7",
+   "color": "#2c2c31",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\piece_pawn.stl",
+   "name": "black pawn e7",
+   "part_name": "black pawn e7",
+   "color": "#2c2c31",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\piece_pawn.stl",
+   "name": "black pawn f7",
+   "part_name": "black pawn f7",
+   "color": "#2c2c31",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\piece_pawn.stl",
+   "name": "black pawn g7",
+   "part_name": "black pawn g7",
+   "color": "#2c2c31",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\piece_pawn.stl",
+   "name": "black pawn h7",
+   "part_name": "black pawn h7",
+   "color": "#2c2c31",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\piece_queen.stl",
+   "name": "black queen spare",
+   "part_name": "black queen spare",
+   "color": "#2c2c31",
+   "pick": false
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\complete assembly\\swivel_fixed.step",
+   "name": "swivel (fixed)"
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\complete assembly\\swivel_turntable.step",
+   "name": "swivel turntable"
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\complete assembly\\mockups\\mockup_drive_spread.step",
+   "offset": [
+    -200,
+    0,
+    0
+   ],
+   "name": "drive J2 (x -200)"
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\complete assembly\\mockups\\mockup_drive_spread.step",
+   "offset": [
+    -400,
+    0,
+    0
+   ],
+   "name": "drive J3 (x -400)"
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\complete assembly\\mockups\\mockup_link_plus.step",
+   "offset": [
+    -400,
+    0,
+    0
+   ],
+   "name": "link C"
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\complete assembly\\mockups\\mockup_drive_spread_m23.step",
+   "offset": [
+    -600,
+    0,
+    0
+   ],
+   "name": "drive J4 (x -600)"
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\gripper\\claw_on_wrist_spread.step",
+   "offset": [
+    -600,
+    0,
+    0
+   ],
+   "name": "claw on wrist"
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\complete assembly\\servo_on_link_b.step",
+   "name": "claw servo"
+  }
+ ],
+ "joints": [
+  {
+   "name": "J0 swivel",
+   "at": [
+    0,
+    0,
+    30.6
+   ],
+   "axis": [
+    0,
+    -1,
+    0
+   ],
+   "min": -170,
+   "max": 170,
+   "models": [
+    "base (J1)",
+    "swivel turntable"
+   ],
+   "home": 90
+  },
+  {
+   "name": "J1 shoulder",
+   "at": [
+    0,
+    0,
+    0
+   ],
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "min": -14,
+   "max": 194,
+   "models": [
+    "link A",
+    "drive J2 (x -200)"
+   ],
+   "home": 135,
+   "parent": "J0 swivel"
+  },
+  {
+   "name": "J2 elbow",
+   "at": [
+    -200,
+    0,
+    0
+   ],
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "parent": "J1 shoulder",
+   "min": -104,
+   "max": 96,
+   "models": [
+    "link B",
+    "drive J3 (x -400)",
+    "claw servo"
+   ],
+   "home": -90
+  },
+  {
+   "name": "J3",
+   "at": [
+    -400,
+    0,
+    0
+   ],
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "parent": "J2 elbow",
+   "min": -104,
+   "max": 104,
+   "models": [
+    "link C",
+    "drive J4 (x -600)"
+   ],
+   "home": -90
+  },
+  {
+   "name": "J4 wrist",
+   "at": [
+    -600,
+    0,
+    0
+   ],
+   "axis": [
+    0,
+    0,
+    1
+   ],
+   "parent": "J3",
+   "min": 9,
+   "max": 171,
+   "models": [
+    "claw on wrist"
+   ],
+   "home": 90,
+   "why_range": "2026-11-05: the spread claw adapter clears tube link C from 9 to 171 deg (IK over the board needs 57..159.4)"
+  }
+ ],
+ "frame": {
+  "rotate_deg": [
+   -90,
+   0,
+   180
+  ],
+  "order": "ZYX",
+  "why": "stand the arm up (joint axes along world y), then turn it 180 about vertical so it reaches toward +x; + angle lifts"
+ },
+ "poses": [
+  {
+   "name": "home",
+   "joints": {
+    "J0 swivel": 90,
+    "J1 shoulder": 135,
+    "J2 elbow": -90,
+    "J3": -90,
+    "J4 wrist": 90
+   },
+   "note": "park (Mike): swung 90 deg clear of the board, arm folded back and up, claw curled in"
+  },
+  {
+   "name": "nearest square",
+   "joints": {
+    "J0 swivel": 0,
+    "J1 shoulder": 91.3,
+    "J2 elbow": -102.8,
+    "J3": -104.0,
+    "J4 wrist": 160.5
+   },
+   "note": "piece down on the squares next to the robot (d8/e8 side), 155 mm out"
+  },
+  {
+   "name": "rank 1",
+   "joints": {
+    "J0 swivel": 0,
+    "J1 shoulder": 15.8,
+    "J2 elbow": 3.6,
+    "J3": -64.4,
+    "J4 wrist": 90.0
+   },
+   "note": "piece down on your back rank, straight out, 572 mm"
+  },
+  {
+   "name": "rank 1 lifted",
+   "joints": {
+    "J0 swivel": 0,
+    "J1 shoulder": 25.3,
+    "J2 elbow": 9.0,
+    "J3": -62.3,
+    "J4 wrist": 73.0
+   },
+   "note": "same square, piece lifted 125 mm"
+  },
+  {
+   "name": "corner h1",
+   "joints": {
+    "J0 swivel": 20.2,
+    "J1 shoulder": 8.6,
+    "J2 elbow": 7.5,
+    "J3": -48.1,
+    "J4 wrist": 77.0
+   },
+   "note": "far corner, 609 mm out, swivel 20.2 deg"
+  }
+ ],
+ "ik": {
+  "yaw": "J0 swivel",
+  "chain": [
+   "J1 shoulder",
+   "J2 elbow",
+   "J3"
+  ],
+  "wrist": "J4 wrist",
+  "link": 200,
+  "tool": [
+   49.5,
+   -211.5
+  ],
+  "wrist_sum": 45,
+  "yaw_axis": [
+   0,
+   30.6
+  ],
+  "board_y": 232,
+  "grab": [
+   "claw"
+  ],
+  "motion": {
+   "why": "2026-11-05 (Mike: move as the motors really can, generous S-shaped speed-up / slow-down so nothing wobbles or skips). Joint output speeds deg/s and accelerations deg/s^2. A NEMA 17 keeps ~0.40 N.m at ~300 rpm (24 V, 2 A) = 48.6 deg/s through the 37:1 drive; loaded joints run well under that. Swivel: 4:1 bevel, limited by the arm's inertia (wobble), not torque.",
+   "J0 swivel": {
+    "v": 40,
+    "a": 40
+   },
+   "J1 shoulder": {
+    "v": 30,
+    "a": 40
+   },
+   "J2 elbow": {
+    "v": 35,
+    "a": 50
+   },
+   "J3": {
+    "v": 40,
+    "a": 70
+   },
+   "J4 wrist": {
+    "v": 45,
+    "a": 90
+   }
+  }
+ },
+ "moves": [
+  {
+   "name": "Knight g1-f3",
+   "part": "white knight g1",
+   "fromSq": "g1",
+   "from": [
+    -572.0,
+    232.0,
+    -119.4
+   ],
+   "to": [
+    -452.0,
+    232.0,
+    -59.4
+   ],
+   "lift": 125
+  }
+ ],
+ "claw": {
+  "fingers": [
+   {
+    "part": "claw finger0",
+    "pivot": [
+     -550.503,
+     88.385,
+     27.0
+    ],
+    "axis": [
+     -0.0,
+     -0.0,
+     -1.0
+    ]
+   },
+   {
+    "part": "claw finger1",
+    "pivot": [
+     -573.837,
+     111.719,
+     46.053
+    ],
+    "axis": [
+     0.61237,
+     -0.61237,
+     0.5
+    ]
+   },
+   {
+    "part": "claw finger2",
+    "pivot": [
+     -573.837,
+     111.719,
+     7.947
+    ],
+    "axis": [
+     -0.61237,
+     0.61237,
+     0.5
+    ]
+   }
+  ],
+  "open_deg": 6.0,
+  "plunger": {
+   "part": "claw plunger",
+   "dir": [
+    -0.70711,
+    -0.70711,
+    0.0
+   ],
+   "travel": 6.0
+  },
+  "piece": "claw piece_stand_in"
+ },
+ "print_color": "#b9bcc2",
+ "colors": [
+  {
+   "match": "6808",
+   "color": "#c9ccd2"
+  },
+  {
+   "match": "end caps",
+   "color": "#c5c8cd"
+  },
+  {
+   "match": "NEMA|motor",
+   "color": "#2a2c30"
+  },
+  {
+   "match": "servo \\(",
+   "color": "#1b1b1e"
+  },
+  {
+   "match": "servo horn",
+   "color": "#f2f2f2"
+  },
+  {
+   "match": "piece_stand_in",
+   "color": "#55585f"
+  },
+  {
+   "match": ".",
+   "color": "#b9bcc2"
+  }
+ ],
+ "arm_note": "2026-11-05: tube links (mockup_link.py) on spread gearboxes, base arm_tube.py, claw claw_adapter.py --spread; the box-link arm is in scene_boxlink_backup.json",
+ "motors_note": "2026-11-05 (Mike): J1 60 mm (73 N.cm), J2 48, J3 48, J4 23 mm pancake (15.5 N.cm), swivel 48",
+ "bowden": {
+  "why": "2026-11-05 (Mike): the claw's Bowden (PTFE 4 x 2) in the arm's plane along the OUTSIDE of the arch: straight up out of the claw adapter's 16 mm bore, up along link C's outside, a wide arc over the J3 knuckle (72 from its axis, clear of everything there, which reaches 54), down onto the back of link B into the servo's guide - the servo tilted 30 deg outward so the tube leaves already curving into the arc (servo spot is a placeholder until its mount is designed). The servo sits on link B by J2 in a 30 deg mount glued into two D16 side holes (servo_tube.py). Cubic Bezier chain through the anchors (p in the anchor's joint frame, d = tube direction, k = handle share); tuned so the tightest bend over the whole demo is r ~54 (PTFE min ~30). Length 452..541 mm over the demo.",
+  "od": 4.0,
+  "min_bend_r": 30.0,
+  "points": [
+   {
+    "joint": "J2 elbow",
+    "p": [
+     -322.07,
+     -130.85,
+     32.48
+    ],
+    "d": [
+     -0.8207,
+     -0.5,
+     -0.2766
+    ],
+    "note": "the PC4-M10 fitting's collet on the servo box's end wall (servo_tube.py), 30 deg out, turned 18.6 deg along link B's edge P2.E37"
+   },
+   {
+    "joint": "J2 elbow",
+    "p": [
+     -390.0,
+     -145.0,
+     20.0
+    ],
+    "d": [
+     -1,
+     0,
+     0
+    ],
+    "note": "arc over the J3 knuckle, 145 out (free, no clip) - re-tuned for the fitting's collet start: tightest r 54.3 over the demo"
+   },
+   {
+    "joint": "J3",
+    "p": [
+     -420.0,
+     -110.0,
+     27.0
+    ],
+    "d": [
+     -0.766,
+     0.6428,
+     0.0
+    ],
+    "k": 0.35,
+    "note": "standoff clip on link C, 20 past J3, 110 out, aimed 40 deg back in - tuned 2026-11-05 over every square and tray spot down / 60 up / carry height: tightest r 47.9 (was 19.5 at the near squares, arm folded)"
+   },
+   {
+    "joint": "J4 wrist",
+    "p": [
+     -659.53,
+     10.47,
+     27.0
+    ],
+    "d": [
+     0.7071,
+     0.7071,
+     0
+    ],
+    "k": 0.5,
+    "note": "straight up out of the claw, 40 above the bore"
+   },
+   {
+    "joint": "J4 wrist",
+    "p": [
+     -631.25,
+     38.75,
+     27.0
+    ],
+    "d": [
+     0.7071,
+     0.7071,
+     0
+    ],
+    "note": "into the claw adapter's 16 mm bore"
+   }
+  ]
+ },
+ "piece_home": [
+  {
+   "part": "white rook a1",
+   "at": [
+    -572.0,
+    232.0,
+    240.6
+   ],
+   "yaw": 0.0
+  },
+  {
+   "part": "white knight b1",
+   "at": [
+    -572.0,
+    232.0,
+    180.6
+   ],
+   "yaw": -90.0
+  },
+  {
+   "part": "white bishop c1",
+   "at": [
+    -572.0,
+    232.0,
+    120.6
+   ],
+   "yaw": 0.0
+  },
+  {
+   "part": "white queen d1",
+   "at": [
+    -572.0,
+    232.0,
+    60.6
+   ],
+   "yaw": 0.0
+  },
+  {
+   "part": "white king e1",
+   "at": [
+    -572.0,
+    232.0,
+    0.6
+   ],
+   "yaw": 0.0
+  },
+  {
+   "part": "white bishop f1",
+   "at": [
+    -572.0,
+    232.0,
+    -59.4
+   ],
+   "yaw": 0.0
+  },
+  {
+   "part": "white knight g1",
+   "at": [
+    -572.0,
+    232.0,
+    -119.4
+   ],
+   "yaw": -90.0
+  },
+  {
+   "part": "white rook h1",
+   "at": [
+    -572.0,
+    232.0,
+    -179.4
+   ],
+   "yaw": 0.0
+  },
+  {
+   "part": "white pawn a2",
+   "at": [
+    -512.0,
+    232.0,
+    240.6
+   ],
+   "yaw": 0.0
+  },
+  {
+   "part": "white pawn b2",
+   "at": [
+    -512.0,
+    232.0,
+    180.6
+   ],
+   "yaw": 0.0
+  },
+  {
+   "part": "white pawn c2",
+   "at": [
+    -512.0,
+    232.0,
+    120.6
+   ],
+   "yaw": 0.0
+  },
+  {
+   "part": "white pawn d2",
+   "at": [
+    -512.0,
+    232.0,
+    60.6
+   ],
+   "yaw": 0.0
+  },
+  {
+   "part": "white pawn e2",
+   "at": [
+    -512.0,
+    232.0,
+    0.6
+   ],
+   "yaw": 0.0
+  },
+  {
+   "part": "white pawn f2",
+   "at": [
+    -512.0,
+    232.0,
+    -59.4
+   ],
+   "yaw": 0.0
+  },
+  {
+   "part": "white pawn g2",
+   "at": [
+    -512.0,
+    232.0,
+    -119.4
+   ],
+   "yaw": 0.0
+  },
+  {
+   "part": "white pawn h2",
+   "at": [
+    -512.0,
+    232.0,
+    -179.4
+   ],
+   "yaw": 0.0
+  },
+  {
+   "part": "white queen spare",
+   "at": [
+    28.0,
+    232.0,
+    325.6
+   ],
+   "yaw": 0.0
+  },
+  {
+   "part": "black rook a8",
+   "at": [
+    -152.0,
+    232.0,
+    240.6
+   ],
+   "yaw": 0.0
+  },
+  {
+   "part": "black knight b8",
+   "at": [
+    -152.0,
+    232.0,
+    180.6
+   ],
+   "yaw": 90.0
+  },
+  {
+   "part": "black bishop c8",
+   "at": [
+    -152.0,
+    232.0,
+    120.6
+   ],
+   "yaw": 0.0
+  },
+  {
+   "part": "black queen d8",
+   "at": [
+    -152.0,
+    232.0,
+    60.6
+   ],
+   "yaw": 0.0
+  },
+  {
+   "part": "black king e8",
+   "at": [
+    -152.0,
+    232.0,
+    0.6
+   ],
+   "yaw": 0.0
+  },
+  {
+   "part": "black bishop f8",
+   "at": [
+    -152.0,
+    232.0,
+    -59.4
+   ],
+   "yaw": 0.0
+  },
+  {
+   "part": "black knight g8",
+   "at": [
+    -152.0,
+    232.0,
+    -119.4
+   ],
+   "yaw": 90.0
+  },
+  {
+   "part": "black rook h8",
+   "at": [
+    -152.0,
+    232.0,
+    -179.4
+   ],
+   "yaw": 0.0
+  },
+  {
+   "part": "black pawn a7",
+   "at": [
+    -212.0,
+    232.0,
+    240.6
+   ],
+   "yaw": 0.0
+  },
+  {
+   "part": "black pawn b7",
+   "at": [
+    -212.0,
+    232.0,
+    180.6
+   ],
+   "yaw": 0.0
+  },
+  {
+   "part": "black pawn c7",
+   "at": [
+    -212.0,
+    232.0,
+    120.6
+   ],
+   "yaw": 0.0
+  },
+  {
+   "part": "black pawn d7",
+   "at": [
+    -212.0,
+    232.0,
+    60.6
+   ],
+   "yaw": 0.0
+  },
+  {
+   "part": "black pawn e7",
+   "at": [
+    -212.0,
+    232.0,
+    0.6
+   ],
+   "yaw": 0.0
+  },
+  {
+   "part": "black pawn f7",
+   "at": [
+    -212.0,
+    232.0,
+    -59.4
+   ],
+   "yaw": 0.0
+  },
+  {
+   "part": "black pawn g7",
+   "at": [
+    -212.0,
+    232.0,
+    -119.4
+   ],
+   "yaw": 0.0
+  },
+  {
+   "part": "black pawn h7",
+   "at": [
+    -212.0,
+    232.0,
+    -179.4
+   ],
+   "yaw": 0.0
+  },
+  {
+   "part": "black queen spare",
+   "at": [
+    28.0,
+    232.0,
+    -264.4
+   ],
+   "yaw": 0.0
+  }
+ ],
+ "game": {
+  "title": "micro-Max 4.8 (Megachess SKILL 7) plays itself",
+  "seed": 5,
+  "skill": 7,
+  "result": "1-0",
+  "reason": "checkmate",
+  "plies": 93,
+  "think_s": 1423.3,
+  "pgn": "1. e4 c5 2. Nc3 Nc6 3. g3 g6 4. Bg2 Bg7 5. d3 d6 6. Bf4 Be6 7. Nf3 Qb6 8. Qb1 O-O-O 9. O-O h6 10. a4 Qb4 11. Nd1 Bf6 12. c3 Qb6 13. h4 Bg7 14. Ne3 Nf6 15. Nc4 Qa6 16. Ncd2 Nh5 17. Be3 Ne5 18. d4 Nd3 19. b4 cxb4 20. cxb4 Bf6 21. b5 Qb6 22. Qxd3 Qc7 23. Rac1 Rd7 24. Rxc7+ Rxc7 25. Qa3 Rh7 26. Rc1 Rxc1+ 27. Qxc1+ Kd7 28. d5 Bg4 29. Bxa7 Bxf3 30. Bxf3 e6 31. b6 exd5 32. Qc7+ Ke8 33. Qxd6 Be7 34. Qb8+ Bd8 35. exd5 f5 36. d6 Nf6 37. Bxb7 Nd7 38. Bc6 g5 39. b7 gxh4 40. Bb6 Kf7 41. Qxd8 Ke6 42. Bxd7+ Rxd7 43. Qe8+ Kd5 44. b8=Q Rg7 45. Qa8+ Rb7 46. Qxb7+ Kxd6 47. Nc4#",
+  "moves": [
+   {
+    "part": "white pawn e2",
+    "from": [
+     -512.0,
+     232.0,
+     0.6
+    ],
+    "to": [
+     -392.0,
+     232.0,
+     0.6
+    ],
+    "lift": 125.0,
+    "what": "white pawn e2-e4",
+    "fromSq": "e2",
+    "toSq": "e4",
+    "name": "1. e4  white pawn e2-e4",
+    "ply": 1,
+    "info": "book"
+   },
+   {
+    "part": "black pawn c7",
+    "from": [
+     -212.0,
+     232.0,
+     120.6
+    ],
+    "to": [
+     -332.0,
+     232.0,
+     120.6
+    ],
+    "lift": 125.0,
+    "what": "black pawn c7-c5",
+    "fromSq": "c7",
+    "toSq": "c5",
+    "name": "1... c5  black pawn c7-c5",
+    "ply": 2,
+    "info": "book"
+   },
+   {
+    "part": "white knight b1",
+    "from": [
+     -572.0,
+     232.0,
+     180.6
+    ],
+    "to": [
+     -452.0,
+     232.0,
+     120.6
+    ],
+    "lift": 125.0,
+    "what": "white knight b1-c3",
+    "fromSq": "b1",
+    "toSq": "c3",
+    "name": "2. Nc3  white knight b1-c3",
+    "ply": 3,
+    "info": "book"
+   },
+   {
+    "part": "black knight b8",
+    "from": [
+     -152.0,
+     232.0,
+     180.6
+    ],
+    "to": [
+     -272.0,
+     232.0,
+     120.6
+    ],
+    "lift": 125.0,
+    "what": "black knight b8-c6",
+    "fromSq": "b8",
+    "toSq": "c6",
+    "name": "2... Nc6  black knight b8-c6",
+    "ply": 4,
+    "info": "book"
+   },
+   {
+    "part": "white pawn g2",
+    "from": [
+     -512.0,
+     232.0,
+     -119.4
+    ],
+    "to": [
+     -452.0,
+     232.0,
+     -119.4
+    ],
+    "lift": 125.0,
+    "what": "white pawn g2-g3",
+    "fromSq": "g2",
+    "toSq": "g3",
+    "name": "3. g3  white pawn g2-g3",
+    "ply": 5,
+    "info": "book"
+   },
+   {
+    "part": "black pawn g7",
+    "from": [
+     -212.0,
+     232.0,
+     -119.4
+    ],
+    "to": [
+     -272.0,
+     232.0,
+     -119.4
+    ],
+    "lift": 125.0,
+    "what": "black pawn g7-g6",
+    "fromSq": "g7",
+    "toSq": "g6",
+    "name": "3... g6  black pawn g7-g6",
+    "ply": 6,
+    "info": "book"
+   },
+   {
+    "part": "white bishop f1",
+    "from": [
+     -572.0,
+     232.0,
+     -59.4
+    ],
+    "to": [
+     -512.0,
+     232.0,
+     -119.4
+    ],
+    "lift": 125.0,
+    "what": "white bishop f1-g2",
+    "fromSq": "f1",
+    "toSq": "g2",
+    "name": "4. Bg2  white bishop f1-g2",
+    "ply": 7,
+    "info": "book"
+   },
+   {
+    "part": "black bishop f8",
+    "from": [
+     -152.0,
+     232.0,
+     -59.4
+    ],
+    "to": [
+     -212.0,
+     232.0,
+     -119.4
+    ],
+    "lift": 125.0,
+    "what": "black bishop f8-g7",
+    "fromSq": "f8",
+    "toSq": "g7",
+    "name": "4... Bg7  black bishop f8-g7",
+    "ply": 8,
+    "info": "book"
+   },
+   {
+    "part": "white pawn d2",
+    "from": [
+     -512.0,
+     232.0,
+     60.6
+    ],
+    "to": [
+     -452.0,
+     232.0,
+     60.6
+    ],
+    "lift": 125.0,
+    "what": "white pawn d2-d3",
+    "fromSq": "d2",
+    "toSq": "d3",
+    "name": "5. d3  white pawn d2-d3",
+    "ply": 9,
+    "info": "book"
+   },
+   {
+    "part": "black pawn d7",
+    "from": [
+     -212.0,
+     232.0,
+     60.6
+    ],
+    "to": [
+     -272.0,
+     232.0,
+     60.6
+    ],
+    "lift": 125.0,
+    "what": "black pawn d7-d6",
+    "fromSq": "d7",
+    "toSq": "d6",
+    "name": "5... d6  black pawn d7-d6",
+    "ply": 10,
+    "info": "book"
+   },
+   {
+    "part": "white bishop c1",
+    "from": [
+     -572.0,
+     232.0,
+     120.6
+    ],
+    "to": [
+     -392.0,
+     232.0,
+     -59.4
+    ],
+    "lift": 125.0,
+    "what": "white bishop c1-f4",
+    "fromSq": "c1",
+    "toSq": "f4",
+    "name": "6. Bf4  white bishop c1-f4",
+    "ply": 11,
+    "info": "micro-Max depth 4, +0.19, 21122 nodes, 30.1 s on the Mega",
+    "think": 30.08
+   },
+   {
+    "part": "black bishop c8",
+    "from": [
+     -152.0,
+     232.0,
+     120.6
+    ],
+    "to": [
+     -272.0,
+     232.0,
+     0.6
+    ],
+    "lift": 125.0,
+    "what": "black bishop c8-e6",
+    "fromSq": "c8",
+    "toSq": "e6",
+    "name": "6... Be6  black bishop c8-e6",
+    "ply": 12,
+    "info": "micro-Max depth 4, +0.19, 21121 nodes, 30.1 s on the Mega",
+    "think": 30.08
+   },
+   {
+    "part": "white knight g1",
+    "from": [
+     -572.0,
+     232.0,
+     -119.4
+    ],
+    "to": [
+     -452.0,
+     232.0,
+     -59.4
+    ],
+    "lift": 125.0,
+    "what": "white knight g1-f3",
+    "fromSq": "g1",
+    "toSq": "f3",
+    "name": "7. Nf3  white knight g1-f3",
+    "ply": 13,
+    "info": "micro-Max depth 4, +0.18, 6163 nodes, 8.8 s on the Mega",
+    "think": 8.78
+   },
+   {
+    "part": "black queen d8",
+    "from": [
+     -152.0,
+     232.0,
+     60.6
+    ],
+    "to": [
+     -272.0,
+     232.0,
+     180.6
+    ],
+    "lift": 125.0,
+    "what": "black queen d8-b6",
+    "fromSq": "d8",
+    "toSq": "b6",
+    "name": "7... Qb6  black queen d8-b6",
+    "ply": 14,
+    "info": "micro-Max depth 3, +0.00, 4814 nodes, 6.9 s on the Mega",
+    "think": 6.86
+   },
+   {
+    "part": "white queen d1",
+    "from": [
+     -572.0,
+     232.0,
+     60.6
+    ],
+    "to": [
+     -572.0,
+     232.0,
+     180.6
+    ],
+    "lift": 125.0,
+    "what": "white queen d1-b1",
+    "fromSq": "d1",
+    "toSq": "b1",
+    "name": "8. Qb1  white queen d1-b1",
+    "ply": 15,
+    "info": "micro-Max depth 4, +0.00, 19129 nodes, 27.2 s on the Mega",
+    "think": 27.25
+   },
+   {
+    "part": "black king e8",
+    "from": [
+     -152.0,
+     232.0,
+     0.6
+    ],
+    "to": [
+     -152.0,
+     232.0,
+     120.6
+    ],
+    "lift": 125.0,
+    "what": "black king e8-c8",
+    "fromSq": "e8",
+    "toSq": "c8",
+    "name": "8... O-O-O  black king e8-c8 (1/2)",
+    "ply": 16,
+    "info": "micro-Max depth 3, +0.00, 5751 nodes, 8.1 s on the Mega",
+    "think": 8.14
+   },
+   {
+    "part": "black rook a8",
+    "from": [
+     -152.0,
+     232.0,
+     240.6
+    ],
+    "to": [
+     -152.0,
+     232.0,
+     60.6
+    ],
+    "lift": 125.0,
+    "what": "black rook a8-d8",
+    "fromSq": "a8",
+    "toSq": "d8",
+    "name": "8... O-O-O  black rook a8-d8 (2/2)",
+    "ply": 16
+   },
+   {
+    "part": "white king e1",
+    "from": [
+     -572.0,
+     232.0,
+     0.6
+    ],
+    "to": [
+     -572.0,
+     232.0,
+     -119.4
+    ],
+    "lift": 125.0,
+    "what": "white king e1-g1",
+    "fromSq": "e1",
+    "toSq": "g1",
+    "name": "9. O-O  white king e1-g1 (1/2)",
+    "ply": 17,
+    "info": "micro-Max depth 4, +0.26, 8077 nodes, 11.5 s on the Mega",
+    "think": 11.52
+   },
+   {
+    "part": "white rook h1",
+    "from": [
+     -572.0,
+     232.0,
+     -179.4
+    ],
+    "to": [
+     -572.0,
+     232.0,
+     -59.4
+    ],
+    "lift": 125.0,
+    "what": "white rook h1-f1",
+    "fromSq": "h1",
+    "toSq": "f1",
+    "name": "9. O-O  white rook h1-f1 (2/2)",
+    "ply": 17
+   },
+   {
+    "part": "black pawn h7",
+    "from": [
+     -212.0,
+     232.0,
+     -179.4
+    ],
+    "to": [
+     -272.0,
+     232.0,
+     -179.4
+    ],
+    "lift": 125.0,
+    "what": "black pawn h7-h6",
+    "fromSq": "h7",
+    "toSq": "h6",
+    "name": "9... h6  black pawn h7-h6",
+    "ply": 18,
+    "info": "micro-Max depth 4, +0.14, 18370 nodes, 26.2 s on the Mega",
+    "think": 26.24
+   },
+   {
+    "part": "white pawn a2",
+    "from": [
+     -512.0,
+     232.0,
+     240.6
+    ],
+    "to": [
+     -392.0,
+     232.0,
+     240.6
+    ],
+    "lift": 125.0,
+    "what": "white pawn a2-a4",
+    "fromSq": "a2",
+    "toSq": "a4",
+    "name": "10. a4  white pawn a2-a4",
+    "ply": 19,
+    "info": "micro-Max depth 4, -0.01, 9837 nodes, 14.0 s on the Mega",
+    "think": 13.99
+   },
+   {
+    "part": "black queen d8",
+    "from": [
+     -272.0,
+     232.0,
+     180.6
+    ],
+    "to": [
+     -392.0,
+     232.0,
+     180.6
+    ],
+    "lift": 125.0,
+    "what": "black queen b6-b4",
+    "fromSq": "b6",
+    "toSq": "b4",
+    "name": "10... Qb4  black queen b6-b4",
+    "ply": 20,
+    "info": "micro-Max depth 4, +0.24, 6186 nodes, 8.8 s on the Mega",
+    "think": 8.78
+   },
+   {
+    "part": "white knight b1",
+    "from": [
+     -452.0,
+     232.0,
+     120.6
+    ],
+    "to": [
+     -572.0,
+     232.0,
+     60.6
+    ],
+    "lift": 125.0,
+    "what": "white knight c3-d1",
+    "fromSq": "c3",
+    "toSq": "d1",
+    "name": "11. Nd1  white knight c3-d1",
+    "ply": 21,
+    "info": "micro-Max depth 4, -0.12, 8324 nodes, 11.9 s on the Mega",
+    "think": 11.88
+   },
+   {
+    "part": "black bishop f8",
+    "from": [
+     -212.0,
+     232.0,
+     -119.4
+    ],
+    "to": [
+     -272.0,
+     232.0,
+     -59.4
+    ],
+    "lift": 125.0,
+    "what": "black bishop g7-f6",
+    "fromSq": "g7",
+    "toSq": "f6",
+    "name": "11... Bf6  black bishop g7-f6",
+    "ply": 22,
+    "info": "micro-Max depth 4, +0.08, 6866 nodes, 9.8 s on the Mega",
+    "think": 9.78
+   },
+   {
+    "part": "white pawn c2",
+    "from": [
+     -512.0,
+     232.0,
+     120.6
+    ],
+    "to": [
+     -452.0,
+     232.0,
+     120.6
+    ],
+    "lift": 125.0,
+    "what": "white pawn c2-c3",
+    "fromSq": "c2",
+    "toSq": "c3",
+    "name": "12. c3  white pawn c2-c3",
+    "ply": 23,
+    "info": "micro-Max depth 4, +0.07, 6099 nodes, 8.7 s on the Mega",
+    "think": 8.69
+   },
+   {
+    "part": "black queen d8",
+    "from": [
+     -392.0,
+     232.0,
+     180.6
+    ],
+    "to": [
+     -272.0,
+     232.0,
+     180.6
+    ],
+    "lift": 125.0,
+    "what": "black queen b4-b6",
+    "fromSq": "b4",
+    "toSq": "b6",
+    "name": "12... Qb6  black queen b4-b6",
+    "ply": 24,
+    "info": "micro-Max depth 4, -0.15, 21121 nodes, 30.1 s on the Mega",
+    "think": 30.08
+   },
+   {
+    "part": "white pawn h2",
+    "from": [
+     -512.0,
+     232.0,
+     -179.4
+    ],
+    "to": [
+     -392.0,
+     232.0,
+     -179.4
+    ],
+    "lift": 125.0,
+    "what": "white pawn h2-h4",
+    "fromSq": "h2",
+    "toSq": "h4",
+    "name": "13. h4  white pawn h2-h4",
+    "ply": 25,
+    "info": "micro-Max depth 4, +0.14, 8108 nodes, 11.5 s on the Mega",
+    "think": 11.52
+   },
+   {
+    "part": "black bishop f8",
+    "from": [
+     -272.0,
+     232.0,
+     -59.4
+    ],
+    "to": [
+     -212.0,
+     232.0,
+     -119.4
+    ],
+    "lift": 125.0,
+    "what": "black bishop f6-g7",
+    "fromSq": "f6",
+    "toSq": "g7",
+    "name": "13... Bg7  black bishop f6-g7",
+    "ply": 26,
+    "info": "micro-Max depth 4, -0.08, 7206 nodes, 10.2 s on the Mega",
+    "think": 10.24
+   },
+   {
+    "part": "white knight b1",
+    "from": [
+     -572.0,
+     232.0,
+     60.6
+    ],
+    "to": [
+     -452.0,
+     232.0,
+     0.6
+    ],
+    "lift": 125.0,
+    "what": "white knight d1-e3",
+    "fromSq": "d1",
+    "toSq": "e3",
+    "name": "14. Ne3  white knight d1-e3",
+    "ply": 27,
+    "info": "micro-Max depth 4, -0.03, 5996 nodes, 8.5 s on the Mega",
+    "think": 8.5
+   },
+   {
+    "part": "black knight g8",
+    "from": [
+     -152.0,
+     232.0,
+     -119.4
+    ],
+    "to": [
+     -272.0,
+     232.0,
+     -59.4
+    ],
+    "lift": 125.0,
+    "what": "black knight g8-f6",
+    "fromSq": "g8",
+    "toSq": "f6",
+    "name": "14... Nf6  black knight g8-f6",
+    "ply": 28,
+    "info": "micro-Max depth 4, +0.18, 21122 nodes, 30.1 s on the Mega",
+    "think": 30.08
+   },
+   {
+    "part": "white knight b1",
+    "from": [
+     -452.0,
+     232.0,
+     0.6
+    ],
+    "to": [
+     -392.0,
+     232.0,
+     120.6
+    ],
+    "lift": 125.0,
+    "what": "white knight e3-c4",
+    "fromSq": "e3",
+    "toSq": "c4",
+    "name": "15. Nc4  white knight e3-c4",
+    "ply": 29,
+    "info": "micro-Max depth 4, -0.01, 17574 nodes, 25.1 s on the Mega",
+    "think": 25.05
+   },
+   {
+    "part": "black queen d8",
+    "from": [
+     -272.0,
+     232.0,
+     180.6
+    ],
+    "to": [
+     -272.0,
+     232.0,
+     240.6
+    ],
+    "lift": 125.0,
+    "what": "black queen b6-a6",
+    "fromSq": "b6",
+    "toSq": "a6",
+    "name": "15... Qa6  black queen b6-a6",
+    "ply": 30,
+    "info": "micro-Max depth 4, -0.03, 21121 nodes, 30.1 s on the Mega",
+    "think": 30.08
+   },
+   {
+    "part": "white knight b1",
+    "from": [
+     -392.0,
+     232.0,
+     120.6
+    ],
+    "to": [
+     -512.0,
+     232.0,
+     60.6
+    ],
+    "lift": 125.0,
+    "what": "white knight c4-d2",
+    "fromSq": "c4",
+    "toSq": "d2",
+    "name": "16. Ncd2  white knight c4-d2",
+    "ply": 31,
+    "info": "micro-Max depth 4, -0.04, 11783 nodes, 16.8 s on the Mega",
+    "think": 16.82
+   },
+   {
+    "part": "black knight g8",
+    "from": [
+     -272.0,
+     232.0,
+     -59.4
+    ],
+    "to": [
+     -332.0,
+     232.0,
+     -179.4
+    ],
+    "lift": 125.0,
+    "what": "black knight f6-h5",
+    "fromSq": "f6",
+    "toSq": "h5",
+    "name": "16... Nh5  black knight f6-h5",
+    "ply": 32,
+    "info": "micro-Max depth 5, +0.08, 18332 nodes, 26.1 s on the Mega",
+    "think": 26.15
+   },
+   {
+    "part": "white bishop c1",
+    "from": [
+     -392.0,
+     232.0,
+     -59.4
+    ],
+    "to": [
+     -452.0,
+     232.0,
+     0.6
+    ],
+    "lift": 125.0,
+    "what": "white bishop f4-e3",
+    "fromSq": "f4",
+    "toSq": "e3",
+    "name": "17. Be3  white bishop f4-e3",
+    "ply": 33,
+    "info": "micro-Max depth 4, -0.18, 6875 nodes, 9.8 s on the Mega",
+    "think": 9.78
+   },
+   {
+    "part": "black knight b8",
+    "from": [
+     -272.0,
+     232.0,
+     120.6
+    ],
+    "to": [
+     -332.0,
+     232.0,
+     0.6
+    ],
+    "lift": 125.0,
+    "what": "black knight c6-e5",
+    "fromSq": "c6",
+    "toSq": "e5",
+    "name": "17... Ne5  black knight c6-e5",
+    "ply": 34,
+    "info": "micro-Max depth 4, +0.14, 15438 nodes, 22.0 s on the Mega",
+    "think": 22.03
+   },
+   {
+    "part": "white pawn d2",
+    "from": [
+     -452.0,
+     232.0,
+     60.6
+    ],
+    "to": [
+     -392.0,
+     232.0,
+     60.6
+    ],
+    "lift": 125.0,
+    "what": "white pawn d3-d4",
+    "fromSq": "d3",
+    "toSq": "d4",
+    "name": "18. d4  white pawn d3-d4",
+    "ply": 35,
+    "info": "micro-Max depth 3, -0.07, 6193 nodes, 8.8 s on the Mega",
+    "think": 8.78
+   },
+   {
+    "part": "black knight b8",
+    "from": [
+     -332.0,
+     232.0,
+     0.6
+    ],
+    "to": [
+     -452.0,
+     232.0,
+     60.6
+    ],
+    "lift": 125.0,
+    "what": "black knight e5-d3",
+    "fromSq": "e5",
+    "toSq": "d3",
+    "name": "18... Nd3  black knight e5-d3",
+    "ply": 36,
+    "info": "micro-Max depth 2, -0.04, 21123 nodes, 30.1 s on the Mega",
+    "think": 30.08
+   },
+   {
+    "part": "white pawn b2",
+    "from": [
+     -512.0,
+     232.0,
+     180.6
+    ],
+    "to": [
+     -392.0,
+     232.0,
+     180.6
+    ],
+    "lift": 125.0,
+    "what": "white pawn b2-b4",
+    "fromSq": "b2",
+    "toSq": "b4",
+    "name": "19. b4  white pawn b2-b4",
+    "ply": 37,
+    "info": "micro-Max depth 3, -0.03, 21122 nodes, 30.1 s on the Mega",
+    "think": 30.08
+   },
+   {
+    "part": "white pawn b2",
+    "from": [
+     -392.0,
+     232.0,
+     180.6
+    ],
+    "to": [
+     -32.0,
+     232.0,
+     325.6
+    ],
+    "lift": 125.0,
+    "what": "white pawn off to the tray",
+    "fromSq": "b4",
+    "toSq": "white tray 2",
+    "name": "19... cxb4  white pawn off to the tray (1/2)",
+    "ply": 38,
+    "info": "micro-Max depth 3, -0.03, 8953 nodes, 12.7 s on the Mega",
+    "think": 12.71
+   },
+   {
+    "part": "black pawn c7",
+    "from": [
+     -332.0,
+     232.0,
+     120.6
+    ],
+    "to": [
+     -392.0,
+     232.0,
+     180.6
+    ],
+    "lift": 125.0,
+    "what": "black pawn c5-b4",
+    "fromSq": "c5",
+    "toSq": "b4",
+    "name": "19... cxb4  black pawn c5-b4 (2/2)",
+    "ply": 38
+   },
+   {
+    "part": "black pawn c7",
+    "from": [
+     -392.0,
+     232.0,
+     180.6
+    ],
+    "to": [
+     -32.0,
+     232.0,
+     -264.4
+    ],
+    "lift": 125.0,
+    "what": "black pawn off to the tray",
+    "fromSq": "b4",
+    "toSq": "black tray 2",
+    "name": "20. cxb4  black pawn off to the tray (1/2)",
+    "ply": 39,
+    "info": "micro-Max depth 4, -0.26, 11624 nodes, 16.5 s on the Mega",
+    "think": 16.55
+   },
+   {
+    "part": "white pawn c2",
+    "from": [
+     -452.0,
+     232.0,
+     120.6
+    ],
+    "to": [
+     -392.0,
+     232.0,
+     180.6
+    ],
+    "lift": 125.0,
+    "what": "white pawn c3-b4",
+    "fromSq": "c3",
+    "toSq": "b4",
+    "name": "20. cxb4  white pawn c3-b4 (2/2)",
+    "ply": 39
+   },
+   {
+    "part": "black bishop f8",
+    "from": [
+     -212.0,
+     232.0,
+     -119.4
+    ],
+    "to": [
+     -272.0,
+     232.0,
+     -59.4
+    ],
+    "lift": 125.0,
+    "what": "black bishop g7-f6",
+    "fromSq": "g7",
+    "toSq": "f6",
+    "name": "20... Bf6  black bishop g7-f6",
+    "ply": 40,
+    "info": "micro-Max depth 3, +0.09, 21122 nodes, 30.1 s on the Mega",
+    "think": 30.08
+   },
+   {
+    "part": "white pawn c2",
+    "from": [
+     -392.0,
+     232.0,
+     180.6
+    ],
+    "to": [
+     -332.0,
+     232.0,
+     180.6
+    ],
+    "lift": 125.0,
+    "what": "white pawn b4-b5",
+    "fromSq": "b4",
+    "toSq": "b5",
+    "name": "21. b5  white pawn b4-b5",
+    "ply": 41,
+    "info": "micro-Max depth 4, +3.49, 9317 nodes, 13.3 s on the Mega",
+    "think": 13.26
+   },
+   {
+    "part": "black queen d8",
+    "from": [
+     -272.0,
+     232.0,
+     240.6
+    ],
+    "to": [
+     -272.0,
+     232.0,
+     180.6
+    ],
+    "lift": 125.0,
+    "what": "black queen a6-b6",
+    "fromSq": "a6",
+    "toSq": "b6",
+    "name": "21... Qb6  black queen a6-b6",
+    "ply": 42,
+    "info": "micro-Max depth 4, -3.50, 21122 nodes, 30.1 s on the Mega",
+    "think": 30.08
+   },
+   {
+    "part": "black knight b8",
+    "from": [
+     -452.0,
+     232.0,
+     60.6
+    ],
+    "to": [
+     -92.0,
+     232.0,
+     -264.4
+    ],
+    "lift": 125.0,
+    "what": "black knight off to the tray",
+    "fromSq": "d3",
+    "toSq": "black tray 3",
+    "name": "22. Qxd3  black knight off to the tray (1/2)",
+    "ply": 43,
+    "info": "micro-Max depth 4, +3.50, 10453 nodes, 14.9 s on the Mega",
+    "think": 14.9
+   },
+   {
+    "part": "white queen d1",
+    "from": [
+     -572.0,
+     232.0,
+     180.6
+    ],
+    "to": [
+     -452.0,
+     232.0,
+     60.6
+    ],
+    "lift": 125.0,
+    "what": "white queen b1-d3",
+    "fromSq": "b1",
+    "toSq": "d3",
+    "name": "22. Qxd3  white queen b1-d3 (2/2)",
+    "ply": 43
+   },
+   {
+    "part": "black queen d8",
+    "from": [
+     -272.0,
+     232.0,
+     180.6
+    ],
+    "to": [
+     -212.0,
+     232.0,
+     120.6
+    ],
+    "lift": 125.0,
+    "what": "black queen b6-c7",
+    "fromSq": "b6",
+    "toSq": "c7",
+    "name": "22... Qc7  black queen b6-c7",
+    "ply": 44,
+    "info": "micro-Max depth 3, -3.50, 21123 nodes, 30.1 s on the Mega",
+    "think": 30.08
+   },
+   {
+    "part": "white rook a1",
+    "from": [
+     -572.0,
+     232.0,
+     240.6
+    ],
+    "to": [
+     -572.0,
+     232.0,
+     120.6
+    ],
+    "lift": 125.0,
+    "what": "white rook a1-c1",
+    "fromSq": "a1",
+    "toSq": "c1",
+    "name": "23. Rac1  white rook a1-c1",
+    "ply": 45,
+    "info": "micro-Max depth 4, +7.55, 21122 nodes, 30.1 s on the Mega",
+    "think": 30.08
+   },
+   {
+    "part": "black rook a8",
+    "from": [
+     -152.0,
+     232.0,
+     60.6
+    ],
+    "to": [
+     -212.0,
+     232.0,
+     60.6
+    ],
+    "lift": 125.0,
+    "what": "black rook d8-d7",
+    "fromSq": "d8",
+    "toSq": "d7",
+    "name": "23... Rd7  black rook d8-d7",
+    "ply": 46,
+    "info": "micro-Max depth 4, -9.00, 15877 nodes, 22.7 s on the Mega",
+    "think": 22.67
+   },
+   {
+    "part": "black queen d8",
+    "from": [
+     -212.0,
+     232.0,
+     120.6
+    ],
+    "to": [
+     -152.0,
+     232.0,
+     -264.4
+    ],
+    "lift": 125.0,
+    "what": "black queen off to the tray",
+    "fromSq": "c7",
+    "toSq": "black tray 4",
+    "name": "24. Rxc7+  black queen off to the tray (1/2)",
+    "ply": 47,
+    "info": "micro-Max depth 4, +9.00, 21123 nodes, 30.1 s on the Mega",
+    "think": 30.08
+   },
+   {
+    "part": "white rook a1",
+    "from": [
+     -572.0,
+     232.0,
+     120.6
+    ],
+    "to": [
+     -212.0,
+     232.0,
+     120.6
+    ],
+    "lift": 125.0,
+    "what": "white rook c1-c7",
+    "fromSq": "c1",
+    "toSq": "c7",
+    "name": "24. Rxc7+  white rook c1-c7 (2/2)",
+    "ply": 47
+   },
+   {
+    "part": "white rook a1",
+    "from": [
+     -212.0,
+     232.0,
+     120.6
+    ],
+    "to": [
+     -92.0,
+     232.0,
+     325.6
+    ],
+    "lift": 125.0,
+    "what": "white rook off to the tray",
+    "fromSq": "c7",
+    "toSq": "white tray 3",
+    "name": "24... Rxc7  white rook off to the tray (1/2)",
+    "ply": 48,
+    "info": "micro-Max depth 4, -9.00, 10245 nodes, 14.6 s on the Mega",
+    "think": 14.63
+   },
+   {
+    "part": "black rook a8",
+    "from": [
+     -212.0,
+     232.0,
+     60.6
+    ],
+    "to": [
+     -212.0,
+     232.0,
+     120.6
+    ],
+    "lift": 125.0,
+    "what": "black rook d7-c7",
+    "fromSq": "d7",
+    "toSq": "c7",
+    "name": "24... Rxc7  black rook d7-c7 (2/2)",
+    "ply": 48
+   },
+   {
+    "part": "white queen d1",
+    "from": [
+     -452.0,
+     232.0,
+     60.6
+    ],
+    "to": [
+     -452.0,
+     232.0,
+     240.6
+    ],
+    "lift": 125.0,
+    "what": "white queen d3-a3",
+    "fromSq": "d3",
+    "toSq": "a3",
+    "name": "25. Qa3  white queen d3-a3",
+    "ply": 49,
+    "info": "micro-Max depth 4, +9.00, 8074 nodes, 11.5 s on the Mega",
+    "think": 11.52
+   },
+   {
+    "part": "black rook h8",
+    "from": [
+     -152.0,
+     232.0,
+     -179.4
+    ],
+    "to": [
+     -212.0,
+     232.0,
+     -179.4
+    ],
+    "lift": 125.0,
+    "what": "black rook h8-h7",
+    "fromSq": "h8",
+    "toSq": "h7",
+    "name": "25... Rh7  black rook h8-h7",
+    "ply": 50,
+    "info": "micro-Max depth 3, -9.00, 5857 nodes, 8.3 s on the Mega",
+    "think": 8.32
+   },
+   {
+    "part": "white rook h1",
+    "from": [
+     -572.0,
+     232.0,
+     -59.4
+    ],
+    "to": [
+     -572.0,
+     232.0,
+     120.6
+    ],
+    "lift": 125.0,
+    "what": "white rook f1-c1",
+    "fromSq": "f1",
+    "toSq": "c1",
+    "name": "26. Rc1  white rook f1-c1",
+    "ply": 51,
+    "info": "micro-Max depth 4, +9.16, 11584 nodes, 16.5 s on the Mega",
+    "think": 16.55
+   },
+   {
+    "part": "white rook h1",
+    "from": [
+     -572.0,
+     232.0,
+     120.6
+    ],
+    "to": [
+     -152.0,
+     232.0,
+     325.6
+    ],
+    "lift": 125.0,
+    "what": "white rook off to the tray",
+    "fromSq": "c1",
+    "toSq": "white tray 4",
+    "name": "26... Rxc1+  white rook off to the tray (1/2)",
+    "ply": 52,
+    "info": "micro-Max depth 3, -9.18, 5609 nodes, 8.0 s on the Mega",
+    "think": 7.95
+   },
+   {
+    "part": "black rook a8",
+    "from": [
+     -212.0,
+     232.0,
+     120.6
+    ],
+    "to": [
+     -572.0,
+     232.0,
+     120.6
+    ],
+    "lift": 125.0,
+    "what": "black rook c7-c1",
+    "fromSq": "c7",
+    "toSq": "c1",
+    "name": "26... Rxc1+  black rook c7-c1 (2/2)",
+    "ply": 52
+   },
+   {
+    "part": "black rook a8",
+    "from": [
+     -572.0,
+     232.0,
+     120.6
+    ],
+    "to": [
+     -212.0,
+     232.0,
+     -264.4
+    ],
+    "lift": 125.0,
+    "what": "black rook off to the tray",
+    "fromSq": "c1",
+    "toSq": "black tray 5",
+    "name": "27. Qxc1+  black rook off to the tray (1/2)",
+    "ply": 53,
+    "info": "micro-Max depth 2, +9.18, 21121 nodes, 30.1 s on the Mega",
+    "think": 30.08
+   },
+   {
+    "part": "white queen d1",
+    "from": [
+     -452.0,
+     232.0,
+     240.6
+    ],
+    "to": [
+     -572.0,
+     232.0,
+     120.6
+    ],
+    "lift": 125.0,
+    "what": "white queen a3-c1",
+    "fromSq": "a3",
+    "toSq": "c1",
+    "name": "27. Qxc1+  white queen a3-c1 (2/2)",
+    "ply": 53
+   },
+   {
+    "part": "black king e8",
+    "from": [
+     -152.0,
+     232.0,
+     120.6
+    ],
+    "to": [
+     -212.0,
+     232.0,
+     60.6
+    ],
+    "lift": 125.0,
+    "what": "black king c8-d7",
+    "fromSq": "c8",
+    "toSq": "d7",
+    "name": "27... Kd7  black king c8-d7",
+    "ply": 54,
+    "info": "micro-Max depth 2, -9.19, 21122 nodes, 30.1 s on the Mega",
+    "think": 30.08
+   },
+   {
+    "part": "white pawn d2",
+    "from": [
+     -392.0,
+     232.0,
+     60.6
+    ],
+    "to": [
+     -332.0,
+     232.0,
+     60.6
+    ],
+    "lift": 125.0,
+    "what": "white pawn d4-d5",
+    "fromSq": "d4",
+    "toSq": "d5",
+    "name": "28. d5  white pawn d4-d5",
+    "ply": 55,
+    "info": "micro-Max depth 3, +9.68, 13718 nodes, 19.6 s on the Mega",
+    "think": 19.57
+   },
+   {
+    "part": "black bishop c8",
+    "from": [
+     -272.0,
+     232.0,
+     0.6
+    ],
+    "to": [
+     -392.0,
+     232.0,
+     -119.4
+    ],
+    "lift": 125.0,
+    "what": "black bishop e6-g4",
+    "fromSq": "e6",
+    "toSq": "g4",
+    "name": "28... Bg4  black bishop e6-g4",
+    "ply": 56,
+    "info": "micro-Max depth 4, -9.76, 5681 nodes, 8.0 s on the Mega",
+    "think": 8.04
+   },
+   {
+    "part": "black pawn a7",
+    "from": [
+     -212.0,
+     232.0,
+     240.6
+    ],
+    "to": [
+     -272.0,
+     232.0,
+     -264.4
+    ],
+    "lift": 125.0,
+    "what": "black pawn off to the tray",
+    "fromSq": "a7",
+    "toSq": "black tray 6",
+    "name": "29. Bxa7  black pawn off to the tray (1/2)",
+    "ply": 57,
+    "info": "micro-Max depth 4, +10.30, 12106 nodes, 17.3 s on the Mega",
+    "think": 17.28
+   },
+   {
+    "part": "white bishop c1",
+    "from": [
+     -452.0,
+     232.0,
+     0.6
+    ],
+    "to": [
+     -212.0,
+     232.0,
+     240.6
+    ],
+    "lift": 125.0,
+    "what": "white bishop e3-a7",
+    "fromSq": "e3",
+    "toSq": "a7",
+    "name": "29. Bxa7  white bishop e3-a7 (2/2)",
+    "ply": 57
+   },
+   {
+    "part": "white knight g1",
+    "from": [
+     -452.0,
+     232.0,
+     -59.4
+    ],
+    "to": [
+     -212.0,
+     232.0,
+     325.6
+    ],
+    "lift": 125.0,
+    "what": "white knight off to the tray",
+    "fromSq": "f3",
+    "toSq": "white tray 5",
+    "name": "29... Bxf3  white knight off to the tray (1/2)",
+    "ply": 58,
+    "info": "micro-Max depth 3, -10.58, 8254 nodes, 11.7 s on the Mega",
+    "think": 11.7
+   },
+   {
+    "part": "black bishop c8",
+    "from": [
+     -392.0,
+     232.0,
+     -119.4
+    ],
+    "to": [
+     -452.0,
+     232.0,
+     -59.4
+    ],
+    "lift": 125.0,
+    "what": "black bishop g4-f3",
+    "fromSq": "g4",
+    "toSq": "f3",
+    "name": "29... Bxf3  black bishop g4-f3 (2/2)",
+    "ply": 58
+   },
+   {
+    "part": "black bishop c8",
+    "from": [
+     -452.0,
+     232.0,
+     -59.4
+    ],
+    "to": [
+     -332.0,
+     232.0,
+     -264.4
+    ],
+    "lift": 125.0,
+    "what": "black bishop off to the tray",
+    "fromSq": "f3",
+    "toSq": "black tray 7",
+    "name": "30. Bxf3  black bishop off to the tray (1/2)",
+    "ply": 59,
+    "info": "micro-Max depth 5, +11.41, 11654 nodes, 16.6 s on the Mega",
+    "think": 16.64
+   },
+   {
+    "part": "white bishop f1",
+    "from": [
+     -512.0,
+     232.0,
+     -119.4
+    ],
+    "to": [
+     -452.0,
+     232.0,
+     -59.4
+    ],
+    "lift": 125.0,
+    "what": "white bishop g2-f3",
+    "fromSq": "g2",
+    "toSq": "f3",
+    "name": "30. Bxf3  white bishop g2-f3 (2/2)",
+    "ply": 59
+   },
+   {
+    "part": "black pawn e7",
+    "from": [
+     -212.0,
+     232.0,
+     0.6
+    ],
+    "to": [
+     -272.0,
+     232.0,
+     0.6
+    ],
+    "lift": 125.0,
+    "what": "black pawn e7-e6",
+    "fromSq": "e7",
+    "toSq": "e6",
+    "name": "30... e6  black pawn e7-e6",
+    "ply": 60,
+    "info": "micro-Max depth 5, -11.26, 15338 nodes, 21.9 s on the Mega",
+    "think": 21.85
+   },
+   {
+    "part": "white pawn c2",
+    "from": [
+     -332.0,
+     232.0,
+     180.6
+    ],
+    "to": [
+     -272.0,
+     232.0,
+     180.6
+    ],
+    "lift": 125.0,
+    "what": "white pawn b5-b6",
+    "fromSq": "b5",
+    "toSq": "b6",
+    "name": "31. b6  white pawn b5-b6",
+    "ply": 61,
+    "info": "micro-Max depth 4, +11.26, 5244 nodes, 7.4 s on the Mega",
+    "think": 7.41
+   },
+   {
+    "part": "white pawn d2",
+    "from": [
+     -332.0,
+     232.0,
+     60.6
+    ],
+    "to": [
+     -272.0,
+     232.0,
+     325.6
+    ],
+    "lift": 125.0,
+    "what": "white pawn off to the tray",
+    "fromSq": "d5",
+    "toSq": "white tray 6",
+    "name": "31... exd5  white pawn off to the tray (1/2)",
+    "ply": 62,
+    "info": "micro-Max depth 4, -11.47, 9687 nodes, 13.8 s on the Mega",
+    "think": 13.8
+   },
+   {
+    "part": "black pawn e7",
+    "from": [
+     -272.0,
+     232.0,
+     0.6
+    ],
+    "to": [
+     -332.0,
+     232.0,
+     60.6
+    ],
+    "lift": 125.0,
+    "what": "black pawn e6-d5",
+    "fromSq": "e6",
+    "toSq": "d5",
+    "name": "31... exd5  black pawn e6-d5 (2/2)",
+    "ply": 62
+   },
+   {
+    "part": "white queen d1",
+    "from": [
+     -572.0,
+     232.0,
+     120.6
+    ],
+    "to": [
+     -212.0,
+     232.0,
+     120.6
+    ],
+    "lift": 125.0,
+    "what": "white queen c1-c7",
+    "fromSq": "c1",
+    "toSq": "c7",
+    "name": "32. Qc7+  white queen c1-c7",
+    "ply": 63,
+    "info": "micro-Max depth 4, +12.65, 21121 nodes, 30.1 s on the Mega",
+    "think": 30.08
+   },
+   {
+    "part": "black king e8",
+    "from": [
+     -212.0,
+     232.0,
+     60.6
+    ],
+    "to": [
+     -152.0,
+     232.0,
+     0.6
+    ],
+    "lift": 125.0,
+    "what": "black king d7-e8",
+    "fromSq": "d7",
+    "toSq": "e8",
+    "name": "32... Ke8  black king d7-e8",
+    "ply": 64,
+    "info": "micro-Max depth 4, -12.66, 11791 nodes, 16.8 s on the Mega",
+    "think": 16.82
+   },
+   {
+    "part": "black pawn d7",
+    "from": [
+     -272.0,
+     232.0,
+     60.6
+    ],
+    "to": [
+     -392.0,
+     232.0,
+     -264.4
+    ],
+    "lift": 125.0,
+    "what": "black pawn off to the tray",
+    "fromSq": "d6",
+    "toSq": "black tray 8",
+    "name": "33. Qxd6  black pawn off to the tray (1/2)",
+    "ply": 65,
+    "info": "micro-Max depth 4, +12.32, 7678 nodes, 10.9 s on the Mega",
+    "think": 10.88
+   },
+   {
+    "part": "white queen d1",
+    "from": [
+     -212.0,
+     232.0,
+     120.6
+    ],
+    "to": [
+     -272.0,
+     232.0,
+     60.6
+    ],
+    "lift": 125.0,
+    "what": "white queen c7-d6",
+    "fromSq": "c7",
+    "toSq": "d6",
+    "name": "33. Qxd6  white queen c7-d6 (2/2)",
+    "ply": 65
+   },
+   {
+    "part": "black bishop f8",
+    "from": [
+     -272.0,
+     232.0,
+     -59.4
+    ],
+    "to": [
+     -212.0,
+     232.0,
+     0.6
+    ],
+    "lift": 125.0,
+    "what": "black bishop f6-e7",
+    "fromSq": "f6",
+    "toSq": "e7",
+    "name": "33... Be7  black bishop f6-e7",
+    "ply": 66,
+    "info": "micro-Max depth 4, -12.49, 5884 nodes, 8.3 s on the Mega",
+    "think": 8.32
+   },
+   {
+    "part": "white queen d1",
+    "from": [
+     -272.0,
+     232.0,
+     60.6
+    ],
+    "to": [
+     -152.0,
+     232.0,
+     180.6
+    ],
+    "lift": 125.0,
+    "what": "white queen d6-b8",
+    "fromSq": "d6",
+    "toSq": "b8",
+    "name": "34. Qb8+  white queen d6-b8",
+    "ply": 67,
+    "info": "micro-Max depth 4, +12.49, 5042 nodes, 7.1 s on the Mega",
+    "think": 7.13
+   },
+   {
+    "part": "black bishop f8",
+    "from": [
+     -212.0,
+     232.0,
+     0.6
+    ],
+    "to": [
+     -152.0,
+     232.0,
+     60.6
+    ],
+    "lift": 125.0,
+    "what": "black bishop e7-d8",
+    "fromSq": "e7",
+    "toSq": "d8",
+    "name": "34... Bd8  black bishop e7-d8",
+    "ply": 68,
+    "info": "micro-Max depth 4, -13.14, 7011 nodes, 10.0 s on the Mega",
+    "think": 9.96
+   },
+   {
+    "part": "black pawn e7",
+    "from": [
+     -332.0,
+     232.0,
+     60.6
+    ],
+    "to": [
+     -452.0,
+     232.0,
+     -264.4
+    ],
+    "lift": 125.0,
+    "what": "black pawn off to the tray",
+    "fromSq": "d5",
+    "toSq": "black tray 9",
+    "name": "35. exd5  black pawn off to the tray (1/2)",
+    "ply": 69,
+    "info": "micro-Max depth 5, +13.78, 11797 nodes, 16.8 s on the Mega",
+    "think": 16.82
+   },
+   {
+    "part": "white pawn e2",
+    "from": [
+     -392.0,
+     232.0,
+     0.6
+    ],
+    "to": [
+     -332.0,
+     232.0,
+     60.6
+    ],
+    "lift": 125.0,
+    "what": "white pawn e4-d5",
+    "fromSq": "e4",
+    "toSq": "d5",
+    "name": "35. exd5  white pawn e4-d5 (2/2)",
+    "ply": 69
+   },
+   {
+    "part": "black pawn f7",
+    "from": [
+     -212.0,
+     232.0,
+     -59.4
+    ],
+    "to": [
+     -332.0,
+     232.0,
+     -59.4
+    ],
+    "lift": 125.0,
+    "what": "black pawn f7-f5",
+    "fromSq": "f7",
+    "toSq": "f5",
+    "name": "35... f5  black pawn f7-f5",
+    "ply": 70,
+    "info": "micro-Max depth 5, -13.86, 13536 nodes, 19.3 s on the Mega",
+    "think": 19.29
+   },
+   {
+    "part": "white pawn e2",
+    "from": [
+     -332.0,
+     232.0,
+     60.6
+    ],
+    "to": [
+     -272.0,
+     232.0,
+     60.6
+    ],
+    "lift": 125.0,
+    "what": "white pawn d5-d6",
+    "fromSq": "d5",
+    "toSq": "d6",
+    "name": "36. d6  white pawn d5-d6",
+    "ply": 71,
+    "info": "micro-Max depth 5, +13.89, 16586 nodes, 23.7 s on the Mega",
+    "think": 23.68
+   },
+   {
+    "part": "black knight g8",
+    "from": [
+     -332.0,
+     232.0,
+     -179.4
+    ],
+    "to": [
+     -272.0,
+     232.0,
+     -59.4
+    ],
+    "lift": 125.0,
+    "what": "black knight h5-f6",
+    "fromSq": "h5",
+    "toSq": "f6",
+    "name": "36... Nf6  black knight h5-f6",
+    "ply": 72,
+    "info": "micro-Max depth 4, -13.99, 21122 nodes, 30.1 s on the Mega",
+    "think": 30.08
+   },
+   {
+    "part": "black pawn b7",
+    "from": [
+     -212.0,
+     232.0,
+     180.6
+    ],
+    "to": [
+     -512.0,
+     232.0,
+     -264.4
+    ],
+    "lift": 125.0,
+    "what": "black pawn off to the tray",
+    "fromSq": "b7",
+    "toSq": "black tray 10",
+    "name": "37. Bxb7  black pawn off to the tray (1/2)",
+    "ply": 73,
+    "info": "micro-Max depth 5, +14.23, 8484 nodes, 12.1 s on the Mega",
+    "think": 12.07
+   },
+   {
+    "part": "white bishop f1",
+    "from": [
+     -452.0,
+     232.0,
+     -59.4
+    ],
+    "to": [
+     -212.0,
+     232.0,
+     180.6
+    ],
+    "lift": 125.0,
+    "what": "white bishop f3-b7",
+    "fromSq": "f3",
+    "toSq": "b7",
+    "name": "37. Bxb7  white bishop f3-b7 (2/2)",
+    "ply": 73
+   },
+   {
+    "part": "black knight g8",
+    "from": [
+     -272.0,
+     232.0,
+     -59.4
+    ],
+    "to": [
+     -212.0,
+     232.0,
+     60.6
+    ],
+    "lift": 125.0,
+    "what": "black knight f6-d7",
+    "fromSq": "f6",
+    "toSq": "d7",
+    "name": "37... Nd7  black knight f6-d7",
+    "ply": 74,
+    "info": "micro-Max depth 5, -15.26, 11400 nodes, 16.3 s on the Mega",
+    "think": 16.27
+   },
+   {
+    "part": "white bishop f1",
+    "from": [
+     -212.0,
+     232.0,
+     180.6
+    ],
+    "to": [
+     -272.0,
+     232.0,
+     120.6
+    ],
+    "lift": 125.0,
+    "what": "white bishop b7-c6",
+    "fromSq": "b7",
+    "toSq": "c6",
+    "name": "38. Bc6  white bishop b7-c6",
+    "ply": 75,
+    "info": "micro-Max depth 6, +15.26, 14519 nodes, 20.7 s on the Mega",
+    "think": 20.66
+   },
+   {
+    "part": "black pawn g7",
+    "from": [
+     -272.0,
+     232.0,
+     -119.4
+    ],
+    "to": [
+     -332.0,
+     232.0,
+     -119.4
+    ],
+    "lift": 125.0,
+    "what": "black pawn g6-g5",
+    "fromSq": "g6",
+    "toSq": "g5",
+    "name": "38... g5  black pawn g6-g5",
+    "ply": 76,
+    "info": "micro-Max depth 5, -15.15, 12650 nodes, 18.0 s on the Mega",
+    "think": 18.01
+   },
+   {
+    "part": "white pawn c2",
+    "from": [
+     -272.0,
+     232.0,
+     180.6
+    ],
+    "to": [
+     -212.0,
+     232.0,
+     180.6
+    ],
+    "lift": 125.0,
+    "what": "white pawn b6-b7",
+    "fromSq": "b6",
+    "toSq": "b7",
+    "name": "39. b7  white pawn b6-b7",
+    "ply": 77,
+    "info": "micro-Max depth 5, +16.51, 11790 nodes, 16.8 s on the Mega",
+    "think": 16.82
+   },
+   {
+    "part": "white pawn h2",
+    "from": [
+     -392.0,
+     232.0,
+     -179.4
+    ],
+    "to": [
+     -332.0,
+     232.0,
+     325.6
+    ],
+    "lift": 125.0,
+    "what": "white pawn off to the tray",
+    "fromSq": "h4",
+    "toSq": "white tray 7",
+    "name": "39... gxh4  white pawn off to the tray (1/2)",
+    "ply": 78,
+    "info": "micro-Max depth 4, -16.53, 5743 nodes, 8.1 s on the Mega",
+    "think": 8.14
+   },
+   {
+    "part": "black pawn g7",
+    "from": [
+     -332.0,
+     232.0,
+     -119.4
+    ],
+    "to": [
+     -392.0,
+     232.0,
+     -179.4
+    ],
+    "lift": 125.0,
+    "what": "black pawn g5-h4",
+    "fromSq": "g5",
+    "toSq": "h4",
+    "name": "39... gxh4  black pawn g5-h4 (2/2)",
+    "ply": 78
+   },
+   {
+    "part": "white bishop c1",
+    "from": [
+     -212.0,
+     232.0,
+     240.6
+    ],
+    "to": [
+     -272.0,
+     232.0,
+     180.6
+    ],
+    "lift": 125.0,
+    "what": "white bishop a7-b6",
+    "fromSq": "a7",
+    "toSq": "b6",
+    "name": "40. Bb6  white bishop a7-b6",
+    "ply": 79,
+    "info": "micro-Max depth 5, +18.27, 6097 nodes, 8.7 s on the Mega",
+    "think": 8.69
+   },
+   {
+    "part": "black king e8",
+    "from": [
+     -152.0,
+     232.0,
+     0.6
+    ],
+    "to": [
+     -212.0,
+     232.0,
+     -59.4
+    ],
+    "lift": 125.0,
+    "what": "black king e8-f7",
+    "fromSq": "e8",
+    "toSq": "f7",
+    "name": "40... Kf7  black king e8-f7",
+    "ply": 80,
+    "info": "micro-Max depth 5, -19.23, 11330 nodes, 16.2 s on the Mega",
+    "think": 16.18
+   },
+   {
+    "part": "black bishop f8",
+    "from": [
+     -152.0,
+     232.0,
+     60.6
+    ],
+    "to": [
+     28.0,
+     232.0,
+     -324.4
+    ],
+    "lift": 125.0,
+    "what": "black bishop off to the tray",
+    "fromSq": "d8",
+    "toSq": "black tray 11",
+    "name": "41. Qxd8  black bishop off to the tray (1/2)",
+    "ply": 81,
+    "info": "micro-Max depth 5, +20.82, 10560 nodes, 15.1 s on the Mega",
+    "think": 15.09
+   },
+   {
+    "part": "white queen d1",
+    "from": [
+     -152.0,
+     232.0,
+     180.6
+    ],
+    "to": [
+     -152.0,
+     232.0,
+     60.6
+    ],
+    "lift": 125.0,
+    "what": "white queen b8-d8",
+    "fromSq": "b8",
+    "toSq": "d8",
+    "name": "41. Qxd8  white queen b8-d8 (2/2)",
+    "ply": 81
+   },
+   {
+    "part": "black king e8",
+    "from": [
+     -212.0,
+     232.0,
+     -59.4
+    ],
+    "to": [
+     -272.0,
+     232.0,
+     0.6
+    ],
+    "lift": 125.0,
+    "what": "black king f7-e6",
+    "fromSq": "f7",
+    "toSq": "e6",
+    "name": "41... Ke6  black king f7-e6",
+    "ply": 82,
+    "info": "micro-Max depth 4, -20.85, 21123 nodes, 30.1 s on the Mega",
+    "think": 30.08
+   },
+   {
+    "part": "black knight g8",
+    "from": [
+     -212.0,
+     232.0,
+     60.6
+    ],
+    "to": [
+     -32.0,
+     232.0,
+     -324.4
+    ],
+    "lift": 125.0,
+    "what": "black knight off to the tray",
+    "fromSq": "d7",
+    "toSq": "black tray 12",
+    "name": "42. Bxd7+  black knight off to the tray (1/2)",
+    "ply": 83,
+    "info": "micro-Max depth 4, +24.57, 5266 nodes, 7.5 s on the Mega",
+    "think": 7.5
+   },
+   {
+    "part": "white bishop f1",
+    "from": [
+     -272.0,
+     232.0,
+     120.6
+    ],
+    "to": [
+     -212.0,
+     232.0,
+     60.6
+    ],
+    "lift": 125.0,
+    "what": "white bishop c6-d7",
+    "fromSq": "c6",
+    "toSq": "d7",
+    "name": "42. Bxd7+  white bishop c6-d7 (2/2)",
+    "ply": 83
+   },
+   {
+    "part": "white bishop f1",
+    "from": [
+     -212.0,
+     232.0,
+     60.6
+    ],
+    "to": [
+     -392.0,
+     232.0,
+     325.6
+    ],
+    "lift": 125.0,
+    "what": "white bishop off to the tray",
+    "fromSq": "d7",
+    "toSq": "white tray 8",
+    "name": "42... Rxd7  white bishop off to the tray (1/2)",
+    "ply": 84,
+    "info": "micro-Max depth 4, -25.47, 5307 nodes, 7.5 s on the Mega",
+    "think": 7.5
+   },
+   {
+    "part": "black rook h8",
+    "from": [
+     -212.0,
+     232.0,
+     -179.4
+    ],
+    "to": [
+     -212.0,
+     232.0,
+     60.6
+    ],
+    "lift": 125.0,
+    "what": "black rook h7-d7",
+    "fromSq": "h7",
+    "toSq": "d7",
+    "name": "42... Rxd7  black rook h7-d7 (2/2)",
+    "ply": 84
+   },
+   {
+    "part": "white queen d1",
+    "from": [
+     -152.0,
+     232.0,
+     60.6
+    ],
+    "to": [
+     -152.0,
+     232.0,
+     0.6
+    ],
+    "lift": 125.0,
+    "what": "white queen d8-e8",
+    "fromSq": "d8",
+    "toSq": "e8",
+    "name": "43. Qe8+  white queen d8-e8",
+    "ply": 85,
+    "info": "micro-Max depth 4, +25.50, 21122 nodes, 30.1 s on the Mega",
+    "think": 30.08
+   },
+   {
+    "part": "black king e8",
+    "from": [
+     -272.0,
+     232.0,
+     0.6
+    ],
+    "to": [
+     -332.0,
+     232.0,
+     60.6
+    ],
+    "lift": 125.0,
+    "what": "black king e6-d5",
+    "fromSq": "e6",
+    "toSq": "d5",
+    "name": "43... Kd5  black king e6-d5",
+    "ply": 86,
+    "info": "micro-Max depth 4, -25.51, 5840 nodes, 8.3 s on the Mega",
+    "think": 8.32
+   },
+   {
+    "part": "white pawn c2",
+    "from": [
+     -212.0,
+     232.0,
+     180.6
+    ],
+    "to": [
+     -152.0,
+     232.0,
+     180.6
+    ],
+    "lift": 125.0,
+    "what": "white pawn b7-b8",
+    "fromSq": "b7",
+    "toSq": "b8",
+    "name": "44. b8=Q  white pawn b7-b8 (1/3)",
+    "ply": 87,
+    "info": "micro-Max depth 5, +27.18, 12167 nodes, 17.4 s on the Mega",
+    "think": 17.37
+   },
+   {
+    "part": "white pawn c2",
+    "from": [
+     -152.0,
+     232.0,
+     180.6
+    ],
+    "to": [
+     -452.0,
+     232.0,
+     325.6
+    ],
+    "lift": 125.0,
+    "what": "white pawn off to the tray",
+    "fromSq": "b8",
+    "toSq": "white tray 9",
+    "name": "44. b8=Q  white pawn off to the tray (2/3)",
+    "ply": 87
+   },
+   {
+    "part": "white queen spare",
+    "from": [
+     28.0,
+     232.0,
+     325.6
+    ],
+    "to": [
+     -152.0,
+     232.0,
+     180.6
+    ],
+    "lift": 125.0,
+    "what": "white queen in as the new queen",
+    "fromSq": "white tray 1",
+    "toSq": "b8",
+    "name": "44. b8=Q  white queen in as the new queen (3/3)",
+    "ply": 87
+   },
+   {
+    "part": "black rook h8",
+    "from": [
+     -212.0,
+     232.0,
+     60.6
+    ],
+    "to": [
+     -212.0,
+     232.0,
+     -119.4
+    ],
+    "lift": 125.0,
+    "what": "black rook d7-g7",
+    "fromSq": "d7",
+    "toSq": "g7",
+    "name": "44... Rg7  black rook d7-g7",
+    "ply": 88,
+    "info": "micro-Max depth 4, -27.35, 21122 nodes, 30.1 s on the Mega",
+    "think": 30.08
+   },
+   {
+    "part": "white queen spare",
+    "from": [
+     -152.0,
+     232.0,
+     180.6
+    ],
+    "to": [
+     -152.0,
+     232.0,
+     240.6
+    ],
+    "lift": 125.0,
+    "what": "white queen b8-a8",
+    "fromSq": "b8",
+    "toSq": "a8",
+    "name": "45. Qa8+  white queen b8-a8",
+    "ply": 89,
+    "info": "micro-Max depth 4, +31.69, 6575 nodes, 9.3 s on the Mega",
+    "think": 9.32
+   },
+   {
+    "part": "black rook h8",
+    "from": [
+     -212.0,
+     232.0,
+     -119.4
+    ],
+    "to": [
+     -212.0,
+     232.0,
+     180.6
+    ],
+    "lift": 125.0,
+    "what": "black rook g7-b7",
+    "fromSq": "g7",
+    "toSq": "b7",
+    "name": "45... Rb7  black rook g7-b7",
+    "ply": 90,
+    "info": "micro-Max depth 97, -108.08, 8646 nodes, 12.3 s on the Mega",
+    "think": 12.34
+   },
+   {
+    "part": "black rook h8",
+    "from": [
+     -212.0,
+     232.0,
+     180.6
+    ],
+    "to": [
+     -92.0,
+     232.0,
+     -324.4
+    ],
+    "lift": 125.0,
+    "what": "black rook off to the tray",
+    "fromSq": "b7",
+    "toSq": "black tray 13",
+    "name": "46. Qxb7+  black rook off to the tray (1/2)",
+    "ply": 91,
+    "info": "micro-Max depth 97, +108.08, 5121 nodes, 7.3 s on the Mega",
+    "think": 7.31
+   },
+   {
+    "part": "white queen spare",
+    "from": [
+     -152.0,
+     232.0,
+     240.6
+    ],
+    "to": [
+     -212.0,
+     232.0,
+     180.6
+    ],
+    "lift": 125.0,
+    "what": "white queen a8-b7",
+    "fromSq": "a8",
+    "toSq": "b7",
+    "name": "46. Qxb7+  white queen a8-b7 (2/2)",
+    "ply": 91
+   },
+   {
+    "part": "white pawn e2",
+    "from": [
+     -272.0,
+     232.0,
+     60.6
+    ],
+    "to": [
+     28.0,
+     232.0,
+     325.6
+    ],
+    "lift": 125.0,
+    "what": "white pawn off to the tray",
+    "fromSq": "d6",
+    "toSq": "white tray 1",
+    "name": "46... Kxd6  white pawn off to the tray (1/2)",
+    "ply": 92,
+    "info": "micro-Max depth 97, -108.09, 501 nodes, 0.6 s on the Mega",
+    "think": 0.64
+   },
+   {
+    "part": "black king e8",
+    "from": [
+     -332.0,
+     232.0,
+     60.6
+    ],
+    "to": [
+     -272.0,
+     232.0,
+     60.6
+    ],
+    "lift": 125.0,
+    "what": "black king d5-d6",
+    "fromSq": "d5",
+    "toSq": "d6",
+    "name": "46... Kxd6  black king d5-d6 (2/2)",
+    "ply": 92
+   },
+   {
+    "part": "white knight b1",
+    "from": [
+     -512.0,
+     232.0,
+     60.6
+    ],
+    "to": [
+     -392.0,
+     232.0,
+     120.6
+    ],
+    "lift": 125.0,
+    "what": "white knight d2-c4",
+    "fromSq": "d2",
+    "toSq": "c4",
+    "name": "47. Nc4#  white knight d2-c4",
+    "ply": 93,
+    "info": "micro-Max depth 97, +108.09, 399 nodes, 0.5 s on the Mega",
+    "think": 0.55
+   }
+  ],
+  "reach_ok": true
+ }
+}
