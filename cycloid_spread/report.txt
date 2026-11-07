@@ -34,9 +34,9 @@ Printed parts (solid nylon, g):
   pin ring                               12.7
   lid                                    51.7
   disc (x2)                              12.0
-  eccentric lower                         0.6
-  eccentric upper                         0.4
-  output flange                          39.6
+  eccentric (one piece)                   1.0
+  eccentric spacer                        0.2
+  output flange                          39.5
   output support ring (steel pins)        3.5
   output support ring (printed pins)      4.7
   clamp ring                              1.7
@@ -55,12 +55,12 @@ Assembly:
   1  Drill the printed pin holes to 3.0 (housing floor sockets, support ring, flange sockets) so the dowels press in.
   2  Motor to the housing: 4 x M3 x 8 from inside, heads into the counterbores.
   3  Steel pins: press the 38 ring pins down the wall grooves into the floor (tops stand 0.5 above the housing).
-  4  Lower eccentric onto the motor shaft, D to D, down to 0.3 above the floor.
-  5  Press the 8 output pins into the support ring (flush underneath) and drop it in over the hub.
-  6  Press a 6800 into each disc, grease the lobes. Disc 1 down onto the lower cam and over the output pins;
-     upper eccentric onto the shaft, its star socket down over the lower one's star (they lock 180 deg apart);
-     disc 2 onto the upper cam, turned 180 deg
-     (the same part; its lobes then fall between the pins).
+  4  Press the 8 output pins into the support ring (flush underneath) and drop it in over the motor shaft.
+  5  On the bench, the eccentric cartridge: press a 6800 into each disc, grease the lobes. Disc 1's bearing up
+     onto cam 1 FROM BELOW (over the neck) to the middle collar, then the eccentric spacer up the neck under it;
+     disc 2's bearing down onto cam 2 from above, disc 2 turned 180 deg (the same part).
+  6  Lower the cartridge onto the motor shaft, D to D, down to 0.3 above the floor, turning each disc on its
+     bearing so its lobes fall between the ring pins and its 8 holes take the output pins.
   7  Onto the flange journal: a 6808, the inner race spacer, the other 6808; push the lot up into the lid from
      below with the outer race spacer between the two outer races (the lip stops the top race);
      pin ring under the lid; lower the three together so the flange sockets take the output pin tops.

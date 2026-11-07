@@ -33,14 +33,14 @@ LEVELS = [
     (("housing",), BLUE),
     (("motor screw",), BLACK),                     # from inside the housing, down into the motor
     (("ring pin",), STEEL),                        # down the wall grooves into the floor
-    (("eccentric lower",), GREEN),
     (("output support ring",), NAVY),
     (("output pin",), STEEL),                      # pressed into the support ring
+    (("eccentric spacer",), GREEN2),               # the cartridge: spacer, disc 1 + bearing from below,
     (("disc 1",), ORANGE),
     (("6800 in disc 1",), STEEL),
-    (("eccentric upper",), GREEN2),                # star socket down over the lower one's star
+    (("eccentric",), GREEN),                       # the one-piece eccentric,
+    (("6800 in disc 2",), STEEL),                  # disc 2 + bearing from above
     (("disc 2",), ORANGE2),
-    (("6800 in disc 2",), STEEL),
     (("pin ring",), BLUE),
     (("output flange",), NAVY),
     (("insert",), BRASS),                          # heat-set into the flange face

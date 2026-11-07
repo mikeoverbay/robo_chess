@@ -99,17 +99,22 @@ Z_OPIN0 = Z_RING                             # output pins 7.7 .. 27.7
 # ---------------------------------------------------------------- bought parts
 B6800_ID, B6800_OD, B6800_W = 10.0, 19.0, 5.0
 B6800_INNER_OD, B6800_OUTER_ID = 12.4, 16.6  # check model only (envelope)
-COLLAR_D = 11.0              # concentric hub collars: r 5.5 -/+ e stays on the 6800 inner rings (r 5.0..6.2)
+COLLAR_D = 11.0              # the middle collar, concentric: r 5.5 -/+ e stays on both 6800 inner rings (r 5.0..6.2)
 HUB_BORE = 5.0               # --hub-bore
 CAM_D = 10.0                 # --cam-d
 ECC_BORE = 19.0              # --ecc-bore
-# Mike (2026-11-06): "put a star-shaped pattern ... female on one, and male on the other. So the two lobes are locked
-# together": the two eccentrics (always 180 deg apart) lock where they meet (z 15.7), so the lower one - all of it on
-# the motor's D - drives the upper one, whose cam a short shaft only half fills (the wrist's 17HE08: 20 mm, ends at 20.0
-# under the upper cam's 17.2..22.2). A male star on the lower cam's top, the socket in the upper collar's underside.
-# Points stay inside the cam faces (nearest edge r 4.63) and the socket inside the upper collar (1.1 wall); both parts
-# still print collar-down.
-KEY_STAR = (6, 4.3, 3.4, 1.0, 1.2, 0.1)   # points, point r, valley r, male height, socket depth, socket clearance
+# ONE-PIECE eccentric (Mike 2026-11-06: "I'm not really liking that little star coupling ... Can we make that one piece
+# and just make it longer so it covers more of the motor shaft?"; it replaced the two star-keyed halves). A 6800's 10 bore
+# can't pass the other cam (offset 2e = 0.74 the other way) or the middle collar, and there is only 1.5 between the
+# bearings - so disc 1's bearing goes on from BELOW and disc 2's from above. Below cam 1: a neck on cam 1's own axis
+# (inside its footprint, so the bearing slides past) with a 45 deg lead-in; the old bottom collar is now a LOOSE spacer
+# ring on that neck under bearing 1's inner ring (carries no torque). Above cam 2: a concentric top (inside cam 2's
+# footprint) running up into a pocket in the flange's underside, so the D grips the whole 24 mm shaft: 10.75..24.0
+# (was 10.75..16.7 in the lower half). All of it prints neck-down; the only overhang is 0.87 under the middle collar.
+NECK_D, NECK_LEAD = 8.5, 0.75          # neck on cam 1's axis (wall 1.38 to the 5 bore); 45 deg cone up to the cam
+SPACER_ECC = (12.2, 8.8)               # spacer ring on the neck, on cam 1's axis: OD (inner ring r 5.0..6.2 only), ID
+TOP_D = 9.0                            # concentric top above cam 2: r 4.5 + e = 4.87 < 5, bearing 2 slides past
+TOP_POCKET_CLEAR = 0.8                 # the flange's pocket over the top: this much radial room, 1.0 above it
 PIN_HOLE = 3.0               # --pin-hole: printed hole for a press-fit dowel; drill to 3.0
 PIN_CAP_HOLE = 3.3           # loose pockets over the ring pin tops in the pin ring
 FLAT_START = 9.0             # 17HS19-2004S1: D flat starts 9 mm out (7.75 .. 10.25)
@@ -362,41 +367,38 @@ def disc():
     return cut_all(body, cuts)
 
 
-def hub(upper):
-    """Eccentric in two pieces on the D shaft (a 6800's 10 mm bore can't pass a collar, so each bearing slides
-    onto its cam from above): lower = collar + cam 1 (+e along x); upper = collar + cam 2 (-e). Collars are
-    concentric and 11 mm, so they bear on the inner rings only (band r 5.0..6.2 round each cam's centre)."""
-    b1 = Z_D1 + (DISC_T - B6800_W) / 2           # 10.7
-    b2 = Z_D2 + (DISC_T - B6800_W) / 2           # 17.2
-    if upper:
-        z0, zc, ex = b1 + B6800_W, b2, -ECC       # collar 15.7..17.2, cam 17.2..22.2
-    else:
-        z0, zc, ex = FLOOR_T + 0.3, b1, ECC      # collar 7.5..10.7, cam 10.7..15.7
-    z1 = zc + B6800_W
-    body = cyl(COLLAR_D, zc - z0, z0).fuse(cyl(CAM_D, B6800_W, zc, ex, 0))
-    n, ro, ri, h, d, c = KEY_STAR
-    if upper:                                 # the star key's socket in the upper collar's underside
-        body = body.cut(star(ro, ri, n, d + 1, z0 - 1, c))
-    else:                                     # the star key standing on the lower cam's top face
-        body = body.fuse(star(ro, ri, n, h, z1))
-        z1 += h
-    body = body.cut(cyl(HUB_BORE, z1 - z0 + 2, z0 - 1))
-    # D flat: material back in the bore beyond x = -(2.5 - 0.5), from past the latest flat start (in the upper one,
-    # from above its socket: the lower one's star, with its own flat, fills the socket)
-    zf = max(FLAT_LATE + 0.5, z0 + (d if upper else 0.0))
-    flat = cyl(HUB_BORE, z1 - zf, zf).intersect(box(-HUB_BORE, -(G.SHAFT_D / 2 - G.SHAFT_FLAT_DEPTH), -5, 5, zf, z1))
+def ecc_z():
+    """(bottom, bearing 1 seat, bearing 2 seat, top) of the one-piece eccentric"""
+    return (FLOOR_T + 0.3, Z_D1 + (DISC_T - B6800_W) / 2, Z_D2 + (DISC_T - B6800_W) / 2, Z_TOP + 1.3)   # 7.5 10.7 17.2 24.5
+
+
+def hub():
+    """The one-piece eccentric on the D shaft, bottom up: neck + 45 deg lead-in on cam 1's axis (+e along x), cam 1,
+    the 11 concentric middle collar (stops both bearings' inner rings), cam 2 (-e), the concentric top up into the
+    flange. Disc 1's 6800 goes on from below, disc 2's from above (see NECK_D)."""
+    z0, b1, b2, zt = ecc_z()
+    zn = b1 - NECK_LEAD
+    body = one_solid(cyl(NECK_D, zn - z0, z0, ECC, 0)
+                     .fuse(GS.cone(NECK_D / 2, CAM_D / 2, NECK_LEAD, zn, ECC, 0))
+                     .fuse(cyl(CAM_D, B6800_W, b1, ECC, 0))
+                     .fuse(cyl(COLLAR_D, b2 - (b1 + B6800_W), b1 + B6800_W))
+                     .fuse(cyl(CAM_D, B6800_W, b2, -ECC, 0))
+                     .fuse(cyl(TOP_D, zt - (b2 + B6800_W), b2 + B6800_W)).clean())
+    body = body.cut(cyl(HUB_BORE, zt - z0 + 2, z0 - 1))
+    # D flat: material back in the bore beyond x = -(2.5 - 0.5), from past the latest flat start to the top
+    zf = FLAT_LATE + 0.5
+    flat = cyl(HUB_BORE, zt - zf, zf).intersect(box(-HUB_BORE, -(G.SHAFT_D / 2 - G.SHAFT_FLAT_DEPTH), -5, 5, zf, zt))
     return one_solid(body.fuse(flat).clean())
 
 
-def star(ro, ri, n, h, z, grow=0.0):
-    """an n-point star prism about the shaft axis (points at ro, valleys at ri, one point on +x), grown outward by
-    `grow` all round (the socket's clearance), h tall from z"""
-    pts = [((ro if k % 2 == 0 else ri) * math.cos(math.pi * k / n), (ro if k % 2 == 0 else ri) * math.sin(math.pi * k / n))
-           for k in range(2 * n)]
-    w = cq.Workplane("XY", origin=(0, 0, z)).polyline(pts).close()
-    if grow:
-        w = w.offset2D(grow, "intersection")
-    return w.extrude(h).val()
+def ecc_spacer():
+    """the loose ring on the eccentric's neck under disc 1's 6800 (its inner ring only), on cam 1's axis; turns with
+    the eccentric, carries no torque. A 45 deg chamfer inside its top clears the neck's lead-in by 0.3."""
+    z0, b1, _, _ = ecc_z()
+    od, idia = SPACER_ECC
+    zc = b1 - NECK_LEAD - (idia - NECK_D) / 2          # chamfer start: 0.3 radial off the lead-in cone
+    body = ring(od, idia, b1 - z0, z0, ECC, 0)
+    return one_solid(body.cut(GS.cone(idia / 2, idia / 2 + (b1 - zc) + 0.01, b1 - zc + 0.01, zc, ECC, 0)))
 
 
 def output_flange():
@@ -408,7 +410,9 @@ def output_flange():
     # handle the shaft lengths of all the motors we're using?"): it used to stop at z 25, so a 25 mm shaft (some 60 mm
     # NEMA 17s) would have rubbed the slowly turning flange; now any length fits. Short ones: the wrist's 20 mm is fine
     # (the star key drives the upper eccentric).
+    zt = ecc_z()[3]
     cuts = [cyl(7.0, (Z_BRG + 1.0) + 0.5 - (Z_TOP - 1), Z_TOP - 1),      # motor shaft tip, through
+            cyl(TOP_D + 2 * TOP_POCKET_CLEAR, zt + 1.0 - (Z_TOP - 1), Z_TOP - 1),   # the one-piece eccentric's top
             cyl(CENTRE_POCKET_D, face - (Z_BRG + 1.0) + 1, Z_BRG + 1.0)]  # lightening pocket from the face
     for a in out_pin_angles():
         cuts.append(cyl(PIN_HOLE, 4.5 + 1, Z_TOP - 1, *polar(R_OUT, a)))
@@ -506,8 +510,8 @@ def build(printed_pins, theta_deg, parts):
     # the disc is built centred on the origin in its own frame: turn it, then move it to its centre
     out.append(("disc 1", place(parts["disc"], tuple(c1), math.degrees(p1)).translate(V(0, 0, Z_D1)), (0.9, 0.5, 0.1), True))
     out.append(("disc 2", place(parts["disc"], tuple(c2), math.degrees(p2)).translate(V(0, 0, Z_D2)), (0.95, 0.65, 0.2), True))
-    out.append(("eccentric lower", parts["hub_lo"].rotate(V(0, 0, 0), V(0, 0, 1), theta_deg), (0.3, 0.75, 0.3), True))
-    out.append(("eccentric upper", parts["hub_up"].rotate(V(0, 0, 0), V(0, 0, 1), theta_deg), (0.4, 0.85, 0.4), True))
+    out.append(("eccentric", parts["hub"].rotate(V(0, 0, 0), V(0, 0, 1), theta_deg), (0.3, 0.75, 0.3), True))
+    out.append(("eccentric spacer", parts["ecc_sp"].rotate(V(0, 0, 0), V(0, 0, 1), theta_deg), (0.4, 0.85, 0.4), True))
     phi = math.degrees(-th / LOBES)
     out.append(("output flange", parts["flange"].rotate(V(0, 0, 0), V(0, 0, 1), phi), (0.2, 0.3, 0.6), True))
     out.append(("output support ring", parts["sring_p" if printed_pins else "sring_s"].rotate(V(0, 0, 0), V(0, 0, 1), phi),
@@ -622,7 +626,7 @@ def main():
     print("building parts ...", flush=True)
     G.FLAT_START = FLAT_START
     parts = dict(housing_s=housing(False), housing_p=housing(True), pin_ring=pin_ring(), lid=lid(), disc=disc(),
-                 hub_lo=hub(False), hub_up=hub(True), flange=output_flange(), sring_s=support_ring(False), sring_p=support_ring(True),
+                 hub=hub(), ecc_sp=ecc_spacer(), flange=output_flange(), sring_s=support_ring(False), sring_p=support_ring(True),
                  clamp=clamp_ring(), b6800=b6800(), b6808=GS.bearing_6808(), motor=motor_body(), shaft=motor_shaft(),
                  outdisc=out_disc())
     if SPREAD:
@@ -675,12 +679,12 @@ def main():
     # ---- masses
     w("\nPrinted parts (solid nylon, g):")
     names = [("housing (steel pins)", "housing_s"), ("housing (printed pins)", "housing_p"), ("pin ring", "pin_ring"),
-             ("lid", "lid"), ("disc (x2)", "disc"), ("eccentric lower", "hub_lo"), ("eccentric upper", "hub_up"), ("output flange", "flange"),
+             ("lid", "lid"), ("disc (x2)", "disc"), ("eccentric (one piece)", "hub"), ("eccentric spacer", "ecc_sp"), ("output flange", "flange"),
              ("output support ring (steel pins)", "sring_s"), ("output support ring (printed pins)", "sring_p"),
              ("clamp ring", "clamp")] + ([("outer race spacer", "sp_out"), ("inner race spacer", "sp_in")] if SPREAD else [])
     for lab, k in names:
         w(f"  {lab:36s} {parts[k].Volume() * NYLON:6.1f}")
-    tot = sum(parts[k].Volume() for k in ("housing_s", "pin_ring", "lid", "hub_lo", "hub_up", "flange", "sring_s", "clamp")
+    tot = sum(parts[k].Volume() for k in ("housing_s", "pin_ring", "lid", "hub", "ecc_sp", "flange", "sring_s", "clamp")
               + (("sp_out", "sp_in") if SPREAD else ())) + 2 * parts["disc"].Volume()
     w(f"  set with steel pins: {tot * NYLON:.0f} g printed + 46 dowels {46 * math.pi / 4 * PIN_D ** 2 * PIN_LEN * 7.85e-3:.0f} g "
       f"+ 2 x 6808 + 2 x 6800 + screws (the 5:1 gearbox it replaces: {591 - 390:.0f} g without the motor)")
@@ -715,12 +719,12 @@ def main():
     w("  1  Drill the printed pin holes to 3.0 (housing floor sockets, support ring, flange sockets) so the dowels press in.")
     w("  2  Motor to the housing: 4 x M3 x 8 from inside, heads into the counterbores.")
     w("  3  Steel pins: press the 38 ring pins down the wall grooves into the floor (tops stand 0.5 above the housing).")
-    w("  4  Lower eccentric onto the motor shaft, D to D, down to 0.3 above the floor.")
-    w("  5  Press the 8 output pins into the support ring (flush underneath) and drop it in over the hub.")
-    w("  6  Press a 6800 into each disc, grease the lobes. Disc 1 down onto the lower cam and over the output pins;")
-    w("     upper eccentric onto the shaft, its star socket down over the lower one's star (they lock 180 deg apart);")
-    w("     disc 2 onto the upper cam, turned 180 deg")
-    w("     (the same part; its lobes then fall between the pins).")
+    w("  4  Press the 8 output pins into the support ring (flush underneath) and drop it in over the motor shaft.")
+    w("  5  On the bench, the eccentric cartridge: press a 6800 into each disc, grease the lobes. Disc 1's bearing up")
+    w("     onto cam 1 FROM BELOW (over the neck) to the middle collar, then the eccentric spacer up the neck under it;")
+    w("     disc 2's bearing down onto cam 2 from above, disc 2 turned 180 deg (the same part).")
+    w("  6  Lower the cartridge onto the motor shaft, D to D, down to 0.3 above the floor, turning each disc on its")
+    w("     bearing so its lobes fall between the ring pins and its 8 holes take the output pins.")
     w("  7  Both 6808s onto the flange journal; push them up into the lid from below (the lip stops the top race);"
       if not SPREAD else
       "  7  Onto the flange journal: a 6808, the inner race spacer, the other 6808; push the lot up into the lid from\n"
@@ -738,8 +742,8 @@ def main():
         "pin_ring": (parts["pin_ring"], -Z_TOP, False),
         "lid": (parts["lid"], -Z_BRG, False),
         "disc": (parts["disc"], 0.0, False),
-        "eccentric_lower": (parts["hub_lo"], -(FLOOR_T + 0.3), False),
-        "eccentric_upper": (parts["hub_up"], -(Z_D1 + (DISC_T - B6800_W) / 2 + B6800_W), False),
+        "eccentric": (parts["hub"], -(FLOOR_T + 0.3), False),
+        "eccentric_spacer": (parts["ecc_sp"], -(FLOOR_T + 0.3), False),
         "output_flange": (parts["flange"], -Z_TOP, False),
         "output_support_ring_steel_pins": (parts["sring_s"], -Z_RING, False),
         "output_support_ring_printed_pins": (parts["sring_p"], -Z_RING, False),

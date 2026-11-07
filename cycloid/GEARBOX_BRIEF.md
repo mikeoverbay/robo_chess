@@ -35,7 +35,7 @@ The turntable (J0) is NOT a cycloid. It is a printed bevel pair, m1.5 18:72 = 4:
     It did on 2026-11-06.
 - `tools\cycloid_exploded.py [--gap 12]` writes `cycloid_spread\step\assembly_exploded.step`: every part pushed up the
   motor axis in assembly order (Robo Chess gearbox, 2026-11-06). Re-run after cycloid.py.
-- Plain `cycloid.py` writes `cycloid\step\`, the older narrow-bearing version (not rebuilt since the star key).
+- Plain `cycloid.py` writes `cycloid\step\`, the older narrow-bearing version (stale: last built 2026-11-03).
 - `complete assembly\cycloid gearbox` is an NTFS JUNCTION to `cycloid\`. Never replace it with a copy, and never
   clean it as a duplicate.
 - `tools\print_parts.py` writes `print\*.step`. `tools\cycloid_standin.py` writes `cycloid\cycloid_drive_standin.step`.
@@ -82,10 +82,20 @@ The turntable (J0) is NOT a cycloid. It is a printed bevel pair, m1.5 18:72 = 4:
 - Two discs 6 mm thick (the same part), printed solid. The tested printed drive cracked at its eccentric bearing first.
 
 **Eccentric**
-- Two pieces (lower and upper) on 6800s (Ø19 bore).
-- **Star-keyed** 180° apart: KEY_STAR has 6 points, r 4.3/3.4, male 1.0 tall, socket 1.2 deep + 0.1 clearance.
-  The lower one, fully on the D-flat, drives the upper one.
-- It can't be one piece: each 6800 must slide past an 11 mm collar.
+- **ONE PIECE** since 2026-11-06 (Professor: "not really liking that little star coupling"). The star-keyed halves
+  are gone. It runs z 7.5..24.5 on 6800s (the discs' Ø19 bore). Bottom to top:
+  - neck Ø8.5 on cam 1's axis, with a 45° lead-in
+  - cam 1 Ø10 at +e
+  - middle collar Ø11, concentric
+  - cam 2 Ø10 at −e
+  - top Ø9, concentric, up into a Ø10.6 × 2.3 pocket in the flange's underside
+- The D grips z 10.75..24.5.
+- A solid one-piece can't take both bearings from the top. The lower 6800 can't pass cam 2 (offset 0.74 the other
+  way) or the collar, and there is only 1.5 between the bearings.
+- So disc 1's bearing goes on FROM BELOW. The old bottom collar is a loose **eccentric spacer** ring (Ø12.2 × Ø8.8 ×
+  3.2, on cam 1's axis, inner ring only, no torque).
+- Assembly is a cartridge: both discs go onto the eccentric on the bench, then the lot drops onto the shaft.
+- Checked: nothing below cam 1 or above cam 2 sticks out of a 10 bore on that cam's axis.
 
 **Bearings and body**
 - Output on 2 × 6808, spread 14 apart (ball rows 21 apart, was 7) by sleeves: outer 51.8/46, inner 44/40.2.
@@ -116,7 +126,9 @@ The turntable (J0) is NOT a cycloid. It is a printed bevel pair, m1.5 18:72 = 4:
 
 **Shafts**
 - One design fits every motor shaft. The D-flat must start ≤ 10.75 from the motor face.
-- The 20 mm pancake shaft keeps 4.3 of 6.5 mm in the upper eccentric: OK for the wrist.
+- D-flat grip in the one-piece eccentric:
+  - 24 mm shaft (17HS19): 13.25 mm. The two-piece had 6.0 in the lower half.
+  - 20 mm wrist pancake: 9.25 mm, no key needed.
 
 ## Motors
 | Joint | Motor | Notes |
@@ -155,7 +167,7 @@ The turntable (J0) is NOT a cycloid. It is a printed bevel pair, m1.5 18:72 = 4:
 - Shoulder (J1) margin.
 - Ring-pin rollers.
 - Bench test on the first build: string + weight on the output, lever + scale on the input. The Uno sketch is not written.
-- The stock `cycloid\` folder is not rebuilt with the star key.
+- The stock `cycloid\` folder (no spread) has not been rebuilt since before the one-piece eccentric.
 - His arm.step motor pocket is 57.1 across the chamfers; the real 17HS19 must be smaller (he should measure it).
 
 ## Working with the Robot Studio session
