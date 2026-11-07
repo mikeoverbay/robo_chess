@@ -14,6 +14,11 @@ LIVE APP (what Mike uses):
     the text becomes a link), show.json (faces to highlight, labels to place, a view to jump to). The window
     follows every change within a second, and reloads a model whenever its file changes on disk.
 
+SEVERAL STUDIOS AT ONCE (Mike 2026-11-06: "You run your version, it runs its version ... Think of it as multi-user
+interface"): python view_step.py --serve --studio NAME [--restart] runs studio NAME (tools/studios.json: its port
+and its own folder for scene / show / notes / selection; see studio.py). The menu by the title switches the window
+between studios and starts one that isn't running. Without --studio: ROBOT_STUDIO, else main (8765, viewer_session).
+
 STATIC PAGE / PICTURE (what Claude uses from the command line):
     python view_step.py FILE.step [...] [--view front] [--cut y=0] [--keep +|-] [--hide 2 ...] [--only 1 ...]
                         [--at x,y,z] [--zoom 2] [--no-edges] [--png pic.png] [--size 1600x1000] [--out page.html] [--open]
@@ -63,6 +68,8 @@ from OCP.TopLoc import TopLoc_Location
 from OCP.TopoDS import TopoDS
 from OCP.TopTools import TopTools_IndexedMapOfShape
 from OCP.XCAFDoc import XCAFDoc_ColorType, XCAFDoc_DocumentTool
+
+import studio as ST
 
 TOOLS = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(TOOLS)                                   # robo_chess
@@ -429,22 +436,35 @@ def open_chrome(url):
 
 # ---------------------------------------------------------------- the live app
 class App:
-    def __init__(self, tol):
+    def __init__(self, tol, session=SESSION, name=ST.MAIN):
         self.tol = tol
+        self.session, self.name, self.srv = session, name, None
+        self._scene_cache = None
         self.lock = threading.Lock()
         self.cache = {}
         self.scene_key = None
         self.scene_txt = None
-        os.makedirs(SESSION, exist_ok=True)
+        os.makedirs(self.session, exist_ok=True)
         for name, text in (("scene.json", '{"models": []}\n'), ("show.json", "{}\n"), ("notes.md", "")):
-            p = os.path.join(SESSION, name)
+            p = os.path.join(self.session, name)
             if not os.path.exists(p):
                 open(p, "w", encoding="utf-8").write(text)
 
     def f(self, name):
-        return os.path.join(SESSION, name)
+        return os.path.join(self.session, name)
 
     def read_json(self, name, default):
+        if name == "scene.json":                 # ~10 MB: parsed once per change, not on every poll of every page
+            try:
+                st = os.stat(self.f(name))
+                k = (st.st_mtime_ns, st.st_size)
+                if self._scene_cache and self._scene_cache[0] == k:
+                    return self._scene_cache[1]
+                v = json.load(open(self.f(name), encoding="utf-8"))
+                self._scene_cache = (k, v)
+                return v
+            except Exception:
+                return default
         try:
             return json.load(open(self.f(name), encoding="utf-8"))
         except Exception:
@@ -455,7 +475,10 @@ class App:
         return [m for m in self.read_json("scene.json", {}).get("models", []) if os.path.isfile(entry(m)["path"])]
 
     def set_models(self, paths):
-        sc = self.read_json("scene.json", {})                 # keep the joints (and anything else) as they are
+        try:                                                  # a fresh copy (read_json's is shared)
+            sc = json.load(open(self.f("scene.json"), encoding="utf-8"))   # keep the joints (and the rest) as they are
+        except Exception:
+            sc = {}
         sc["models"] = paths
         json.dump(sc, open(self.f("scene.json"), "w", encoding="utf-8"), indent=1)
 
@@ -476,6 +499,7 @@ class App:
                                  json.dumps(sc.get("game"), sort_keys=True),
                                  json.dumps(sc.get("homing"), sort_keys=True),
                                  json.dumps(sc.get("gears"), sort_keys=True),
+                                 json.dumps(sc.get("rigs"), sort_keys=True),
                                  json.dumps(sc.get("drawings"), sort_keys=True)]).encode()).hexdigest()[:12]
 
     def scene(self):
@@ -498,6 +522,7 @@ class App:
                     sc["game"] = self.read_json("scene.json", {}).get("game")         # a self-play game (selfplay.py)
                     sc["homing"] = self.read_json("scene.json", {}).get("homing")     # home switches (hall_homing.py)
                     sc["gears"] = self.read_json("scene.json", {}).get("gears")       # models geared to a joint (pinion)
+                    sc["rigs"] = self.read_json("scene.json", {}).get("rigs")         # test rigs (gearbox_anim.py)
                     sc["drawings"] = self.read_json("scene.json", {}).get("drawings")  # SVGs as pen strokes (svg_draw.py)
                     # colour rules: [{"match": regex on "<model> / <part>", "color": "#rrggbb"}], first match wins,
                     # for every part whose scene entry has no colour of its own (Mike: printed parts one filament)
@@ -556,7 +581,7 @@ class App:
         digest = hashlib.md5(data).hexdigest()
         found = None
         for d, _, files in os.walk(ROOT):
-            if os.path.abspath(d).startswith(os.path.abspath(SESSION)):
+            if os.path.abspath(d).startswith(os.path.abspath(self.session)):
                 continue
             if name in files:
                 p = os.path.join(d, name)
@@ -579,9 +604,9 @@ class App:
 class FeaRunner:
     """Load tests (fea.py) run as their own process, so a long solve never holds up the page; one at a time.
     Progress: viewer_session/fea/status.json, result: fea/result.json, log: fea/run.log."""
-    def __init__(self):
+    def __init__(self, session=SESSION, name=ST.MAIN):
         self.proc, self.lock = None, threading.Lock()
-        self.dir = os.path.join(SESSION, "fea")
+        self.dir, self.studio = os.path.join(session, "fea"), name
 
     def info(self):
         sys.path.insert(0, TOOLS)
@@ -605,6 +630,7 @@ class FeaRunner:
                       open(os.path.join(self.dir, "status.json"), "w", encoding="utf-8"))
             log = open(os.path.join(self.dir, "run.log"), "w", encoding="utf-8")
             self.proc = subprocess.Popen([sys.executable, os.path.join(TOOLS, "fea.py"), "--job", jp], cwd=TOOLS,
+                                         env={**os.environ, "ROBOT_STUDIO": self.studio},
                                          stdout=log, stderr=subprocess.STDOUT,
                                          creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
             print("load test:", job.get("part"), "/", job.get("case"), flush=True)
@@ -638,12 +664,15 @@ def make_handler(app):
 
         def send(self, code, body, ctype="application/json"):
             b = body if isinstance(body, bytes) else body.encode("utf-8")
-            self.send_response(code)
-            self.send_header("Content-Type", ctype)
-            self.send_header("Cache-Control", "no-store")
-            self.send_header("Content-Length", str(len(b)))
-            self.end_headers()
-            self.wfile.write(b)
+            try:
+                self.send_response(code)
+                self.send_header("Content-Type", ctype)
+                self.send_header("Cache-Control", "no-store")
+                self.send_header("Content-Length", str(len(b)))
+                self.end_headers()
+                self.wfile.write(b)
+            except (ConnectionAbortedError, ConnectionResetError, BrokenPipeError):
+                pass                       # the page went away mid-answer (a reload, a studio switch): nothing to tell
 
         def do_GET(self):
             u = urllib.parse.urlparse(self.path)
@@ -654,6 +683,10 @@ def make_handler(app):
                     self.send(200, json.dumps(app.state()))
                 elif u.path == "/api/scene":
                     self.send(200, app.scene())
+                elif u.path == "/api/ping":                # is this studio up, and which is it (studio.alive)
+                    self.send(200, json.dumps({"studio": app.name}))
+                elif u.path == "/api/studios":
+                    self.send(200, json.dumps(studios_state(app)))
                 elif u.path == "/api/fea/info":
                     self.send(200, json.dumps(FEA.info()))
                 elif u.path == "/api/fea/status":
@@ -678,6 +711,15 @@ def make_handler(app):
                     app.remove(json.loads(body)["path"])
                 elif u.path == "/api/capture":
                     print("picture", app.save_capture(body), flush=True)
+                elif u.path == "/api/studio/start":
+                    n = json.loads(body)["name"]
+                    if n not in ST.studios():
+                        return self.send(404, '{"error": "no such studio"}')
+                    start_studio(n)
+                elif u.path == "/api/quit":                 # view_step.py --restart (a session restarting its studio)
+                    self.send(200, '{"ok": true}')
+                    threading.Thread(target=app.srv.shutdown, daemon=True).start()
+                    return
                 elif u.path == "/api/fea/run":
                     if not FEA.run(json.loads(body)):
                         return self.send(409, '{"error": "a load test is already running"}')
@@ -689,9 +731,52 @@ def make_handler(app):
     return H
 
 
-def serve(files, tol, port, browser):
-    app = App(tol)
+def studios_state(app):
+    """The studios, which of them are running, and which one this is (the page's studio menu)."""
+    reg = ST.studios()
+    up = {}
+
+    def ping(n, p):
+        up[n] = n == app.name or ST.alive(p)
+    ts = [threading.Thread(target=ping, args=(n, int(v["port"]))) for n, v in reg.items()]
+    for t in ts:
+        t.start()
+    for t in ts:
+        t.join()
+    return {"current": app.name, "studios": [{"name": n, "port": int(v["port"]), "who": v.get("who", ""),
+                                              "what": v.get("what", ""), "running": up.get(n, False)}
+                                             for n, v in reg.items()]}
+
+
+def start_studio(n):
+    """Run studio n as its own process (no window; its output in its folder's server.log), unless it's running."""
+    if ST.alive(ST.port(n)):
+        return
+    d = ST.ensure(n)
+    log = open(os.path.join(d, "server.log"), "a", encoding="utf-8")
+    flags = (getattr(subprocess, "DETACHED_PROCESS", 0) | getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0)
+             | getattr(subprocess, "CREATE_NO_WINDOW", 0))
+    subprocess.Popen([sys.executable, os.path.abspath(__file__), "--serve", "--studio", n, "--no-browser"], cwd=TOOLS,
+                     stdout=log, stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL, creationflags=flags)
+
+
+def serve(files, tol, port, browser, name=ST.MAIN, restart=False):
+    global FEA
+    session = ST.ensure(name)
+    os.environ["ROBOT_STUDIO"] = name                     # scripts this server runs (fea.py) use its folder
+    port = port or ST.port(name)
+    app = App(tol, session, name)
+    FEA = FeaRunner(session, name)
     url = f"http://127.0.0.1:{port}/"
+    if restart and ST.alive(port):                            # ask the running one to stop, then take its place
+        try:
+            urllib.request.urlopen(urllib.request.Request(url + "api/quit", data=b"{}", method="POST"), timeout=5).read()
+        except Exception:
+            pass
+        for _ in range(50):
+            if not ST.alive(port, 0.2):
+                break
+            time.sleep(0.2)
     if files:
         app.set_models([os.path.abspath(f) for f in files])
     try:                                                       # already running? then just show the window
@@ -703,7 +788,8 @@ def serve(files, tol, port, browser):
     except Exception:
         pass
     srv = ThreadingHTTPServer(("127.0.0.1", port), make_handler(app))
-    print(f"Robot Studio at {url}  (session files: {SESSION})", flush=True)
+    app.srv = srv
+    print(f"Robot Studio '{name}' at {url}  (session files: {session})", flush=True)
     app.scene()
     if browser:
         open_chrome(url)
@@ -715,7 +801,9 @@ def main():
     ap = argparse.ArgumentParser(description="Robot Studio; see the top of this file.")
     ap.add_argument("files", nargs="*")
     ap.add_argument("--serve", action="store_true", help="run the live app (port 8765) and open it in Chrome")
-    ap.add_argument("--port", type=int, default=PORT)
+    ap.add_argument("--port", type=int, default=None, help="default: the studio's own (main 8765)")
+    ap.add_argument("--studio", default=None, help="which Robot Studio (tools/studios.json); default ROBOT_STUDIO, else main")
+    ap.add_argument("--restart", action="store_true", help="stop that studio's running server first, then serve")
     ap.add_argument("--no-browser", action="store_true")
     ap.add_argument("--out", help="static page to write (default tools/views/<first file>.html)")
     ap.add_argument("--tol", type=float, default=0.05, help="mesh tolerance, mm")
@@ -733,7 +821,7 @@ def main():
     a = ap.parse_args()
 
     if a.serve:
-        return serve(a.files, a.tol, a.port, not a.no_browser)
+        return serve(a.files, a.tol, a.port, not a.no_browser, ST.name(a.studio), a.restart)
     if not a.files:
         ap.error("give a STEP file, or --serve")
 

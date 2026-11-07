@@ -55,7 +55,8 @@ import chess.pgn  # noqa: E402
 import board_pieces as BP  # noqa: E402
 
 ROOT = os.path.dirname(HERE)
-SCENE = os.path.join(HERE, "viewer_session", "scene.json")
+import studio  # noqa: E402
+SCENE = studio.scene_path()          # this studio's scene (ROBOT_STUDIO; default main = viewer_session/scene.json)
 UMAX = os.path.join(HERE, "umax", "umax_cli.exe")
 BOOK = os.path.join(HERE, "umax", "BOOK.TXT")       # Robo Chess's own copy (2026-11-06; was read from Megachess)
 GAMES = os.path.join(ROOT, "games")

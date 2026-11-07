@@ -1,0 +1,66 @@
+{
+ "models": [
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\electronics_case\\case_hood_v1.step",
+   "name": "case: hood (v1 concept)",
+   "color": "#5b8def",
+   "part_name": "case: hood (v1 concept)"
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\electronics_case\\case_bottom_v1.step",
+   "name": "case: bottom cover",
+   "color": "#3350a0",
+   "part_name": "case: bottom cover"
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\electronics_case\\view\\fan_50mm.step",
+   "name": "fan 50 x 50 x 10",
+   "color": "#2a2c30",
+   "part_name": "fan 50 x 50 x 10"
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\electronics_case\\view\\screen.step",
+   "name": "Ender-3 V2 screen",
+   "color": "#1f6b3a",
+   "part_name": "Ender-3 V2 screen"
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\electronics_case\\view\\Arduino_Mega_2560.stl",
+   "name": "Arduino Mega 2560",
+   "color": "#1d5fa8",
+   "part_name": "Arduino Mega 2560"
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\electronics_case\\view\\Raspberry_Pi_4.stl",
+   "name": "Raspberry Pi 4",
+   "color": "#2f8f4e",
+   "part_name": "Raspberry Pi 4"
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\electronics_case\\view\\BTT_Octopus.stl",
+   "name": "BTT Octopus",
+   "color": "#1d5fa8",
+   "part_name": "BTT Octopus"
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\electronics_case\\view\\psu_24V.step",
+   "name": "24 V supply (159 x 97 x 30)",
+   "color": "#9a9da3",
+   "part_name": "24 V supply (159 x 97 x 30)"
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\electronics_case\\view\\mains_inlet.step",
+   "name": "mains inlet (C14 + fuse + rocker)",
+   "color": "#1b1b1e",
+   "part_name": "mains inlet (C14 + fuse + rocker)"
+  }
+ ],
+ "frame": null,
+ "colors": [
+  {
+   "match": ".",
+   "color": "#b9bcc2"
+  }
+ ],
+ "notes": "electronics_case.py v1 concept"
+}

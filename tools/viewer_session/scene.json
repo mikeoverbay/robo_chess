@@ -395,6 +395,60 @@
     0,
     0
    ]
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\gearbox_exploded_upright.step",
+   "name": "gearbox exploded",
+   "offset": [
+    380.0,
+    209.0,
+    0.0
+   ]
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\gearbox_anim\\fixed.step",
+   "name": "gearbox anim: housing, ring pins, lid, motor",
+   "offset": [
+    260.0,
+    209.0,
+    0.0
+   ]
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\gearbox_anim\\input.step",
+   "name": "gearbox anim: eccentric + motor shaft (motor speed)",
+   "offset": [
+    260.0,
+    209.0,
+    0.0
+   ]
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\gearbox_anim\\disc1.step",
+   "name": "gearbox anim: disc 1 + its 6800",
+   "offset": [
+    260.0,
+    209.0,
+    0.0
+   ]
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\gearbox_anim\\disc2.step",
+   "name": "gearbox anim: disc 2 + its 6800",
+   "offset": [
+    260.0,
+    209.0,
+    0.0
+   ]
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\gearbox_anim\\output.step",
+   "name": "gearbox anim: output (1/37 speed)",
+   "offset": [
+    260.0,
+    209.0,
+    0.0
+   ]
   }
  ],
  "joints": [
@@ -3217,6 +3271,66 @@
  },
  "print_color": "#b9bcc2",
  "colors": [
+  {
+   "match": "^gearbox.* / (6800|6808)",
+   "color": "#c9ccd2",
+   "by": "gearbox_anim.py"
+  },
+  {
+   "match": "^gearbox.* / (ring pin|output pin) ",
+   "color": "#c9ccd2",
+   "by": "gearbox_anim.py"
+  },
+  {
+   "match": "^gearbox.* / motor shaft",
+   "color": "#c9ccd2",
+   "by": "gearbox_anim.py"
+  },
+  {
+   "match": "^gearbox.* / motor body",
+   "color": "#2a2c30",
+   "by": "gearbox_anim.py"
+  },
+  {
+   "match": "^gearbox.* / (motor screw|lid screw|output screw)",
+   "color": "#2a2c30",
+   "by": "gearbox_anim.py"
+  },
+  {
+   "match": "^gearbox.* / insert",
+   "color": "#c9a03a",
+   "by": "gearbox_anim.py"
+  },
+  {
+   "match": "^gearbox.* / disc 1",
+   "color": "#e8801a",
+   "by": "gearbox_anim.py"
+  },
+  {
+   "match": "^gearbox.* / disc 2",
+   "color": "#f5b041",
+   "by": "gearbox_anim.py"
+  },
+  {
+   "match": "^gearbox.* / eccentric",
+   "color": "#4cbf4c",
+   "by": "gearbox_anim.py"
+  },
+  {
+   "match": "^gearbox.* / (output flange|output support ring|clamp ring|inner race spacer)",
+   "color": "#3350a0",
+   "by": "gearbox_anim.py"
+  },
+  {
+   "match": "^gearbox.* / your output disc",
+   "color": "#9a9da3",
+   "by": "gearbox_anim.py"
+  },
+  {
+   "match": "^gearbox.* / (housing|pin ring|lid|outer race spacer)",
+   "color": "#5b8def",
+   "by": "gearbox_anim.py"
+  },
   {
    "match": "fitting collet",
    "color": "#2b6cd6"
@@ -9617,6 +9731,88 @@
     0.0
    ],
    "why": "2026-11-06 Mike: the motor's bevel gear must spin in sync with the turntable's. 18T on the motor, 72T on the turntable: +4 x J0 about the motor shaft (design -x through (0, 197, 30.6)); the other way the teeth collide (swivel_base.py mesh check)."
+  },
+  {
+   "model": "gearbox anim: eccentric + motor shaft (motor speed)",
+   "follows": "gearbox motor",
+   "ratio": 1.0,
+   "at": [
+    260.0,
+    209.0,
+    0.0
+   ],
+   "axis": [
+    0.0,
+    -1.0,
+    0.0
+   ],
+   "why": "gearbox_anim.py: cycloid.py's motion (disc_pose / build)"
+  },
+  {
+   "model": "gearbox anim: disc 1 + its 6800",
+   "follows": "gearbox motor",
+   "ratio": -0.02702702702702703,
+   "at": [
+    260.0,
+    209.0,
+    0.0
+   ],
+   "axis": [
+    0.0,
+    -1.0,
+    0.0
+   ],
+   "orbit": {
+    "r": 0.368,
+    "phase": 0.0,
+    "u": [
+     1.0,
+     0.0,
+     0.0
+    ]
+   },
+   "why": "gearbox_anim.py: cycloid.py's motion (disc_pose / build)"
+  },
+  {
+   "model": "gearbox anim: disc 2 + its 6800",
+   "follows": "gearbox motor",
+   "ratio": -0.02702702702702703,
+   "at": [
+    260.0,
+    209.0,
+    0.0
+   ],
+   "axis": [
+    0.0,
+    -1.0,
+    0.0
+   ],
+   "orbit": {
+    "r": 0.368,
+    "phase": 180.0,
+    "u": [
+     1.0,
+     0.0,
+     0.0
+    ]
+   },
+   "why": "gearbox_anim.py: cycloid.py's motion (disc_pose / build)"
+  },
+  {
+   "model": "gearbox anim: output (1/37 speed)",
+   "follows": "gearbox motor",
+   "ratio": -0.02702702702702703,
+   "at": [
+    260.0,
+    209.0,
+    0.0
+   ],
+   "axis": [
+    0.0,
+    -1.0,
+    0.0
+   ],
+   "why": "gearbox_anim.py: cycloid.py's motion (disc_pose / build)"
   }
  ],
  "drawings": {
@@ -791493,5 +791689,68 @@
     "ink_m": 164.59
    }
   }
- }
+ },
+ "rigs": [
+  {
+   "name": "gearbox motor",
+   "rpm": 30,
+   "turns": 37,
+   "at": [
+    260.0,
+    167.4,
+    0.0
+   ],
+   "models": [
+    "gearbox anim: housing, ring pins, lid, motor",
+    "gearbox anim: eccentric + motor shaft (motor speed)",
+    "gearbox anim: disc 1 + its 6800",
+    "gearbox anim: disc 2 + its 6800",
+    "gearbox anim: output (1/37 speed)"
+   ],
+   "readouts": [
+    {
+     "label": "output",
+     "ratio": -0.02702702702702703
+    }
+   ],
+   "views": [
+    {
+     "label": "cut disc 1",
+     "cut": "z",
+     "point": [
+      260.0,
+      195.8,
+      0.0
+     ],
+     "view": "0.15,-0.3,1"
+    },
+    {
+     "label": "cut disc 2",
+     "cut": "z",
+     "point": [
+      260.0,
+      189.3,
+      0.0
+     ],
+     "view": "0.15,-0.3,1"
+    },
+    {
+     "label": "cut down the axis",
+     "cut": "y",
+     "point": [
+      260.0,
+      209.0,
+      0.0
+     ],
+     "view": "0.3,-1,0.3"
+    },
+    {
+     "label": "no cut",
+     "cut": "off",
+     "view": "iso"
+    }
+   ],
+   "why": "gearbox_anim.py: the 37:1 cycloid (spread 14, steel dowels) - Mike 2026-11-06 'animate it ... slice it while it's animating, or hide parts of it'"
+  }
+ ]
 }

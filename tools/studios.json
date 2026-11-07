@@ -1,0 +1,20 @@
+{
+ "chessboard": {
+  "port": 8766,
+  "dir": "viewer_sessions/chessboard",
+  "who": "Robo chessboard design",
+  "what": "the board: cells, buses, causeway, pieces"
+ },
+ "gearbox": {
+  "port": 8767,
+  "dir": "viewer_sessions/gearbox",
+  "who": "Robo Chess gearbox",
+  "what": "the 37:1 cycloid gearbox"
+ },
+ "case": {
+  "port": 8768,
+  "dir": "viewer_sessions/case",
+  "who": "Robot arm control and kinematics",
+  "what": "the electronics case (electronics_case.py)"
+ }
+}

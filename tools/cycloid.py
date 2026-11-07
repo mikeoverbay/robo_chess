@@ -551,11 +551,13 @@ def build(printed_pins, theta_deg, parts):
                     screw(L, Z_LID_STEP, x, y, G.BODY_HOLE, L - LID_THREAD), black, False))
     face = Z_BRG_TOP - 0.1
     for k, a in enumerate(OUT_SCREW_ANGLES, start=1):
-        x, y = polar(OUT_SCREW_R, a + phi)
+        # placed at the start angle, then turned with the output, so the screw's hex socket turns with it
+        x, y = polar(OUT_SCREW_R, a)
         out.append((f"insert {k}: M3 x {INSERT_L:g} x {INSERT_D:g} brass heat-set insert ({INSERT_L:g} long, "
-                    f"{INSERT_D:g} knurl)", insert().translate(V(x, y, face - INSERT_L)), brass, False))
-        out.append((f"output screw {k}: M3 x 30 socket head cap screw", screw(30, Z_DISC_OUT + OUT_DISC_T, x, y),
-                    black, False))
+                    f"{INSERT_D:g} knurl)", insert().translate(V(x, y, face - INSERT_L)).rotate(V(0, 0, 0), V(0, 0, 1), phi),
+                    brass, False))
+        out.append((f"output screw {k}: M3 x 30 socket head cap screw",
+                    screw(30, Z_DISC_OUT + OUT_DISC_T, x, y).rotate(V(0, 0, 0), V(0, 0, 1), phi), black, False))
     out.append((f"your output disc: {G.BODY_OD:g} x {OUT_DISC_T:g} (stand-in)",
                 parts["outdisc"].rotate(V(0, 0, 0), V(0, 0, 1), phi), grey, False))
     seen = {}

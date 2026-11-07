@@ -26,7 +26,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import board_pieces as BP  # noqa: E402
 
-SCENE = os.path.join(HERE, "viewer_session", "scene.json")
+import studio  # noqa: E402
+SCENE = studio.scene_path()          # this studio's scene (ROBOT_STUDIO; default main = viewer_session/scene.json)
 V_SUPPLY = 24.0
 MARGIN = 1.5                     # pull-out torque over the load
 GEARBOX_RPM = 600.0              # input-speed cap for the printed cycloid until it is bench-tested faster

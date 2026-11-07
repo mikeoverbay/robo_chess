@@ -159,7 +159,9 @@
 <body>
 <aside id="side">
   <div class="sec">
-    <div class="row"><span style="font-size:15px;font-weight:600;letter-spacing:.2px">Robot Studio</span><span class="grow"></span><span id="status"></span></div>
+    <div class="row"><span style="font-size:15px;font-weight:600;letter-spacing:.2px">Robot Studio</span>
+      <select id="studioSel" class="look" style="display:none;margin-left:6px" title="Which studio this window shows. Each studio has its own models, views, notes and saved settings (one per job). Pick another to switch this window to it; one that is not running starts."></select>
+      <span class="grow"></span><span id="status"></span></div>
     <div class="row muted" style="margin-top:2px"><span id="title">no models open</span></div>
   </div>
   <div class="sec" id="modelsSec">
@@ -223,6 +225,10 @@
       <span class="grow"></span><span id="bowMsg" class="muted"></span>
     </div>
     <div id="joints"></div>
+  </div>
+  <div class="sec" id="rigSec" style="display:none">
+    <h3>Test rigs</h3>
+    <div id="rigs"></div>
   </div>
   <div class="sec" id="soundSec" style="display:none">
     <h3>Motor sound <span class="grow"></span><label title="Hear the steppers (and the claw servo) at the speeds they really turn"><input type="checkbox" id="sndOn"> on</label></h3>
@@ -291,6 +297,20 @@
     <div id="parts" class="list"></div>
   </div>
 </aside>
+<script>
+// Safety net (2026-11-06): if the main script below ever fails to load (a bad edit), it can't reload itself when
+// viewer.html is fixed - so this plain script watches the page version and reloads while the viewer is not running.
+(function () {
+  if (location.protocol === "file:") return;
+  let v0;
+  setInterval(function () {
+    if (window.__viewer) return;
+    fetch("/api/state", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (s) {
+      if (v0 === undefined) v0 = s.page_v; else if (s.page_v !== v0) location.reload();
+    }).catch(function () {});
+  }, 3000);
+})();
+</script>
 <script type="module">
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -331,7 +351,7 @@ function resize() {
   renderer.setSize(w, h, false);
   lineRes.set(w, h); fatMats.forEach(m => m.resolution.copy(lineRes));
   camera.aspect = w / h; camera.updateProjectionMatrix();
-  if (!sized && parts.length) { sized = true; setView(lastView.name, lastView.zoom, lastView.at); }   // keep zoom / aim
+  if (!sized && parts.length) { sized = true; setView(lastView.name, lastView.zoom, lastView.at, lastView.fitBox); }   // keep zoom / aim
 }
 new ResizeObserver(resize).observe(view);
 
@@ -347,6 +367,7 @@ scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnviron
 const LOOKS = ['printed', 'steel', 'polished', 'rust', 'flat'];
 const LOOK_GLSL = `
 varying vec3 vObj;
+varying vec3 vZdir;
 uniform vec3 uBase;
 float hash13(vec3 p) { p = fract(p * 0.1031); p += dot(p, p.zyx + 31.32); return fract((p.x + p.y) * p.z); }
 float vnoise(vec3 x) {
@@ -364,12 +385,17 @@ vec3 lookBump(vec3 pos, vec3 n, float h, float k) {
 const LOOK_COLOR = `
 #include <color_fragment>
 float hl = clamp(length(vColor - uBase) * 4.0, 0.0, 1.0);      // 0: plain part; 1: a selected or coloured face
-vec3 lc = vColor; float lookRough = 0.62, lookMetal = 0.05, lookH = 0.0, lookK = 0.0;
+vec3 lc = vColor; float lookRough = 0.62, lookMetal = 0.05, lookH = 0.0, lookK = 0.0, lookStripe = 0.0;
 #if defined(LOOK_PRINTED)
+  // 0.2 mm layer lines along the part's z. Mike 2026-11-06: "a shader to simulate 3D printing sucks. It's aliasing on the
+  // screen really bad when you zoom in." The lines were a bump read back through screen derivatives (dFdx of a stripe,
+  // which a 2x2 pixel block can't follow) and at full strength down to ~2.7 px a layer, at the sampling limit: moire;
+  // a fine noise bump (to 0.025 mm) sparkled too. Now the stripe's slope is exact (its z derivative turned into view
+  // space, after normal_fragment_maps), it is fully on only while a layer covers 8+ px and gone by 4 px, no fine bump.
   lc = uBase * (0.93 + 0.14 * fbm(vObj * 0.08));
-  float lw = fwidth(vObj.z) / 0.2;
-  lookH = (0.5 + 0.5 * sin(vObj.z * 31.4159)) * clamp(1.6 - lw * 1.6, 0.0, 1.0) * 0.3 + fbm(vObj * 2.5) * 0.06;
-  lookK = 1.0; lookRough = 0.48 + 0.16 * fbm(vObj * 0.7); lookMetal = 0.0;
+  float lw = fwidth(vObj.z) / 0.2;                       // layers per pixel
+  lookStripe = 1.0 - smoothstep(0.125, 0.25, lw);       // 1 while a layer is 8+ px, 0 once it's under 4 px
+  lookRough = 0.48 + 0.16 * fbm(vObj * 0.15); lookMetal = 0.0;
 #elif defined(LOOK_STEEL)
   float b = fbm(vec3(vObj.x * 0.04, vObj.y * 2.5, vObj.z * 2.5));
   lc = vec3(0.60, 0.61, 0.63) * (0.9 + 0.15 * b);
@@ -395,13 +421,14 @@ function lookMaterial(p, look) {
   m.customProgramCacheKey = () => 'look-' + look;
   m.onBeforeCompile = (sh) => {
     sh.uniforms.uBase = { value: p.col };
-    sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vObj;')
-      .replace('#include <begin_vertex>', '#include <begin_vertex>\nvObj = position;');
+    sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vObj;\nvarying vec3 vZdir;')
+      .replace('#include <begin_vertex>', '#include <begin_vertex>\nvObj = position; vZdir = normalize((modelViewMatrix * vec4(0.0, 0.0, 1.0, 0.0)).xyz);');
     sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\n' + LOOK_GLSL)
       .replace('#include <color_fragment>', LOOK_COLOR)
       .replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\nroughnessFactor = lookRough;')
       .replace('#include <metalnessmap_fragment>', '#include <metalnessmap_fragment>\nmetalnessFactor = lookMetal;')
-      .replace('#include <normal_fragment_maps>', '#include <normal_fragment_maps>\nif (lookK > 0.0) normal = lookBump(-vViewPosition, normal, lookH, lookK);');
+      .replace('#include <normal_fragment_maps>', '#include <normal_fragment_maps>\nif (lookK > 0.0) normal = lookBump(-vViewPosition, normal, lookH, lookK);'
+        + '\nif (lookStripe > 0.0) { vec3 g = vZdir * (lookStripe * 0.35 * cos(vObj.z * 31.4159)); normal = normalize(normal - (g - dot(g, normal) * normal)); }');
   };
   return m;
 }
@@ -410,7 +437,7 @@ function defaultLook(p) {
   if (m.material && LOOKS.includes(m.material)) return m.material;
   const n = (p.name + ' ' + (m.name || '')).toLowerCase();
   if (/6808|6800|bearing/.test(n)) return 'polished';
-  if (/screw|bolt|nut|insert|dowel|\bpin\b/.test(n)) return 'steel';
+  if (/screw|bolt|nut|insert|dowel|\bpin\b(?! ring)/.test(n)) return 'steel';   // (the gearbox's printed "pin ring" isn't)
   return 'printed';
 }
 function lookKey(p) { return 'stepviewer.look.' + p.key; }
@@ -479,7 +506,15 @@ function makePart(p) {
   let eg;
   if (p.edges) { eg = new THREE.BufferGeometry(); eg.setAttribute('position', new THREE.BufferAttribute(new Float32Array(bytes(p.edges)), 3)); }
   else eg = new THREE.EdgesGeometry(g, CREASE_DEG);
-  const edges = new THREE.LineSegments(eg, new THREE.LineBasicMaterial({ color: 0x0e0f12 }));
+  // Mike 2026-11-06 "It's aliasing on the screen really bad when you zoom in": a curved face's triangles cut inside its
+  // true edge (mesh tolerance 0.05 mm), so close up its edge line dashed in and out of the surface. Each line is pulled
+  // toward the eye by 0.06 mm or 0.2 % of its distance, whichever is more - still hidden by anything really in front.
+  const edgeMat = new THREE.LineBasicMaterial({ color: 0x0e0f12 });
+  edgeMat.onBeforeCompile = sh => { sh.vertexShader = sh.vertexShader.replace('#include <project_vertex>',
+    '#include <project_vertex>\n{ float dl = max(length(mvPosition.xyz), 1e-4); mvPosition.xyz *= 1.0 - min(max(0.06, 0.002 * dl) / dl, 0.5);'
+    + ' gl_Position = projectionMatrix * mvPosition; }'); };
+  edgeMat.customProgramCacheKey = () => 'edge-pull';
+  const edges = new THREE.LineSegments(eg, edgeMat);
   edges.renderOrder = 100001;
   let hull = null;
   if (/^(white|black) /.test(p.name)) {                    // the piece's outline: its back faces, pushed out along their
@@ -607,16 +642,120 @@ function gearsBuild(defs) {
   GEARS = [];
   (defs || []).forEach(d => {
     const ps = parts.filter(p => (models[p.model] || {}).name === d.model); if (!ps.length) return;
-    const at = new THREE.Vector3(...d.at), pivot = new THREE.Group(); pivot.position.copy(at);
-    const inner = new THREE.Group(); inner.position.copy(at).negate(); pivot.add(inner);
+    const g = { ...d, ax: new THREE.Vector3(...d.axis).normalize(), at: new THREE.Vector3(...d.at) };
+    if (d.orbit) {
+      g.ou = new THREE.Vector3(...(d.orbit.u || [1, 0, 0])).projectOnPlane(g.ax).normalize();
+      g.ov = new THREE.Vector3().crossVectors(g.ax, g.ou);
+    }
+    const c0 = d.orbit ? orbitAt(g, 0) : g.at;                // the model's centre as built (angle 0)
+    const pivot = new THREE.Group(); pivot.position.copy(c0);
+    const inner = new THREE.Group(); inner.position.copy(c0).negate(); pivot.add(inner);
     (ps[0].group.parent || root).add(pivot);                // where the model hangs: the root or a joint it rides on
     ps.forEach(p => inner.add(p.group));
-    GEARS.push({ ...d, pivot, ax: new THREE.Vector3(...d.axis).normalize() });
+    GEARS.push({ ...g, pivot });
   });
   gearsUpdate();
 }
+// "follows" may also name a test rig's motor (scene.json "rigs", below). "orbit": {r, phase, u, ratio} - the model's
+// own centre runs round a circle of radius r about at / axis, at ratio (default 1) x the angle, starting phase degrees
+// from u (u x axis is +90); the model turns about that moving centre by ratio x the angle (a cycloid disc on its
+// eccentric).
+function driverAngle(name) { return name in rigAngles ? rigAngles[name] : +(jointAngles[name] || 0); }
+function orbitAt(g, deg) {
+  const a = ((g.orbit.ratio ?? 1) * deg + (g.orbit.phase || 0)) * D2R, r = g.orbit.r;
+  return g.at.clone().addScaledVector(g.ou, r * Math.cos(a)).addScaledVector(g.ov, r * Math.sin(a));
+}
 function gearsUpdate() {
-  GEARS.forEach(g => g.pivot.quaternion.setFromAxisAngle(g.ax, (g.ratio ?? 1) * (+(jointAngles[g.follows] || 0)) * D2R));
+  GEARS.forEach(g => {
+    const deg = driverAngle(g.follows);
+    g.pivot.quaternion.setFromAxisAngle(g.ax, (g.ratio ?? 1) * deg * D2R);
+    if (g.orbit) g.pivot.position.copy(orbitAt(g, deg));
+  });
+}
+
+// ---------------------------------------------------------------- test rigs (scene.json "rigs")
+// Mike 2026-11-06: "the whole purpose of this app is to be able to animate and test our robotic arm ... Every tool we
+// build to test the device, a joint, a knee, a foot, an ankle, it's going to happen in here." A rig is a motor that is
+// not one of the arm's joints - the first is the 37:1 cycloid gearbox (tools/gearbox_anim.py): [{name, rpm, turns,
+// models, at, readouts: [{label, ratio}], views: [{label, cut: x|y|z|off, point}]}]. Models geared to it ("gears" with
+// follows = its name) move as it turns: Play runs it at the chosen rpm, the slider turns it by hand. The section cut and
+// the parts' hide boxes keep working while it runs. A view button cuts along world X/Y/Z through its design-frame point
+// and frames the rig's models.
+let RIGS = [];
+const rigAngles = {};
+const RIG_RPM = [1, 3, 10, 30, 60, 150, 300, 600];
+function rigsBuild(defs) {
+  const old = Object.fromEntries(RIGS.map(r => [r.name, r]));
+  RIGS = (defs || []).map(d => ({ ...d, playing: !!(old[d.name] && old[d.name].playing), dir: (old[d.name] && old[d.name].dir) || 1,
+                                   rpmNow: (old[d.name] && old[d.name].rpmNow) || d.rpm || 30, last: null }));
+  Object.keys(rigAngles).forEach(k => { if (!RIGS.some(r => r.name === k)) delete rigAngles[k]; });
+  RIGS.forEach(r => { if (!(r.name in rigAngles)) rigAngles[r.name] = 0; });
+  $('rigSec').style.display = RIGS.length ? '' : 'none';
+  const el = $('rigs'); el.innerHTML = '';
+  RIGS.forEach(r => {
+    const max = 360 * (r.turns || 1);
+    const row = document.createElement('div'); row.className = 'jrow';
+    row.innerHTML = `<div class="row"><span class="n" style="font-weight:600"></span><span class="grow"></span>
+        <button class="play" title="Run the motor (click again to stop)"></button>
+        <button class="rev" title="Turn the other way">&#8644;</button>
+        <label title="Motor speed: rpm at the motor shaft"><select class="rpm look"></select> rpm</label>
+        <button class="z" title="Motor back to 0">0</button></div>
+      <input type="range" min="0" max="${max}" step="0.5" title="Turn the motor by hand (the slider covers ${r.turns || 1} motor turns)">
+      <div class="row muted rd" style="font-size:12px"></div>
+      <div class="row rv" style="gap:4px;flex-wrap:wrap;margin-top:4px"></div>`;
+    row.querySelector('.n').textContent = r.name;
+    if (r.why) row.title = r.why;
+    const sel = row.querySelector('.rpm');
+    [...new Set(RIG_RPM.concat([r.rpm || 30]))].sort((a, b) => a - b)
+      .forEach(v => { const o = document.createElement('option'); o.value = v; o.textContent = v; sel.appendChild(o); });
+    sel.value = r.rpmNow; sel.onchange = () => { r.rpmNow = +sel.value; r.show(); }; r.sel = sel;
+    sel.onclick = e => e.stopPropagation();
+    const s = row.querySelector('input'), rd = row.querySelector('.rd'), play = row.querySelector('.play');
+    r.show = () => {
+      const a = rigAngles[r.name];
+      s.value = a;
+      play.innerHTML = r.playing ? '&#10074;&#10074; Stop' : '&#9654; Play';
+      rd.textContent = `motor ${a.toFixed(1)}° (${(a / 360).toFixed(2)} turns, ${r.dir > 0 ? '+' : '−'}${r.rpmNow} rpm)` +
+        (r.readouts || []).map(o => `  ·  ${o.label} ${(a * o.ratio).toFixed(2)}°`).join('');
+    };
+    s.oninput = () => { rigPlay(r, false); rigAngles[r.name] = +s.value; r.show(); };
+    play.onclick = () => rigPlay(r, !r.playing);
+    row.querySelector('.rev').onclick = () => { r.dir = -r.dir; r.show(); };
+    row.querySelector('.z').onclick = () => { rigPlay(r, false); rigAngles[r.name] = 0; r.show(); };
+    (r.views || []).forEach(v => {
+      const b = document.createElement('button'); b.textContent = v.label;
+      b.title = v.cut === 'off' ? 'Section off; frame the rig' : `Section along world ${String(v.cut).toUpperCase()} there, framed on the rig`;
+      b.onclick = () => rigLook(r, v);
+      row.querySelector('.rv').appendChild(b);
+    });
+    r.show();
+    el.appendChild(row);
+  });
+}
+function rigPlay(r, on) { r.playing = on; r.last = null; if (r.show) r.show(); }
+function rigStep(now) {
+  RIGS.forEach(r => {
+    if (!r.playing) return;
+    const dt = r.last === null ? 0 : Math.min(0.1, (now - r.last) / 1000); r.last = now;
+    const max = 360 * (r.turns || 1);
+    rigAngles[r.name] = (((rigAngles[r.name] + r.dir * r.rpmNow * 6 * dt) % max) + max) % max;
+    r.show();
+  });
+}
+function rigBox(r) {                                       // the rig's models as they sit in the world now
+  root.updateMatrixWorld(true);
+  const names = new Set((r.models || []).concat(GEARS.filter(g => g.follows === r.name).map(g => g.model)));
+  const b = new THREE.Box3();
+  parts.forEach(p => { if (names.has((models[p.model] || {}).name)) b.union(new THREE.Box3().setFromObject(p.mesh)); });
+  return b;
+}
+function rigLook(r, v = {}) {
+  if (v.cut && v.cut !== 'off' && v.point) {
+    const w = root.localToWorld(new THREE.Vector3(...v.point)), i = { x: 0, y: 1, z: 2 }[String(v.cut).toLowerCase()];
+    if (i !== undefined) selectAxis(String(i), +w.getComponent(i).toFixed(2));
+  } else if (v.cut === 'off') selectAxis('off');
+  const b = rigBox(r);
+  if (!b.isEmpty()) setView(v.view || viewName, 1, b.getCenter(new THREE.Vector3()).toArray(), b);
 }
 
 let HOMING = null, homeRun = null, homeLast = null;
@@ -827,7 +966,8 @@ function buildScene(data, keepView) {
   buildJoints(data.joints || []);
   bowdenBuild(data.bowden);
   homingBuild(data.homing);                                // home switches (scene.json "homing")
-  gearsBuild(data.gears);                                  // models geared to a joint (scene.json "gears")
+  rigsBuild(data.rigs);                                    // test rigs: motors that aren't arm joints (scene.json "rigs")
+  gearsBuild(data.gears);                                  // models geared to a joint or a rig (scene.json "gears")
   root.updateMatrixWorld(true);
   box.makeEmpty();
   parts.forEach(p => box.union(new THREE.Box3().setFromObject(p.mesh)));      // in the world, as posed
@@ -895,8 +1035,8 @@ $('none').onclick = () => parts.forEach(p => { p.cb.checked = false; p.group.vis
 const VIEWS = { iso: [1, -1.25, 0.9], iso2: [-1, -1.25, 0.9], iso3: [-1, 1.25, 0.9], iso4: [1, 1.25, 0.9],
   front: [0, -1, 0], back: [0, 1, 0], right: [1, 0, 0], left: [-1, 0, 0], top: [0, -1e-4, 1], bottom: [0, -1e-4, -1] };
 let viewName = 'iso', lastView = { name: 'iso', zoom: 1, at: null };
-function setView(name = 'iso', zoom = 1, at = null) {
-  lastView = { name, zoom, at };
+function setView(name = 'iso', zoom = 1, at = null, fitBox = null) {   // fitBox: frame this box (a test rig) instead of all shown
+  lastView = { name, zoom, at, fitBox };
   let d = VIEWS[name];
   if (!d && /^-?[\d.]+,-?[\d.]+,-?[\d.]+$/.test(name)) d = name.split(',').map(Number);
   if (!d) { d = VIEWS.iso; name = 'iso'; }
@@ -904,7 +1044,8 @@ function setView(name = 'iso', zoom = 1, at = null) {
   const dir = new THREE.Vector3(...d).normalize();
   const tgt = at ? new THREE.Vector3(...at) : center.clone();
   const vis = new THREE.Box3();
-  parts.forEach(p => { if (p.group.visible) vis.union(new THREE.Box3().setFromObject(p.mesh)); });   // as posed
+  if (fitBox) vis.copy(fitBox);
+  else parts.forEach(p => { if (p.group.visible) vis.union(new THREE.Box3().setFromObject(p.mesh)); });   // as posed
   if (vis.isEmpty()) vis.copy(box);
   const up = Math.abs(dir.z) > 0.999 ? new THREE.Vector3(0, 1, 0) : new THREE.Vector3(0, 0, 1);
   const right = new THREE.Vector3().crossVectors(up, dir).normalize();
@@ -925,7 +1066,8 @@ function setView(name = 'iso', zoom = 1, at = null) {
   controls.update();
 }
 function fit() { setView(viewName); }
-document.querySelectorAll('[data-v]').forEach(b => b.onclick = () => setView(b.dataset.v));
+// after a test rig's view, Iso / Front / Top / Right stay on the rig; Fit (F) goes back to everything
+document.querySelectorAll('[data-v]').forEach(b => b.onclick = () => setView(b.dataset.v, 1, lastView.fitBox ? lastView.at : null, lastView.fitBox));
 $('fit').onclick = fit;
 
 // ---------------------------------------------------------------- section
@@ -1355,6 +1497,11 @@ function applyState(st) {
   if (st.cut !== undefined) selectAxis(st.cut ? st.cut.axis : 'off', st.cut ? st.cut.pos : null);
   if (st.keep === '+' || st.keep === '-') { autoCb.checked = false; flipped = st.keep === '-'; flipBtn.disabled = axis === 'off'; }
   if (st.joints) Object.entries(st.joints).forEach(([n, d]) => setJoint(n, d));
+  if (st.rig) {                               // a test rig: {rig: name, rig_view: a view's label, rig_play: true/false, rig_rpm}
+    const r = RIGS.find(q => q.name === st.rig);
+    if (r) { if (st.rig_rpm) { r.rpmNow = +st.rig_rpm; if (r.sel) r.sel.value = r.rpmNow; } if ('rig_play' in st) rigPlay(r, !!st.rig_play); else if (r.show) r.show();
+             if (st.rig_view !== undefined) rigLook(r, (r.views || []).find(v => v.label === st.rig_view) || {}); }
+  }
   let at = st.at || null;
   if (st.focus !== undefined) {               // aim at a joint (by name) or a part (by number) wherever it is posed
     root.updateMatrixWorld(true);
@@ -3417,6 +3564,43 @@ function drawPlanCheck(what, text) {          // every step through the IK: its 
 $('drawBtn').onclick = playDraw;
 $('drawWhat').onchange = () => { $('drawText').style.display = ['text', 'pictures'].includes($('drawWhat').value) ? '' : 'none'; };
 
+// ---------------------------------------------------------------- studios (studio.py, tools/studios.json)
+// Mike 2026-11-06: "Is there any way we can run two of these at the same time? So I can switch between them ... Think
+// of it as multi-user interface." Each studio is its own server (port) with its own scene / show / notes / selection;
+// the browser keeps each one's settings apart (a different address). The menu switches this window; a stopped one starts.
+let STUDIOS = null, studioBusy = false;
+const studioUrl = port => `${location.protocol}//${location.hostname}:${port}/`;
+async function studiosPoll() {
+  if (studioBusy) return;
+  try { STUDIOS = await (await fetch('/api/studios', { cache: 'no-store' })).json(); } catch (e) { return; }
+  const sel = $('studioSel'), cur = STUDIOS.current;
+  document.title = cur === 'main' ? 'Robot Studio' : `Robot Studio · ${cur}`;
+  sel.style.display = STUDIOS.studios.length > 1 ? '' : 'none';
+  if (document.activeElement === sel) return;           // don't rebuild it under the mouse
+  sel.innerHTML = '';
+  STUDIOS.studios.forEach(st => {
+    const o = document.createElement('option'); o.value = st.name;
+    o.textContent = `${st.name}${st.running ? '' : ' (stopped)'}`;
+    o.title = [st.who, st.what, `port ${st.port}`].filter(Boolean).join(' - ');
+    sel.appendChild(o);
+  });
+  sel.value = cur;
+}
+$('studioSel').onchange = async () => {
+  const sel = $('studioSel'), st = STUDIOS && STUDIOS.studios.find(q => q.name === sel.value);
+  if (!st || st.name === STUDIOS.current) return;
+  if (!st.running) {
+    studioBusy = true; sel.disabled = true;
+    $('status').textContent = `starting ${st.name}…`;
+    await api('/api/studio/start', { name: st.name });
+    for (let i = 0; i < 240; i++) {                      // the new studio reads its models first (up to a minute)
+      try { await fetch(studioUrl(st.port) + 'api/ping', { mode: 'no-cors', cache: 'no-store' }); break; }
+      catch (e) { await new Promise(r => setTimeout(r, 500)); }
+    }
+  }
+  location.href = studioUrl(st.port);
+};
+
 renderer.setAnimationLoop(() => {
   bowdenUpdate();
   controls.update();
@@ -3429,6 +3613,7 @@ renderer.setAnimationLoop(() => {
   drawUpdate();
   hudUpdate(performance.now());
   homingStep(performance.now());
+  rigStep(performance.now());
   gearsUpdate();
   homeShow();
   soundTick(performance.now());
@@ -3446,10 +3631,13 @@ if (STATIC) {
 } else {
   poll();
   setInterval(poll, 1000);
+  studiosPoll();
+  setInterval(studiosPoll, 5000);
 }
 addEventListener('hashchange', () => applyState(parseHash()));
 resize();
-window.__viewer = { camera, controls, get parts() { return parts; }, get selection() { return selection; }, pick, setSelection };
+window.__viewer = { camera, controls, get parts() { return parts; }, get selection() { return selection; }, pick, setSelection,
+                    root, get rigs() { return RIGS; }, rigAngles, gearsUpdate, rigPlay };
 </script>
 <script>
   setTimeout(() => { if (!window.__viewer) document.getElementById('err').style.display = 'flex'; }, 10000);

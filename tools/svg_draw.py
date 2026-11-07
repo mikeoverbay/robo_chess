@@ -41,7 +41,8 @@ import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
-SCENE = os.path.join(HERE, "viewer_session", "scene.json")
+import studio  # noqa: E402
+SCENE = studio.scene_path()          # this studio's scene (ROBOT_STUDIO; default main = viewer_session/scene.json)
 RES = 0.1                    # mm per pixel of the fill grid
 EDGE_IN = 0.15               # the first fill line this far inside the edge (the ink, ~0.5 wide, reaches the edge)
 SIMPLIFY = 0.04              # mm: points dropped while the line stays this close

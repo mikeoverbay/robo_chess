@@ -30,7 +30,8 @@ sys.path.insert(0, HERE)
 import numpy as np  # noqa: E402
 from scipy.special import ellipk, ellipe  # noqa: E402
 
-SCENE = os.path.join(HERE, "viewer_session", "scene.json")
+import studio  # noqa: E402
+SCENE = studio.scene_path()          # this studio's scene (ROBOT_STUDIO; default main = viewer_session/scene.json)
 MAG_R, MAG_L = 3.0, 2.0          # 6 x 2
 BR = 1.32                        # T, N42 (N35 1.20 .. N52 1.43)
 BOP = 4.8                        # mT, DRV5032FB operate point (TI's typical; release is lower)

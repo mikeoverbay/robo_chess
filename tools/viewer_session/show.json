@@ -1,16 +1,9 @@
 {
  "view": {
-  "view": "iso",
-  "cut": "off",
-  "zoom": 1,
-  "hide": [],
-  "joints": {
-   "J0 swivel": 89.98,
-   "J1 shoulder": 135,
-   "J2 elbow": -90,
-   "J3": -90,
-   "J4 wrist": 90
-  }
+  "rig": "gearbox motor",
+  "rig_view": "cut disc 1",
+  "rig_play": true,
+  "rig_rpm": 30
  },
- "view_seq": 55
+ "view_seq": 59
 }

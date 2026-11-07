@@ -17,3 +17,11 @@ Thumbs.db
 desktop.ini
 # NTFS junction to robo_chess/cycloid (same files, backed up there; recreate with: mklink /J "complete assembly\cycloid gearbox" cycloid)
 complete assembly/cycloid gearbox/
+# Robot Studio studios (tools/studio.py, 2026-11-06): each studio's server log and FEA solver files
+tools/viewer_sessions/*/server.log
+tools/viewer_sessions/*/fea/*
+!tools/viewer_sessions/*/fea/result.json
+# electronics_case.py rebuilds these (python tools/electronics_case.py --tilt 40 --assembly): board meshes for the
+# viewer and each board placed in the case (45-64 MB each)
+electronics_case/view/
+electronics_case/boards/

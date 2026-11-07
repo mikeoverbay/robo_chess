@@ -30,7 +30,8 @@ import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
-SESSION = os.path.join(HERE, "viewer_session")
+import studio  # noqa: E402
+SESSION = studio.session_dir()                     # the studio that ran it (ROBOT_STUDIO; main = viewer_session)
 WORK = os.path.join(SESSION, "fea")
 FC_BIN = r"C:\Program Files\FreeCAD 0.19\bin"
 GMSH = os.path.join(FC_BIN, "gmsh.exe")
