@@ -13,7 +13,8 @@ Link mock-up (arm frame: pivot on the joint at x 0, elbow at x -200, like link B
   - cup: 70.5 disc on the output face, 3 x M3 on r 15 (8 counterbores), a wire hole; a neck out to the beam
   - beam ("the cage", Mike): one round tube, 2 mm wall, r 30 on the old webs' centre line, between two end walls
     (half round, half square to the neck / plate); no webs inside
-  - mounting ring at the elbow end under the next drive: 6 countersunk M3 from below on r 32.4, the motor's opening
+  - mounting ring at the elbow end under the next drive: 6 countersunk M3 from below on r 32.4 (since 2026-11-15
+    turned 30 deg off the drive's lid screws: ARM_SCREW_*), the motor's opening
 Out: complete assembly/mockups/mockup_link_plus.step, mockup_drive_spread.step; prints mass and stiffness compared
 with the present box link.
 """
@@ -79,6 +80,15 @@ SIDE_HOLES, SIDE_HOLE_D = 4, 16.0          # Mike (P52.F89, between edges E236 /
 # elbow wall's round top (x -162). The underside fairs from the square plate into the round tube. Bore stays clear.
 PLATE_T = CUP_T                  # Mike: the elbow mounting plate as thick as the cup (P52.F137 -> under P56.F1), 4 -> 8;
 #                                  the extra goes underneath, the gearbox seat stays at z 0 (its 6 M3 get 4 mm longer)
+# Arm-mount screws (Mike 2026-11-15, his P3.F99 on the column: the screws holding each gearbox on its arm "are trying to
+# use the same holes that are used to bolt the housing together. Those holes need to be rotated 30 degrees" - the
+# gearbox session adds the housing's 6 new holes): the plate's 6 countersunk M3 from below go on the lid circle turned
+# 30 deg, halfway between the lid screws. The column (arm_tube.py) is cut from this link, so it follows. cycloid.py's
+# ARM_SCREW_R / ARM_SCREW_ANGLES win once it has them - it does since 2026-11-15 (the gearbox session: midway between
+# ring pins, symmetric about 90/270). The screws are #4 x 3/4" flat-head wood screws (Mike) into D2.4 pilots; the
+# 3.4 hole and 6.3 countersink fit a #4 flat head.
+ARM_SCREW_R = getattr(C, "ARM_SCREW_R", C.LID_SCREW_R)
+ARM_SCREW_ANGLES = tuple(getattr(C, "ARM_SCREW_ANGLES", tuple(a + 30.0 for a in C.LID_SCREW_ANGLES)))
 # Home-switch lobe (Mike 2026-11-05; first on the base at J1 - "a little lobe like we did with the screws before, half a
 # capsule shape ... out underneath the center line of that radius of that joint ... a magnetic sensor straight down
 # into the bottom of that radius ... a big enough hole to bring this in and down into the arm ... we'll take it through
@@ -151,7 +161,8 @@ def spread_drive():
         x, y = C.polar(C.LID_SCREW_R, a)
         spacer = spacer.cut(cyl(3.4, SPLIT - 1, SPLIT + SPREAD + 1, x, y))
     tall = one(lower.fuse(spacer).fuse(upper).clean(), "spread drive")
-    return tall, d["NEMA 17"], d["NEMA 17 end caps"]
+    # Mike 2026-11-15, the two-piece housing: the stand-in keeps the floor (z 0..7.2) as its own body - passed through
+    return tall, d["housing floor"], d["NEMA 17"], d["NEMA 17 end caps"]
 
 
 def plus_link():
@@ -250,8 +261,8 @@ def plus_link():
         cuts += [cyl(4.4, Z_OUT - 1, zt + 1, x, y), cyl(8.0, zt - 4.0, zt + 1, x, y)]
     cuts.append(box(-200 - 22, -200 + 22, -22, 22, -PLATE_T - 1, 1))          # the next drive's motor goes through
     k = (6.3 - 3.4) / 2 / 0.8693
-    for a in C.LID_SCREW_ANGLES:                                              # 6 x M3 up into the next drive
-        x, y = C.polar(C.LID_SCREW_R, a)
+    for a in ARM_SCREW_ANGLES:                                                # 6 x M3 up into the next drive
+        x, y = C.polar(ARM_SCREW_R, a)
         cuts.append(cyl(3.4, -PLATE_T - 1, 1, x - 200, y))
         cuts.append(cq.Solid.makeCone(6.3 / 2, 3.4 / 2, k, V(x - 200, y, -PLATE_T - 0.01), V(0, 0, 1)))
     for cu in cuts:
@@ -342,7 +353,7 @@ def section(shape, x):
 def main():
     os.makedirs(OUT_DIR, exist_ok=True)
     link = plus_link()
-    drive, mot, caps = spread_drive()
+    drive, floor, mot, caps = spread_drive()
     box_link = sum(s.Volume() for _, s, _ in read_step(BOX_LINK))
     print(f"plus link: {link.Volume() * PLA * FILL:.0f} g in PLA   (the box link with its top: {box_link * PLA * FILL:.0f} g; "
           f"its outer 6808 another 33 g)")
@@ -355,6 +366,18 @@ def main():
     a = cq.Assembly(name="mockup_link_plus")
     a.add(link, name="mockup plus link", color=cq.Color(0.72, 0.74, 0.78))
     write_step(a, os.path.join(OUT_DIR, "mockup_link_plus.step"))
+    # the arm-mount holes: off the lid screws, and a 7 mm driver's way up from below clear of this link and of the next
+    # drive's motor (42.3 square, under the plate)
+    lid = [C.polar(C.LID_SCREW_R, a) for a in C.LID_SCREW_ANGLES]
+    print(f"arm-mount holes: 6 x #4 on r {ARM_SCREW_R:g} at " + ", ".join(f"{a:.2f}" for a in ARM_SCREW_ANGLES) + " deg")
+    for a in ARM_SCREW_ANGLES:
+        x, y = C.polar(ARM_SCREW_R, a)
+        gap = min(math.hypot(x - lx, y - ly) for lx, ly in lid)
+        motor = max(abs(x), abs(y)) - 3.5 - 42.3 / 2
+        path = cyl(7.0, -PLATE_T - 80.0, -PLATE_T - 0.05, x - 200.0, y).intersect(link).Volume()
+        ok = gap > 6.0 and motor > 1.0 and path < 0.01
+        print(f"  {'ok  ' if ok else 'FAIL'} {a:6.2f} deg ({x:5.1f}, {y:5.1f}): {gap:.1f} mm from a lid screw, driver "
+              f"{motor:.1f} off the motor, {path:.2f} mm^3 of link in its way")
     pcb, chip, elem = hall_parts()
     for n, s in (("Hall TO-92", pcb), ("Hall leads", chip)):
         if s.intersect(link).Volume() > 0.01:
@@ -373,13 +396,17 @@ def main():
         m.add(s, name=f"home magnet {name}", color=cq.Color(0.82, 0.83, 0.86))
     write_step(m, os.path.join(OUT_DIR, "home_magnets_link.step"))
     b = cq.Assembly(name="mockup_drive_spread")
+    b.add(floor, name="housing floor", color=cq.Color(0.72, 0.74, 0.78))
     b.add(drive, name="mockup drive (spread 6808s)", color=cq.Color(0.72, 0.74, 0.78))
     b.add(mot, name="NEMA 17", color=cq.Color(0.12, 0.12, 0.13))
     b.add(caps, name="NEMA 17 end caps", color=cq.Color(0.78, 0.79, 0.81))
     write_step(b, os.path.join(OUT_DIR, "mockup_drive_spread.step"))
     db = drive.BoundingBox()
     print(f"spread drive: output face z {Z_OUT:.1f} (was 45.2), housing {drive.Volume() / 1000:.0f} cm^3, top z {db.zmax:.1f}")
-    for v, n in ((link.intersect(drive), "link x pivot drive"), (link.intersect(drive.translate(V(-200, 0, 0))), "link x elbow drive")):
+    if floor.intersect(drive).Volume() > 0.05:
+        print(f"   OVERLAP housing floor x drive: {floor.intersect(drive).Volume():.1f} mm^3")
+    for v, n in ((link.intersect(drive), "link x pivot drive"), (link.intersect(drive.translate(V(-200, 0, 0))), "link x elbow drive"),
+                 (link.intersect(floor), "link x pivot floor"), (link.intersect(floor.translate(V(-200, 0, 0))), "link x elbow floor")):
         if v.Volume() > 0.05:
             print(f"   OVERLAP {n}: {v.Volume():.1f} mm^3")
     print(OUT_DIR)

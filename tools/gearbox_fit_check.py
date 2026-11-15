@@ -9,13 +9,17 @@ claw. Wrist.")
 Reads the bolt circles from cycloid.py itself and finds the holes in the files that get PRINTED:
   output face   3 x M3 on r OUT_SCREW_R at OUT_SCREW_ANGLES: the flange's insert holes; the arm link's cup
                 (print/Arm (print 3).step); the claw mount on the wrist (print/Claw mount.step)
-  lid circle    6 x M3 on r LID_SCREW_R at LID_SCREW_ANGLES: the gearbox's lid, pin ring and housing; the arm link's
-                mounting ring at its elbow end (x -200, the next drive); the shoulder column (print/Shoulder
-                turntable.step), checked hole-for-hole against J1's drive placed in complete assembly/arm_base_tube.step
+  lid circle    6 x M3 on r LID_SCREW_R at LID_SCREW_ANGLES: the gearbox's lid, pin ring and housing
+  arm screws    6 x #4 on r ARM_SCREW_R at ARM_SCREW_ANGLES (Mike 2026-11-15: the arm's screws moved off the lid
+                holes; midway between ring pins, so NOT every 60 deg - the pattern repeats only every 180): the arm
+                link's mounting ring at its elbow end (x -200, the next drive); the shoulder column (print/Shoulder
+                turntable.step), checked hole-for-hole against J1's drive placed in complete assembly/arm_base_tube.step,
+                whose own arm pilots are found from its lid holes (both on the housing; the output turns)
   output face height  Z_DISC_OUT (spread 14) against the link's cup and the claw mount's cup.
 A hole "matches" when a cylindrical face of a hole's radius has its axis on the expected one (0.05 mm).
-If a bolt circle changes in cycloid.py, rebuild, in order: cycloid.py --spread 14, mockup_link.py (the arms),
-arm_tube.py (the shoulder column), claw_adapter.py --spread (the claw mount), then print_parts.py - and run this.
+If a bolt circle changes in cycloid.py, rebuild, in order: cycloid.py --spread 14, cycloid_standin.py (the drive
+stand-in), mockup_link.py (the arms), arm_tube.py (the shoulder column), claw_adapter.py --spread (the claw mount),
+then print_parts.py - and run this.
 """
 import math
 import os
@@ -77,6 +81,19 @@ def check(label, axes, centres, d=cq.Vector(0, 0, 1)):
         fails.append(label)
 
 
+def pattern_turn(lid_m, arm_m, tol=0.1):
+    """does one turn (and maybe a mirror) put cycloid.py's lid AND arm patterns onto the measured hole angles (deg)?
+    The lid holes fix the turn; the arm holes then have to land too."""
+    near = lambda a, pool: any(abs((a - b + 180.0) % 360.0 - 180.0) < tol for b in pool)
+    for s in (1, -1):
+        for a0 in C.LID_SCREW_ANGLES:
+            turn = lid_m[0] - s * a0
+            if all(near(s * a + turn, lid_m) for a in C.LID_SCREW_ANGLES) and \
+                    all(near(s * a + turn, arm_m) for a in C.ARM_SCREW_ANGLES):
+                return True
+    return False
+
+
 def solid_at(shape, x, y, z):
     return shape.isInside(cq.Vector(x, y, z), 1e-4)
 
@@ -93,21 +110,26 @@ def face_height(label, shape, z):
 def main():
     out_c = [C.polar(C.OUT_SCREW_R, a) for a in C.OUT_SCREW_ANGLES]
     lid_c = [C.polar(C.LID_SCREW_R, a) for a in C.LID_SCREW_ANGLES]
+    arm_c = [C.polar(C.ARM_SCREW_R, a) for a in C.ARM_SCREW_ANGLES]
     print(f"cycloid.py: output 3 x M3 on r {C.OUT_SCREW_R:g} at {', '.join(f'{a:g}' for a in C.OUT_SCREW_ANGLES)} deg; "
           f"lid {len(lid_c)} x M3 on r {C.LID_SCREW_R:g} from {C.LID_SCREW_ANGLES[0]:.2f} deg every 60; "
+          f"arm {len(arm_c)} x #4 on r {C.ARM_SCREW_R:g} at {', '.join(f'{a:.2f}' for a in C.ARM_SCREW_ANGLES)} deg; "
           f"output face z {C.Z_DISC_OUT:g}")
 
     print("gearbox (print/Gearbox assembly (print 4).step):")
     gb = os.path.join(PRINT, "Gearbox assembly (print 4).step")
     check("output flange insert holes", holes(body(gb, "Gearbox output flange"), C.INSERT_HOLE / 2, C.INSERT_HOLE / 2),
           out_c)
-    for nm in ("Gearbox lid", "Gearbox pin ring", "Gearbox housing"):
-        check(f"{nm[8:]} lid-screw holes", holes(body(gb, nm), 1.2, 1.8), lid_c)
+    for nm in ("Gearbox lid", "Gearbox pin ring", "Gearbox housing ring", "Gearbox housing floor"):
+        check(f"{nm[8:]} lid-screw holes", holes(body(gb, nm), 1.25, 1.8), lid_c)
+    rp = C.ARM_SCREW_PILOT / 2
+    for nm in ("Gearbox housing floor", "Gearbox housing ring"):     # the two-piece housing (2026-11-15)
+        check(f"{nm[8:]} arm screw pilots", holes(body(gb, nm), rp, rp), arm_c)
 
     print("arm link (print/Arm (print 3).step):")
     arm = body(os.path.join(PRINT, "Arm (print 3).step"), "Arm (print 3)")
     check("cup output-screw holes", holes(arm, 2.2, 2.2), out_c)
-    check("elbow mounting-ring holes (next drive)", holes(arm, 1.7, 1.7), [(x + LINK_ELBOW_X, y) for x, y in lid_c])
+    check("elbow mounting-ring holes (next drive)", holes(arm, 1.7, 1.7), [(x + LINK_ELBOW_X, y) for x, y in arm_c])
     face_height("cup", arm, C.Z_DISC_OUT)
 
     print("claw mount on the wrist (print/Claw mount.step):")
@@ -117,31 +139,49 @@ def main():
 
     print("shoulder column (print/Shoulder turntable.step) against J1's drive (complete assembly/arm_base_tube.step):")
     col = body(os.path.join(PRINT, "Shoulder turntable.step"), "Shoulder column")
-    drive = next(s for n, s, _ in read_step(BASE_TUBE) if n.startswith("drive J1 mockup drive"))
+    # J1's drive: every "drive J1 ..." body but the motor - one body, or two since the housing is two pieces
+    # (cycloid_standin.py: "housing floor" + "cycloid drive", 2026-11-15)
+    drive = cq.Compound.makeCompound([s for n, s, _ in read_step(BASE_TUBE)
+                                      if n.startswith("drive J1 ") and "NEMA" not in n])
     rim = holes(drive, 35.25, 35.25)                     # the 70.5 body: J1's axis
     ax_p, ax_d = rim[0]
     col_h = holes(col, 1.7, 1.7)
-    drv_h = [(p, d) for p, d in holes(drive, 1.2, 1.8) if abs(abs(d.dot(ax_d)) - 1) < 1e-6]
+    par = lambda hs: [(p, d) for p, d in hs if abs(abs(d.dot(ax_d)) - 1) < 1e-6]
+    drv_h = par(holes(drive, 1.25, 1.8))                 # lid holes: 2.5 in the housing, 3.4 in the pin ring and lid
+    rp = C.ARM_SCREW_PILOT / 2
+    drv_a = par(holes(drive, rp, rp))                    # arm screw pilots (D2.4)
     ref = holes(drive, 2.0, 2.1)                         # its output insert holes: the angle reference
     # the drive's own lid holes on the cycloid.py circle, angles measured from its first insert hole
     u = ref[0][0] - ax_p
     u = (u - ax_d * u.dot(ax_d)).normalized()
     v = ax_d.cross(u)
-    ang = set()
-    for p, _ in drv_h:
-        w = p - ax_p
-        w = w - ax_d * w.dot(ax_d)
-        if abs(w.Length - C.LID_SCREW_R) < TOL:
-            ang.add(round(math.degrees(math.atan2(w.dot(v), w.dot(u))) % 60.0, 2))
+
+    def angles(hs, r):
+        out = set()
+        for p, _ in hs:
+            w = p - ax_p
+            w = w - ax_d * w.dot(ax_d)
+            if abs(w.Length - r) < TOL:
+                out.add(round(math.degrees(math.atan2(w.dot(v), w.dot(u))) % 360.0, 2))
+        return sorted(out)
+    lid_m, arm_m = angles(drv_h, C.LID_SCREW_R), angles(drv_a, C.ARM_SCREW_R)
+    ang = {round(a % 60.0, 2) for a in lid_m}
     want = round((C.LID_SCREW_ANGLES[0] - C.OUT_SCREW_ANGLES[0]) % 60.0, 2)
     ok = ang == {want} or ang == {round((-want) % 60.0, 2)}      # (mirror if the axis came out flipped)
     print(f"  {'ok  ' if ok else 'FAIL'} J1 drive model: lid holes on r {C.LID_SCREW_R:g}, {sorted(ang)} deg past an "
           f"output hole (cycloid.py: {want:g})")
     if not ok:
         fails.append("J1 drive model")
-    n_ok = sum(on_axis(drv_h, p, d) for p, d in col_h)
-    ok = len(col_h) >= len(lid_c) and n_ok == len(col_h)
-    print(f"  {'ok  ' if ok else 'FAIL'} column: {n_ok} of {len(col_h)} of its M3 holes on J1's drive's lid holes")
+    ok = len(arm_m) == len(C.ARM_SCREW_ANGLES) and bool(lid_m) and pattern_turn(lid_m, arm_m)
+    print(f"  {'ok  ' if ok else 'FAIL'} J1 drive model: {len(arm_m)} arm screw pilots on r {C.ARM_SCREW_R:g}"
+          + (", where cycloid.py puts them against its lid holes" if ok else
+             " - expected 6 where cycloid.py puts them against its lid holes (rerun cycloid_standin.py, then the "
+             "arm session's mockup_link.py + arm_tube.py)"))
+    if not ok:
+        fails.append("J1 drive model arm pilots")
+    n_ok = sum(on_axis(drv_a, p, d) for p, d in col_h)
+    ok = len(col_h) >= len(arm_c) and n_ok == len(col_h)
+    print(f"  {'ok  ' if ok else 'FAIL'} column: {n_ok} of {len(col_h)} of its screw holes on J1's drive's arm screw pilots")
     if not ok:
         fails.append("shoulder column")
 

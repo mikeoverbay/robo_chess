@@ -52,8 +52,15 @@ SAMPLE_HZ = 5.0                  # DRV5032FB: looks at the field 5 times a secon
 #         it makes contact again on the way) until it comes off, PULL_OFF more, stop;
 #   in    toward it again: at the back speed up to where it last read clear, then CREEP - slow enough that a 5 Hz read
 #         is at most TOL_MM late at the Hall - until it makes contact: home. (0.01 mm took 30-90 s a joint this way.)
+# Then (Mike 2026-11-07: "The creep speed is really, really slow. When it's seeking home"): the creep has to cover
+# the whole stretch where the back-off's clear read can be late (back / 5 Hz: 2-4 deg = 7-12 s at the creep). So the
+# back-off goes at back only until it's nearly behind first contact, then at BACK_SLOW = sqrt(seek x creep) (the
+# speed that minimises the slow back-off + the creep after it), and in again at BACK_SLOW to the creep. Measured in the
+# viewer (12 runs each, from home / from clear): 37.6 / 39.1 s -> 20.1 / 23.2 s, still <= 0.045 mm at the Hall.
 ZONE_SAFE, STOP_MARGIN, BACK_SHARE, HARD_STOP, TOL_MM = 1.25, 3.0, 0.25, 4.0, 0.05
-PULL_OFF, MAX_TRAVEL = 0.5, 200.0               # past where it comes off; give up after this much travel
+PULL_OFF, TRAVEL_SPARE = 0.5, 30.0              # past where it comes off; give up after the joint's whole range +
+#                                                 TRAVEL_SPARE of travel (was a flat 200: the swivel, 340 of range,
+#                                                 gave up when it started past -105 - found 2026-11-07)
 
 
 def cycle(joint, d, trips_at, early, r_hall):
@@ -70,12 +77,15 @@ def cycle(joint, d, trips_at, early, r_hall):
     tol_deg = math.degrees(TOL_MM / r_hall)
     creep = 0.9 * tol_deg * SAMPLE_HZ
     back = BACK_SHARE * seek
+    back_slow = min(back, math.sqrt(seek * creep))
     print(f"   {joint}: seek {seek:.1f} deg/s ({why}; top {m['v']}, zone {v_zone:.0f}, room {room:.0f} deg -> {v_room:.0f}), "
           f"hard stop {seek * per + seek * seek / (2 * HARD_STOP * m['a']):.1f} deg at most past first contact; back "
           f"{back:.1f}; creep {creep:.3f} deg/s ({TOL_MM} mm at the Hall, r {r_hall:.1f}) over the last "
-          f"{back * per:.1f} deg (~{back * per / creep:.0f} s)")
-    return {"seek": round(seek, 2), "back": round(back, 2), "creep": round(creep, 4), "hard_stop": HARD_STOP,
-            "tol_mm": TOL_MM, "r_hall": round(r_hall, 3), "pull_off": PULL_OFF, "max_travel": MAX_TRAVEL}
+          f"{back_slow * per:.2f} deg (~{back_slow * per / creep:.1f} s) after backing off at {back_slow:.2f} near the switch")
+    return {"seek": round(seek, 2), "back": round(back, 2), "back_slow": round(back_slow, 2), "creep": round(creep, 4),
+            "hard_stop": HARD_STOP,
+            "tol_mm": TOL_MM, "r_hall": round(r_hall, 3), "pull_off": PULL_OFF,
+            "max_travel": round(J["max"] - J["min"] + TRAVEL_SPARE, 1)}
 
 
 def bz(rho, z, br=BR):
@@ -195,7 +205,8 @@ def main():
                "point and magnet carry a sphere, radius trip/2 - touching = the Hall is made (trip = the distance at "
                "which a DRV5032FB, ~4.8 mT, switches over a 6 x 2 magnet). Joints without a switch yet go straight to "
                "their home angle first; then each switch: seek (dir) at seek deg/s until it reads made, back off at "
-               "back until it reads clear + pull_off deg, creep back on at creep: where it reads made is home. The "
+               "back (back_slow from just before first contact) until it reads clear + pull_off deg, in again at "
+               "back_slow and creep back on at creep: where it reads made is home. The "
                "Hall reads the field sample_hz times a second, so it reports up to 1/sample_hz late. Then the arm goes "
                "to its home pose. Switches home in list order: shoulder, elbow, J3, wrist, then the turntable.",
         "sample_hz": SAMPLE_HZ,

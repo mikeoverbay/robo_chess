@@ -406,6 +406,16 @@
    ]
   },
   {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\board_bus_preview_cells.step",
+   "name": "chessboard preview: edge cells (bucket + base plate)",
+   "color": "#e9e4da"
+  },
+  {
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\board_bus_preview_causeway.step",
+   "name": "chessboard preview: causeway (-x edge terminator, 3 pieces)",
+   "color": "#2b2b30"
+  },
+  {
    "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\gearbox_anim\\fixed.step",
    "name": "gearbox anim: housing, ring pins, lid, motor",
    "offset": [
@@ -451,14 +461,22 @@
    ]
   },
   {
-   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\board_bus_preview_cells.step",
-   "name": "chessboard preview: edge cells (bucket + base plate)",
-   "color": "#e9e4da"
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_sessions\\gearbox\\pin_gauge_upright.step",
+   "name": "gearbox pin gauge (38 pins)",
+   "offset": [
+    460.0,
+    257.0,
+    0.0
+   ]
   },
   {
-   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\board_bus_preview_causeway.step",
-   "name": "chessboard preview: causeway (-x edge terminator, 3 pieces)",
-   "color": "#2b2b30"
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_sessions\\gearbox\\torque_rig_upright.step",
+   "name": "gearbox torque test rig",
+   "offset": [
+    600.0,
+    204.0,
+    0.0
+   ]
   }
  ],
  "joints": [
@@ -3281,6 +3299,11 @@
  },
  "print_color": "#b9bcc2",
  "colors": [
+  {
+   "match": "^gearbox torque test rig / dowel",
+   "color": "#c9ccd2",
+   "by": "gearbox_torque_rig_view.py"
+  },
   {
    "match": "^gearbox.* / (6800|6808)",
    "color": "#c9ccd2",

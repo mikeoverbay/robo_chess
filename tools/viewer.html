@@ -140,6 +140,22 @@
   /* collapsible sections on the left: click a heading */
   #side .sec > h3 { cursor:pointer; user-select:none; }
   #side .sec > h3 .chev { width:9px; flex:none; color:var(--muted); font-size:9px; }
+  /* the PLAY version (web_export.py --play; Mike 2026-11-10): "the menu tabs on the left text ... in burnt orange ...
+     a little larger", and everything not the robot or the chess set hidden */
+  /* the headings: his studio too (Mike 2026-11-10: "put the orange headings on my studio too") */
+  #side .sec > h3, #side .sec > h3 .chev { color:#cc5500; }
+  #side .sec > h3 { font-size:13px; font-weight:600; }
+  #side .sec > h3 .chev { font-size:11px; width:11px; }
+  body.play #modelsSec, body.play #cutSec, body.play #selSec, body.play #notesSec, body.play #rigSec, body.play #feaSec,
+  body.play #right, body.play #tools, body.play #titleBox, body.play #poses, body.play #ikRow, body.play #joints,
+  body.play #bowRow, body.play #gameRow, body.play #legend, body.play #demo, body.play #gameBtn,
+  body.play label:has(#homeZones), body.play #status { display:none !important; }
+  /* Mike 2026-11-10: "Remove all the buttons. For the view. And just change that view button to say reset view. Keep
+     the color." + "remove the homing stand for the player version. And remove the home button and all that" */
+  body.play #viewSec [data-v], body.play #fit, body.play #home, body.play #park, body.play #homeRow { display:none !important; }
+  body.play #viewH:hover { text-decoration:underline; }
+  #aboutSec { margin-top:auto; border-bottom:none; border-top:1px solid var(--line); }
+  #aboutLink { display:inline-block; text-decoration:none; } #aboutLink:hover { text-decoration:underline; }
   #side .sec.collapsed > :not(h3) { display:none !important; }
   #side .sec.collapsed > h3 { margin-bottom:0; }
   #notesSec.collapsed { flex:none; min-height:0; }
@@ -159,17 +175,32 @@
 <body>
 <aside id="side">
   <div class="sec">
-    <div class="row"><span style="font-size:15px;font-weight:600;letter-spacing:.2px">Robot Studio</span>
+    <div class="row"><span id="appName" style="font-size:15px;font-weight:600;letter-spacing:.2px">Robot Studio</span>
       <select id="studioSel" class="look" style="display:none;margin-left:6px" title="Which studio this window shows. Each studio has its own models, views, notes and saved settings (one per job). Pick another to switch this window to it; one that is not running starts."></select>
       <span class="grow"></span><span id="status"></span></div>
-    <div class="row muted" style="margin-top:2px"><span id="title">no models open</span></div>
+    <!-- Mike 2026-11-07: "a whole lot of text being spammed there ... put that in a drop-down ... so I can hide it":
+         the scene's model list folds away under a one-line count (closed until he opens it; remembered) -->
+    <details id="titleBox" class="muted" style="margin-top:2px"><summary id="titleSum" style="cursor:pointer">no models open</summary>
+      <div id="title" style="font-size:12px;margin-top:3px;max-height:160px;overflow:auto">no models open</div></details>
+  </div>
+  <div class="sec" id="playSec" style="display:none">
+    <h3>Play chess</h3>
+    <div class="row">
+      <label title="Your side - or watch the robot play both">you play <select id="vsSide" class="look">
+        <option value="white">White</option><option value="black">Black</option><option value="none">nobody - watch</option></select></label>
+      <label title="How strong the robot plays (Stockfish's skill level and thinking time)">robot <select id="vsLevel" class="look">
+        <option value="easy">easy</option><option value="medium" selected>medium</option><option value="hard">hard</option>
+        <option value="full">full strength</option></select></label>
+    </div>
+    <div class="row" style="margin-top:6px"><button id="vsBtn" title="A new game: you click a piece, then the square it goes to; the robot answers with its arm">&#9654; Start</button>
+      <span id="vsMsg" class="muted msgbox"></span></div>
   </div>
   <div class="sec" id="modelsSec">
     <h3>Models <span class="grow"></span><button id="openBtn" title="Open STEP files (.step, .stp); STL also works">Open STEP&hellip;</button></h3>
     <input type="file" id="file" accept=".step,.stp,.STEP,.STP,.stl,.STL" multiple style="display:none">
     <div id="models" class="list"></div>
   </div>
-  <div class="sec">
+  <div class="sec" id="cutSec">
     <h3>Section</h3>
     <div class="row" id="axes">
       <button data-a="off" class="on">Off</button><button data-a="0">X</button><button data-a="1">Y</button><button data-a="2">Z</button>
@@ -181,16 +212,23 @@
       <button id="flip" disabled>Flip</button>
     </div>
   </div>
-  <div class="sec">
-    <h3>View</h3>
+  <div class="sec" id="viewSec">
+    <h3 id="viewH">View</h3>
     <div class="row">
       <button data-v="iso">Iso</button><button data-v="front">Front</button><button data-v="top">Top</button>
       <button data-v="right">Right</button><button id="fit" title="F">Fit</button>
       <label><input type="checkbox" id="edges" checked> edges</label>
     </div>
+    <div id="shadowRow" style="display:none;margin-top:6px">
+      <div class="row"><label title="The shadow map's size in texels: bigger = sharper shadow edges, more video memory. Off = no shadows (the light as it was).">Shadow quality
+        <select id="shadowQ" class="look"></select></label></div>
+      <div class="row" style="margin-top:4px"><label title="The lamp goes round the board once an hour, at the same height (off: it stays over the player's right shoulder)"><input type="checkbox" id="lampOrbit" checked> lamp orbits (1 hour)</label>
+        <span class="grow"></span><span id="shadowInfo" class="muted" style="font-size:12px"></span></div>
+    </div>
   </div>
   <div class="sec" id="jointsSec" style="display:none">
-    <h3>Joints <span class="grow"></span><button id="home" title="Homing cycle, as a CNC does it: the joints without a switch yet straight to their home angle, then each home switch: seek, back off, creep back on (click again to stop). Without switches: all joints to the home pose.">Home</button></h3>
+    <h3>Joints <span class="grow"></span><button id="home" title="Homing cycle, as a CNC does it: the joints without a switch yet straight to their home angle, then each home switch: seek, back off, creep back on (click again to stop). Without switches: all joints to the home pose.">Home</button>
+      <button id="park" disabled style="margin-left:4px" title="Park in the dock (park_dock.py): over it, down beside the fork, slide in, set down in the pocket. Only after Home - the arm's angles are known only once it has homed.">Park</button></h3>
     <div id="homeRow" class="row" style="display:none;margin-bottom:6px;flex-wrap:nowrap;align-items:flex-start">
       <label style="flex:none" title="The home switches' trip zones (scene.json homing, tools/hall_homing.py): a sphere on each Hall (amber) and one on its magnet (blue), each half the distance at which the Hall switches - green while they touch (made)"><input type="checkbox" id="homeZones"> Home switches</label>
       <span id="homeMsg" class="muted msgbox l3" style="text-align:right"></span>
@@ -211,6 +249,8 @@
         <option value="song">motel + song</option></select>
       <input id="drawText" value="ROBO CHESS" maxlength="40" size="11" title="What the arm writes (A-Z, 0-9, . , ! ? : / ' -)"
         style="background:#33353c;color:var(--ink);border:1px solid var(--line);border-radius:4px;font:inherit;padding:1px 4px">
+      <label title="The paper's colour (the sheet the arm draws on)">paper <input type="color" id="paperCol" value="#f4f2ec"
+        style="width:28px;height:20px;padding:0;border:1px solid var(--line);border-radius:4px;background:none;vertical-align:middle"></label>
       <button id="moveReset" title="Pieces back to where they started (stops a game or demo)">Reset pieces</button>
       <label title="How fast moves (and the engine's thinking pauses) play">speed <select id="speedSel">
         <option value="1">1×</option><option value="2">2×</option><option value="4">4×</option>
@@ -253,13 +293,19 @@
       <div class="fea-read" id="feaRead"></div>
     </div>
   </div>
-  <div class="sec">
+  <div class="sec" id="selSec">
     <h3>Selection <span class="grow"></span><button id="copy" title="Copy the selection as text">Copy</button><button id="clear" title="Esc">Clear</button></h3>
     <div id="sel" class="list"><div class="muted">Click a face. Double-click a part. Ctrl adds more.</div></div>
   </div>
   <div class="sec" id="notesSec">
     <h3>Notes from Claude <span class="grow"></span><span id="notesTime"></span></h3>
     <div id="notes"><p class="muted">Nothing yet.</p></div>
+  </div>
+  <div class="sec" id="aboutSec" style="display:none">
+    <div class="muted" style="font-size:12px;line-height:1.45">Robo Chess is a 3D-printed robot arm that plays chess on a
+      real board: NEMA 17 steppers, printed 37:1 cycloidal gearboxes and a servo claw. This page is its simulator,
+      running in your browser; Stockfish picks the robot's moves.</div>
+    <a id="aboutLink" target="_blank" rel="noopener" style="display:none;margin-top:5px;font-size:12px;color:#cc5500">The project on GitHub &rarr;</a>
   </div>
 </aside>
 <div id="split" title="Drag to resize"></div>
@@ -318,10 +364,12 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
 import { LineSegmentsGeometry } from 'three/addons/lines/LineSegmentsGeometry.js';
 import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
-import { toCreasedNormals, mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
+import { toCreasedNormals, mergeVertices, mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 
 const STATIC = /*STATIC*/null;          // a static page carries its scene; the live app gets it from view_step.py
 const LIVE = !STATIC;
+const PLAY = !!(STATIC && STATIC.play), PLAYDATA = PLAY ? STATIC.play : null;   // the play version (web_export.py --play)
+if (PLAY) document.body.classList.add('play');
 const $ = (id) => document.getElementById(id);
 const C_SEL = new THREE.Color(0xffd21f), C_PART = new THREE.Color(0x39d0ff), C_CLAUDE = new THREE.Color(0xff5fd2);
 const C_HOVER = new THREE.Color(0xffffff);
@@ -339,9 +387,14 @@ camera.up.set(0, 0, 1);                                   // CAD: z up
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.12;
-scene.add(new THREE.HemisphereLight(0xffffff, 0x3a3a44, 1.5));
+const hemi = new THREE.HemisphereLight(0xffffff, 0x3a3a44, 1.5);
+scene.add(hemi);
 const key = new THREE.DirectionalLight(0xffffff, 1.7);
 scene.add(key, key.target);
+// the play version's lamp (shadows, below): fixed over the seated player's right shoulder; off until shadowOn()
+const lamp = new THREE.DirectionalLight(0xfff4e6, 0);
+lamp.visible = false;
+scene.add(lamp, lamp.target);
 let sized = false;
 const lineRes = new THREE.Vector2(1000, 800), fatMats = [];      // wide lines need the canvas size in pixels
 function fatMat(opts) { const m = new LineMaterial({ worldUnits: false, ...opts }); m.resolution.copy(lineRes); fatMats.push(m); return m; }
@@ -351,7 +404,7 @@ function resize() {
   renderer.setSize(w, h, false);
   lineRes.set(w, h); fatMats.forEach(m => m.resolution.copy(lineRes));
   camera.aspect = w / h; camera.updateProjectionMatrix();
-  if (!sized && parts.length) { sized = true; setView(lastView.name, lastView.zoom, lastView.at, lastView.fitBox); }   // keep zoom / aim
+  if (!sized && parts.length) { sized = true; if (PLAY) playerView(); else setView(lastView.name, lastView.zoom, lastView.at, lastView.fitBox); }   // keep zoom / aim
 }
 new ResizeObserver(resize).observe(view);
 
@@ -559,7 +612,7 @@ let joints = [];
 const jointAngles = {};
 const root = new THREE.Group();          // everything model-side hangs off this (it carries the scene's "frame")
 scene.add(root);
-function buildJoints(defs) {
+function buildJoints(defs, start = null) {   // start: the angles a joint takes when it has none yet (the page opening)
   joints.forEach(j => { if (j.pivot.parent) j.pivot.parent.remove(j.pivot); });
   joints = [];
   const byName = {}, pending = defs.slice();
@@ -573,7 +626,8 @@ function buildJoints(defs) {
     pivot.add(inner);
     (d.parent && byName[d.parent] ? byName[d.parent].inner : root).add(pivot);
     const j = { ...d, pivot, inner, ax, min: d.min ?? -180, max: d.max ?? 180 };
-    if (!(d.name in jointAngles)) jointAngles[d.name] = d.value || 0;
+    if (!(d.name in jointAngles))                       // within the joint's own travel (J4's starts at 9)
+      jointAngles[d.name] = Math.min(j.max, Math.max(j.min, start && d.name in start ? start[d.name] : d.value || 0));
     byName[d.name] = j; joints.push(j);
   }
   const owner = {};
@@ -621,7 +675,47 @@ $('home').onclick = () => {
   if (HOMING || homeRun) { homeStart(); return; }                 // a homing cycle (below)
   stopPlay();
   joints.forEach(j => setJoint(j.name, j.home ?? 0)); postSelection(true);   // no switches: each joint's "home"
+  HOMED = true; PARKED = false; parkUI();
 };
+// ---------------------------------------------------------------- park (the tool-changer dock, park_dock.py)
+// Mike 2026-11-09: "I need to add a button to this to park it" + "Park button can't work if it hasn't been homed". The
+// arm's angles are only known after a homing cycle, so Park waits for one. The way in (scene ik.park, design-frame grip
+// points): home, up to the dock's safe height, over the dock (round the base if the straight way passes close to it),
+// down beside the fork's open end, slide in with the ring over the pocket, set down in it. Parked, the motors let go
+// (the arm then counts as not homed): the next start is a plain Home cycle out of the dock.
+let HOMED = false, PARKED = false;
+function parkUI() {
+  const b = $('park'); if (!b) return;
+  const P = IK && IK.park, running = !!(anim && anim.mv && anim.mv.park);
+  b.style.display = P ? '' : 'none';
+  b.textContent = running ? 'Stop' : 'Park';
+  b.disabled = !running && !(P && HOMED);
+  b.title = running ? 'Stop parking' : PARKED ? 'Parked in the dock - Home first to use it again'
+    : HOMED ? 'Park in the dock: over it, down beside the fork, slide in, set down in the pocket'
+    : 'Home first: Park only works once the arm has homed (its angles are known only then)';
+}
+function playPark() {
+  if (anim && anim.mv && anim.mv.park) { anim = null; $('moveMsg').textContent = 'parking stopped'; parkUI(); return; }
+  const P = IK && IK.park;
+  if (!P) return;
+  if (!HOMED) { $('moveMsg').textContent = 'Park: home first - the arm\'s angles are known only after Home'; return; }
+  stopHoming(); resetPieces(); standIn(false); playT = 0;            // an empty claw: pieces, pens and paper put away
+  const home = homeAngles(), atHome = joints.every(j => Math.abs(jA(j.name) - (j.home ?? 0)) < 0.2);
+  const hc = ikClaw(home).toArray(), H = Math.min(hc[1], P.over[1]);   // design y: smaller is higher
+  const a1 = [hc[0], H, hc[2]], b1 = [P.over[0], H, P.over[2]];
+  anim = { mv: { name: 'Parking', part: '__park', park: true }, i: 0, t0: performance.now(), yaw0: null, holding: false, last: true, steps: [
+    { kind: 'joint', to: home, t: atHome ? 0.01 : 1.6, say: 'home' },
+    { kind: 'line', a: hc, b: a1, t: hc[1] > H + 0.01 ? 0.6 : 0.01, say: 'up to the dock\'s safe height' },
+    hop(a1, b1, 1.5, { say: 'over to the dock' }),
+    { kind: 'line', a: b1, b: P.over, t: b1[1] < P.over[1] - 0.01 ? 0.6 : 0.01, say: 'over the dock' },
+    { kind: 'line', a: P.over, b: P.outside, t: 0.8, say: 'down beside the fork\'s open end' },
+    { kind: 'line', a: P.outside, b: P.lifted, t: 1.0, say: 'in: the ring over the pocket' },
+    { kind: 'line', a: P.lifted, b: P.seat, t: 0.6, say: 'down into the pocket' },
+    { kind: 'wait', t: 0.5, say: 'dock Hall: made' }] };
+  $('moveMsg').textContent = 'Parking';
+  parkUI();
+}
+$('park').onclick = playPark;
 
 // ---------------------------------------------------------------- homing (scene.json "homing", tools/hall_homing.py)
 // Mike 2026-11-05: Home runs a homing cycle like a CNC machine. Each switch's Hall point and its magnet carry a sphere,
@@ -800,6 +894,7 @@ $('homeZones').onchange = () => {
 function homeStart() {
   if (homeRun) { homeRun = null; $('home').textContent = 'Home'; $('homeMsg').textContent = 'homing stopped'; return; }
   stopPlay();                                                         // a demo or game in progress stops
+  HOMED = false; PARKED = false; parkUI();                            // homed again only when this cycle finishes
   const sws = HOMING ? HOMING.switches : [], switched = new Set(sws.map(s => s.joint)), park = {};
   joints.forEach(j => { if (!switched.has(j.name)) park[j.name] = j.home ?? 0; });
   const homes = Object.fromEntries(joints.map(j => [j.name, j.home ?? 0]));     // after the switches: the home pose
@@ -811,6 +906,7 @@ function homeStart() {
 function homeDone(msg) {
   const R = homeRun; homeRun = null; $('home').textContent = 'Home';
   homeLast = R ? R.log : null;
+  HOMED = !msg && !!R && R.log.every(l => l.ok); parkUI();           // a failed cycle leaves the arm not homed
   $('homeMsg').textContent = msg || (R && R.log.length ? R.log.map(l => l.text).join(' · ') : 'home pose');
   postSelection(true);
 }
@@ -867,7 +963,10 @@ function homeSwitch(T, dt, R) {
   //         makes contact: home. The Hall reads sample_hz times a second, so home is at most creep / sample_hz late.
   const sw = T.sw, j = joints.find(q => q.name === sw.joint), A = motionLimits(sw.joint).a;
   const per = 1 / (HOMING.sample_hz || 5), dir = sw.dir || 1, nm = sw.name || sw.joint;
-  const creep = sw.creep || 0.25, back = sw.back || sw.seek / 4;
+  // back_slow (2026-11-07, Mike: "the creep speed is really, really slow"): the back-off runs at back (his quarter)
+  // until it's nearly back behind first contact, then at back_slow - the clear read is up to back_slow / sample_hz
+  // late, so that's all the creep has left to cover (at back for the whole back-off the creep crossed up to 4 deg)
+  const creep = sw.creep || 0.25, back = sw.back || sw.seek / 4, slow = Math.min(back, sw.back_slow || back);
   if (!T.ph) {
     T.q = jA(sw.joint); T.v = 0; T.t = 0; T.travel = 0;
     T.next = Math.random() * per;                         // the Hall's own clock: any phase
@@ -882,8 +981,10 @@ function homeSwitch(T, dt, R) {
     else if (T.ph === 'seek') vt = dir * sw.seek;
     else if (T.ph === 'in') {                             // full back speed until the braking to creep would reach the
       const left = (T.qc - T.q) * dir;                    // last clear read, then creep
-      vt = dir * (left > (back * back - creep * creep) / (2 * A) + 0.05 ? back : creep);
-    } else vt = -dir * back;                              // clear, clear2, off, off2: away from the switch
+      vt = dir * (left > (slow * slow - creep * creep) / (2 * A) + 0.05 ? slow : creep);
+    } else if (T.ph === 'off')                            // away from the switch: slow from just before first contact
+      vt = -dir * ((T.q - T.firstAt) * dir < (back * back - slow * slow) / (2 * A) + 0.05 ? slow : back);
+    else vt = -dir * (T.ph === 'off2' ? slow : back);     // clear, clear2 (on the switch at the start), off2
     const dv = A * h * (T.stopping && T.hard ? (sw.hard_stop || 4) : 1);
     T.v = Math.abs(vt - T.v) <= dv ? vt : T.v + Math.sign(vt - T.v) * dv;
     T.q += T.v * h; T.travel += Math.abs(T.v * h);
@@ -895,9 +996,12 @@ function homeSwitch(T, dt, R) {
       T.out = homeGap(sw) <= 0;
       if (T.ph === 'clear' && !T.out) { T.ph = 'clear2'; T.mark = T.q; }
       else if (T.ph === 'seek' && T.out && !T.stopping) { T.stopping = true; T.hard = true; T.firstAt = T.q; }
+      // came off: clear after a made read, or clear anywhere back behind first contact - a quick hard stop can end so
+      // near the switch's edge that no read sees it made on the way back, and it then ran on to the joint's limit
+      // (2026-11-07, found with the faster accelerations; the firmware knows where first contact was from its steps)
       else if (T.ph === 'off') {
         if (T.out) T.seenMade = true;
-        else if (T.seenMade) { T.ph = 'off2'; T.qc = T.q; T.mark = T.q; }      // came off
+        else if (T.seenMade || (T.q - T.firstAt) * dir < 0) { T.ph = 'off2'; T.qc = T.q; T.mark = T.q; }
       } else if (T.ph === 'in' && !T.stopping) {
         if (!T.out) T.lastClear = T.q;
         else { T.stopping = true; T.home = T.q; }                           // contact: home
@@ -908,13 +1012,13 @@ function homeSwitch(T, dt, R) {
       T.stopping = false; T.hard = false;
       if (T.ph === 'clear2') T.ph = 'seek';
       else if (T.ph === 'seek') { T.ph = 'off'; T.seenMade = false; T.overshoot = (T.q - T.firstAt) * dir; }
-      else if (T.ph === 'off2') { T.ph = 'in'; T.lastClear = T.q; }
+      else if (T.ph === 'off2') { T.ph = 'in'; T.lastClear = T.q; T.tIn = T.t; }
       else if (T.ph === 'in') {                           // home - and the true switch point, for the record
         let lo = T.lastClear, hi = T.home;
         for (let k = 0; k < 40; k++) { const m = (lo + hi) / 2; setJoint(sw.joint, m); if (homeGap(sw) <= 0) hi = m; else lo = m; }
         setJoint(sw.joint, T.q);
         const late = (T.home - hi) * dir, mm = late * Math.PI / 180 * (sw.r_hall || 40);
-        R.log.push({ name: nm, ok: true, home: T.home, point: hi, late, mm, secs: T.t, firstAt: T.firstAt, overshoot: T.overshoot,
+        R.log.push({ name: nm, ok: true, home: T.home, point: hi, late, mm, secs: T.t, inSecs: T.t - (T.tIn ?? T.t), firstAt: T.firstAt, overshoot: T.overshoot,
           text: `${nm}: home ${T.home.toFixed(3)}° (${mm.toFixed(3)} mm past the switch point at the Hall; ${T.t.toFixed(1)} s)` });
         T.done = true; return dt;
       }
@@ -922,7 +1026,7 @@ function homeSwitch(T, dt, R) {
   }
   setJoint(sw.joint, T.q);
   const say = { clear: 'on the switch: backing off it', clear2: 'off it', seek: `seeking ${dir > 0 ? '+' : '−'} at ${sw.seek}°/s`,
-    off: `first contact at ${(T.firstAt ?? T.q).toFixed(1)}°: backing off at ${back}°/s`, off2: `came off at ${(T.qc ?? T.q).toFixed(2)}°`,
+    off: `first contact at ${(T.firstAt ?? T.q).toFixed(1)}°: backing off at ${back}°/s, then ${slow}°/s`, off2: `came off at ${(T.qc ?? T.q).toFixed(2)}°`,
     in: `back in, creeping the last stretch at ${creep}°/s` }[T.ph];
   $('homeMsg').textContent = `${nm}: ${say} · ${T.q.toFixed(3)}° · Hall ${T.out ? 'MADE' : 'clear'}`;
   return 0;
@@ -934,6 +1038,8 @@ function buildScene(data, keepView) {
   parts.forEach(disposePart);
   models = data.models || [];
   $('title').textContent = data.title || 'no models open';
+  { const n = (data.models || []).length;
+    $('titleSum').textContent = n ? `${n} model${n === 1 ? '' : 's'} (${(data.parts || []).length} parts)` : 'no models open'; }
   parts = (data.parts || []).map(makePart);
   parts.forEach((p, i) => { p.sb.renderOrder = p.sf.renderOrder = 1 + 2 * i; p.cap.renderOrder = 2 + 2 * i; });
   parts.forEach(p => setLook(p, initialLook(p)));
@@ -963,9 +1069,18 @@ function buildScene(data, keepView) {
   // stood up so its joint axes run along world Y. Files and reported coordinates stay in the design frame.
   const fr = (data.frame && data.frame.rotate_deg) || [0, 0, 0];
   root.rotation.set(...fr.map(THREE.MathUtils.degToRad), (data.frame && data.frame.order) || 'XYZ');   // 'ZYX' = x first, then z
-  buildJoints(data.joints || []);
+  // the page opening = the robot powering up: with a dock in the scene it is parked in it and not homed (Mike
+  // 2026-11-09: at power-up "it's going to assume that that's where it is"), so Home first, then Park works again.
+  // Without a dock: every joint at 0 (inside its travel). A rebuilt scene keeps the angles it had.
+  // The play version has no dock and no Home button (Mike 2026-11-10: "Just have the robot be home. It start."): its
+  // arm starts in the home pose, homed.
+  const fresh = !Object.keys(jointAngles).length, parkPose = IK && IK.park && IK.park.pose;
+  buildJoints(data.joints || [], PLAY ? Object.fromEntries((data.joints || []).map(d => [d.name, d.home ?? 0])) : parkPose);
+  if (fresh && PLAY) { PARKED = false; HOMED = true; }
+  else if (fresh && parkPose) { PARKED = true; HOMED = false; }
   bowdenBuild(data.bowden);
   homingBuild(data.homing);                                // home switches (scene.json "homing")
+  parkUI();                                                // Park shows when the scene has a dock (ik.park)
   rigsBuild(data.rigs);                                    // test rigs: motors that aren't arm joints (scene.json "rigs")
   gearsBuild(data.gears);                                  // models geared to a joint or a rig (scene.json "gears")
   root.updateMatrixWorld(true);
@@ -975,6 +1090,8 @@ function buildScene(data, keepView) {
   box.getCenter(center);
   diag = box.getSize(new THREE.Vector3()).length() || 100;
   parts.forEach(p => { p.cap.scale.setScalar(diag * 4); if (hidden.has(p.key)) p.group.visible = false; });
+  woodApply(data.woods);                                   // his wood on the board (woods.py), before the section cut is set
+  TRAYS = data.trays || (PLAYDATA && PLAYDATA.trays) || TRAYS;   // every tray spot (board_pieces.py): Draw's pen stands
   // keep the selection on parts that are still here (same file, same solid)
   const byKey = new Map(parts.map(p => [p.key, p]));
   selection = selection.map(s => { const p = byKey.get(oldKeys.get(s.pid)); return p ? { ...s, pid: p.pid } : null; }).filter(Boolean);
@@ -1037,6 +1154,7 @@ const VIEWS = { iso: [1, -1.25, 0.9], iso2: [-1, -1.25, 0.9], iso3: [-1, 1.25, 0
 let viewName = 'iso', lastView = { name: 'iso', zoom: 1, at: null };
 function setView(name = 'iso', zoom = 1, at = null, fitBox = null) {   // fitBox: frame this box (a test rig) instead of all shown
   lastView = { name, zoom, at, fitBox };
+  if (camera.view && camera.view.enabled) camera.clearViewOffset();      // (the play version's seat slides the picture)
   let d = VIEWS[name];
   if (!d && /^-?[\d.]+,-?[\d.]+,-?[\d.]+$/.test(name)) d = name.split(',').map(Number);
   if (!d) { d = VIEWS.iso; name = 'iso'; }
@@ -1065,10 +1183,349 @@ function setView(name = 'iso', zoom = 1, at = null, fitBox = null) {   // fitBox
   controls.target.copy(tgt);
   controls.update();
 }
-function fit() { setView(viewName); }
+function fit() { if (PLAY) { playerView(); return; } setView(viewName); }
 // after a test rig's view, Iso / Front / Top / Right stay on the rig; Fit (F) goes back to everything
 document.querySelectorAll('[data-v]').forEach(b => b.onclick = () => setView(b.dataset.v, 1, lastView.fitBox ? lastView.at : null, lastView.fitBox));
 $('fit').onclick = fit;
+
+// ---------------------------------------------------------------- the play version: the player's seat, shadows
+// Mike 2026-11-10: "When the game starts up, I want the player looking at the board head on. Front view. Elevated up like
+// a regular person be sitting there" ... "When somebody clicks the reset view, it goes back to the position of the
+// player in front of the board. Looking at the center. With the robot in view." The player sits across the board from
+// the robot (white's end). The view drops SEAT_EL to the board's centre - a seated person's eyes ~450 mm over the table,
+// ~650 mm back from the centre - and stands back as far as it takes to show everything (fov 35: a real seat is too close).
+const SEAT_EL = 35;                                // deg
+function seatFrame() {                // the squares' centre (on top) and the player's side: from the turntable through it
+  if (!IK || !PIECE_HOME.length) return null;
+  root.updateMatrixWorld(true);
+  const sq = boardCentre().c, half = 4 * 60 + 15, board = new THREE.Box3();   // the 64 squares and their 15 border
+  for (const dx of [-half, half]) for (const dz of [-half, half]) for (const dy of [0, 25])
+    board.expandByPoint(root.localToWorld(new THREE.Vector3(sq[0] + dx, IK.board_y + dy, sq[1] + dz)));
+  const c = root.localToWorld(new THREE.Vector3(sq[0], IK.board_y, sq[1]));
+  const ax = joints[0] ? joints[0].pivot.getWorldPosition(new THREE.Vector3()) : new THREE.Vector3();
+  const away = c.clone().sub(ax).setZ(0);
+  if (away.lengthSq() < 1) away.set(1, 0, 0);
+  return { c, away: away.normalize(), board };
+}
+function playerView() {
+  const F = seatFrame(); if (!F) { setView('iso'); return; }
+  const el = THREE.MathUtils.degToRad(SEAT_EL), d = F.away.clone().multiplyScalar(Math.cos(el)).setZ(Math.sin(el));
+  setView(d.toArray().map(v => v.toFixed(4)).join(','), 1, F.c.toArray());     // aimed at the centre, back far enough
+  // Aimed at the board's centre the robot sits high in the picture and the bottom half is empty: come in until the
+  // robot, board and trays fill it, and slide the picture (a view offset) so they sit in the middle - still aimed at
+  // the centre, and the view still turns round it.
+  const pts = [], v = new THREE.Vector3(), W = view.clientWidth || 1, H = view.clientHeight || 1, M = 0.92;
+  parts.forEach(p => { if (!p.group.visible) return; const b = new THREE.Box3().setFromObject(p.mesh);
+    for (let i = 0; i < 8; i++) pts.push(new THREE.Vector3(i & 1 ? b.max.x : b.min.x, i & 2 ? b.max.y : b.min.y, i & 4 ? b.max.z : b.min.z)); });
+  let x0 = -1, x1 = 1, y0 = -1, y1 = 1;
+  for (let it = 0; it < 10 && pts.length; it++) {
+    camera.updateMatrixWorld(); x0 = y0 = Infinity; x1 = y1 = -Infinity;
+    for (const p of pts) { v.copy(p).project(camera); x0 = Math.min(x0, v.x); x1 = Math.max(x1, v.x); y0 = Math.min(y0, v.y); y1 = Math.max(y1, v.y); }
+    const s = Math.max(x1 - x0, y1 - y0) / (2 * M);   // < 1: room to come in
+    if (Math.abs(s - 1) < 0.005) break;
+    camera.position.sub(F.c).multiplyScalar(Math.max(s, 0.5)).add(F.c);
+  }
+  camera.near = Math.max(camera.position.distanceTo(F.c) / 400, 0.01);
+  camera.setViewOffset(W, H, (x0 + x1) / 4 * W, -(y0 + y1) / 4 * H, W, H);
+  camera.updateProjectionMatrix();
+  controls.update();
+}
+// Shadows (Mike 2026-11-10): "build the shadow map. Put the light on player's shoulder. Where he's facing the board. Over
+// to the right a little bit" + "a setting for the shadow map size. Call it shadow quality. Show the resolution of the
+// textures ... as big a shadow map as we can go. And down to ... 4096 square" + "add an orbiting function to the light
+// ... take an hour to make a full trip" + "If the shadow works well in the play version, we'll incorporate it in the
+// Robot Studio version" (so: the play version only, for now).
+// One directional lamp aimed at the board's centre from over the seated player's right shoulder (LAMP, mm from the
+// board's centre top: back toward the player, to their right, up), going round once an hour at that height. Its map
+// covers everything shown and the space over the board the arm works in. The map is redrawn only on a frame where
+// something that casts a shadow moved, or the lamp has turned far enough to move the longest shadow half a texel - never
+// for the view turning. The headlamp (key) stays on, dimmer, so the side of a part away from the lamp isn't black.
+// Measured 2026-11-10: the room reflections (scene.environment) gave ~70 % of the board's light on their own, so a shadow
+// - which only takes the lamp's share away - hardly showed. With shadows on they are halved (env) and the lamp carries
+// the light: a lit square is about as bright as before, a shadowed one clearly darker.
+const LAMP = { back: 650, right: 250, up: 400, hour: 3600, power: 5.0, key: 0.35, hemi: 0.6, env: 0.5 };
+const SHADOW = { on: false, size: 0, sizes: [], casters: [], key: '', sig: null, draws: 0, F: null, B: null, mm: 0, L: 1,
+                 el: 0, az0: 0, drawnAz: null, orbit: true, t0: performance.now(), dirty: false, check: false, changed: 0 };
+function shadowSizes() {              // 4096 and up, doubling, to the most this browser's card can render into
+  const gl = renderer.getContext(), vp = gl.getParameter(gl.MAX_VIEWPORT_DIMS);
+  const max = Math.min(gl.getParameter(gl.MAX_TEXTURE_SIZE), gl.getParameter(gl.MAX_RENDERBUFFER_SIZE), vp[0], vp[1]);
+  const out = []; for (let s = 4096; s <= max; s *= 2) out.push(s);
+  return out.length ? out : [2 ** Math.floor(Math.log2(max))];          // an old card: its largest
+}
+function shadowCasters() {            // every mesh that casts (and takes) a shadow: the parts, the Bowden tube, the pens
+  const key = [parts.length, bowdenMesh && bowdenMesh.uuid, bowdenCable && bowdenCable.uuid, DRAW.paper && DRAW.paper.uuid,
+               DRAW.pens.map(P => P.g.uuid).join(','), BOARD.meshes.length].join('|');
+  if (key === SHADOW.key) return;
+  SHADOW.key = key;
+  const list = parts.map(p => p.mesh).concat([bowdenMesh, bowdenCable].filter(Boolean), BOARD.meshes);
+  DRAW.pens.forEach(P => [P.g, P.stand].forEach(g => g && g.traverse(o => { if (o.isMesh) list.push(o); })));
+  SHADOW.casters = list; SHADOW.sig = new Float64Array(list.length * 17); SHADOW.dirty = true;
+  const on = SHADOW.on;
+  const envSet = m => { if (m.userData.env0 === undefined) m.userData.env0 = m.envMapIntensity ?? 1;
+                        m.envMapIntensity = m.userData.env0 * (on ? LAMP.env : 1); };
+  list.forEach(o => {
+    o.castShadow = on; o.receiveShadow = on;
+    if (o.material) { if (o.userData.part) o.material.shadowSide = THREE.BackSide;   // closed solids: their far side casts
+                      o.material.clipShadows = true; o.material.needsUpdate = true; envSet(o.material); }
+  });
+  if (DRAW.paper) { DRAW.paper.receiveShadow = on; DRAW.paper.material.needsUpdate = true; envSet(DRAW.paper.material); }   // Draw: the paper takes the shadow
+}
+function lampAim(az) {                // the lamp at azimuth az (rad; 0 = straight from the player's side, + = to their right)
+  const F = SHADOW.F, B = SHADOW.B, right = new THREE.Vector3(-F.away.y, F.away.x, 0);
+  const dir = F.away.clone().multiplyScalar(Math.cos(az)).addScaledVector(right, Math.sin(az))
+    .multiplyScalar(Math.cos(SHADOW.el)).setZ(Math.sin(SHADOW.el));
+  lamp.position.copy(F.c).addScaledVector(dir, 4000); lamp.target.position.copy(F.c);
+  lamp.updateMatrixWorld(); lamp.target.updateMatrixWorld();
+  const sc = lamp.shadow.camera;                    // as three places it (LightShadow.updateMatrices), with z up
+  sc.up.set(0, 0, 1); sc.position.copy(lamp.position); sc.lookAt(F.c); sc.updateMatrixWorld(true);
+  const inv = sc.matrixWorld.clone().invert(), v = new THREE.Vector3();
+  const lo = new THREE.Vector3(Infinity, Infinity, Infinity), hi = new THREE.Vector3(-Infinity, -Infinity, -Infinity);
+  for (let i = 0; i < 8; i++) { v.set(i & 1 ? B.max.x : B.min.x, i & 2 ? B.max.y : B.min.y, i & 4 ? B.max.z : B.min.z).applyMatrix4(inv); lo.min(v); hi.max(v); }
+  sc.left = lo.x; sc.right = hi.x; sc.bottom = lo.y; sc.top = hi.y; sc.near = Math.max(1, -hi.z - 200); sc.far = -lo.z + 50;
+  sc.updateProjectionMatrix();
+  SHADOW.mm = Math.max(hi.x - lo.x, hi.y - lo.y) / SHADOW.size;
+  lamp.shadow.normalBias = 1.0 * SHADOW.mm; lamp.shadow.bias = -0.0002;
+  shadowInfo();
+}
+function shadowSet(size, note) {      // 0 = off (the light as it was); else the map's size in texels
+  if (size && !(SHADOW.F = seatFrame())) size = 0;
+  if (lamp.shadow.map) { lamp.shadow.map.dispose(); lamp.shadow.map = null; }
+  const on = size > 0;
+  SHADOW.size = size; SHADOW.on = on; SHADOW.changed = performance.now();
+  renderer.shadowMap.enabled = on; renderer.shadowMap.autoUpdate = false; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  lamp.visible = on; lamp.castShadow = on; lamp.intensity = on ? LAMP.power : 0;
+  key.intensity = on ? LAMP.key : 1.7; hemi.intensity = on ? LAMP.hemi : 1.5;
+  if (on) {
+    lamp.shadow.mapSize.set(size, size);
+    const B = new THREE.Box3(), over = SHADOW.F.board.clone();
+    parts.forEach(p => { if (p.group.visible) B.union(new THREE.Box3().setFromObject(p.mesh)); });
+    over.max.z += 520; B.union(over);                // and over the board, as high as the arm works
+    SHADOW.B = B; SHADOW.L = Math.max(1, B.max.z - SHADOW.F.c.z) / Math.tan(SHADOW.el);   // the longest shadow, mm
+    SHADOW.drawnAz = null;
+    const gl = renderer.getContext(); for (let i = 0; i < 16 && gl.getError() !== gl.NO_ERROR; i++);   // a clean slate
+    SHADOW.check = true;
+  }
+  SHADOW.key = ''; shadowCasters();
+  SHADOW.note = note || '';
+  shadowInfo();
+}
+function shadowInfo() {
+  const s = SHADOW.size, mb = s * s * 8 / 1e6;      // 4 bytes of packed depth + a 4-byte depth buffer per texel
+  $('shadowInfo').textContent = SHADOW.note || (s ? `${SHADOW.mm.toFixed(2)} mm per texel · ${mb >= 1000 ? (mb / 1000).toFixed(1) + ' GB' : Math.round(mb) + ' MB'}` : '');
+  $('shadowInfo').title = SHADOW.note || 'How much ground one texel of the shadow map covers, and the video memory the map takes';
+}
+function shadowTick(now) {            // each frame, before drawing: redraw the map only if a caster moved or the lamp turned
+  if (!SHADOW.on) return;
+  shadowCasters();
+  root.updateMatrixWorld();
+  const s = SHADOW.sig; let k = 0, moved = false;
+  for (const o of SHADOW.casters) {
+    const e = o.matrixWorld.elements;
+    for (let i = 0; i < 16; i++, k++) if (s[k] !== e[i]) { s[k] = e[i]; moved = true; }
+    let vis = 1; for (let q = o; q; q = q.parent) if (!q.visible) { vis = 0; break; }
+    if (s[k] !== vis) { s[k] = vis; moved = true; }
+    k++;
+  }
+  const az = SHADOW.az0 + (SHADOW.orbit ? 2 * Math.PI * (now - SHADOW.t0) / (LAMP.hour * 1000) : 0);
+  const turned = SHADOW.drawnAz === null || Math.abs(az - SHADOW.drawnAz) > 0.5 * SHADOW.mm / SHADOW.L;
+  if (turned) { lampAim(az); SHADOW.drawnAz = az; }
+  if (moved || turned || SHADOW.dirty) { renderer.shadowMap.needsUpdate = true; SHADOW.dirty = false; SHADOW.draws++; }
+}
+function shadowCheck() {              // after a new size's first draw: did the card take it? If not, a size down
+  if (!SHADOW.check) return;
+  SHADOW.check = false;
+  const gl = renderer.getContext(); let bad = 0;
+  for (let i = 0, e; i < 16 && (e = gl.getError()) !== gl.NO_ERROR; i++) if (e === gl.OUT_OF_MEMORY || e === gl.INVALID_FRAMEBUFFER_OPERATION) bad = e;
+  if (!bad) return;
+  const s = SHADOW.size, down = SHADOW.sizes.filter(n => n < s).pop() || 0;
+  $('shadowQ').value = String(down);
+  shadowSet(down, `${s} × ${s} was too big for this card (${bad === gl.OUT_OF_MEMORY ? 'out of video memory' : 'refused'}): ${down ? down + ' × ' + down : 'off'}`);
+}
+function shadowInit() {               // the play version's View section: Shadow quality, the lamp's orbit
+  SHADOW.sizes = shadowSizes();
+  SHADOW.el = Math.atan2(LAMP.up, Math.hypot(LAMP.back, LAMP.right));
+  SHADOW.az0 = Math.atan2(LAMP.right, LAMP.back);
+  const sel = $('shadowQ');
+  sel.innerHTML = '<option value="0">Off</option>' + SHADOW.sizes.map(s => `<option value="${s}">${s} × ${s}</option>`).join('');
+  let want = SHADOW.sizes[0], note = '';
+  try {
+    const v = localStorage.getItem('robochess.shadowQ'); if (v !== null && v !== '') want = +v;
+    note = localStorage.getItem('robochess.shadowFail') || ''; localStorage.removeItem('robochess.shadowFail');
+    SHADOW.orbit = localStorage.getItem('robochess.lampOrbit') !== '0';
+  } catch (e) {}
+  if (want && !SHADOW.sizes.includes(want)) want = SHADOW.sizes.filter(s => s <= want).pop() || SHADOW.sizes[0];
+  sel.value = String(want);
+  sel.onchange = () => { const n = +sel.value; try { localStorage.setItem('robochess.shadowQ', n); } catch (e) {} shadowSet(n); };
+  const ob = $('lampOrbit'); ob.checked = SHADOW.orbit;
+  ob.onchange = () => { SHADOW.orbit = ob.checked; SHADOW.t0 = performance.now(); SHADOW.drawnAz = null;   // off: back on the shoulder
+    try { localStorage.setItem('robochess.lampOrbit', ob.checked ? '1' : '0'); } catch (e) {} };
+  $('shadowRow').style.display = '';
+  // a map too big for the browser can lose the whole 3D view: come back a size down (not for a loss long after a change)
+  renderer.domElement.addEventListener('webglcontextlost', () => {
+    if (!SHADOW.on || performance.now() - SHADOW.changed > 15000) return;
+    const s = SHADOW.size, down = SHADOW.sizes.filter(n => n < s).pop() || 0;
+    try { localStorage.setItem('robochess.shadowQ', down);
+          localStorage.setItem('robochess.shadowFail', `${s} × ${s} was too big for this browser: ${down ? down + ' × ' + down : 'off'}`); } catch (e) {}
+    setTimeout(() => location.reload(), 300);
+  });
+  shadowSet(want, note);
+}
+
+// ---------------------------------------------------------------- the play version's board: wood and light buckets
+// Mike 2026-11-10: "put that [his wood picture] in our folder. It will be the board. The board has the cells and the
+// storage sides. I want the light buckets the other sessions has at every place a piece can be placed. The light border
+// around each cell that is lit because of a move should glow. Start is green, end position is red. Possible moves is
+// blue. An error blinks." + "two woods, error blinks red". His pictures (robo_chess\textures, put in the page by
+// web_export.py): Acacia on the frame and the trays (and the light squares until he finds a light wood), Ackland Hevea
+// (dark) on the dark squares.
+// The cell is the chessboard session's (CHESSBOARD_BRIEF.md, his mikes_cell): a printed bucket on the 60 pitch, 59.8
+// across, whose 1.2 top wall is the lit rim, the wood square in its 57.4 pocket 2.0 below the rim's top. Drawn with the
+// wood where the board's top was (the pieces' and the arm's heights don't change) and the rim 2.0 above it, at each of
+// the 64 squares and each tray spot. A lit rim glows: the rim in its colour and a soft light on the wood round it.
+// An error (blinks red): a click that can't be a move - not the visitor's turn, a square the picked piece can't reach,
+// nothing of theirs picked.
+const CELL = { outer: 59.8, pocket: 57.4, up: 2.0 };
+const GLOW = { from: 0x20ff50, to: 0xff2020, move: 0x2a78ff, error: 0xff2020 };
+const BOARD = { on: false, cells: {}, meshes: [], lit: {}, blink: {}, mats: {}, halos: {}, off: null, lights: null, tex: {} };
+const seeded = s => { let h = 2166136261; for (const ch of s) h = Math.imul(h ^ ch.charCodeAt(0), 16777619); return (h >>> 0) / 4294967296; };
+let WOODS = null;                     // his wood pictures {srcs, uses}: the scene's (woods.py; the studio serves them)
+let TRAYS = null;                     // {white: [[x, y, z] design], black: [...]}: every tray spot, from the robot's end
+function woodMaterial(use, back) {    // that wood's picture (its panel cropped out by the texture's offset / repeat)
+  const W = WOODS, u = W.uses[use];
+  let t = BOARD.tex[u.src];
+  if (!t) {
+    t = BOARD.tex[u.src] = new THREE.TextureLoader().load(W.srcs[u.src]);
+    t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    t.repeat.set(u.crop[2] - u.crop[0], u.crop[3] - u.crop[1]); t.offset.set(u.crop[0], u.crop[1]);
+  }
+  const m = new THREE.MeshStandardMaterial({ map: t, roughness: 0.55, metalness: 0, envMapIntensity: 0.55,
+    polygonOffset: !!back, polygonOffsetFactor: back ? 1 : 0, polygonOffsetUnits: back ? 1 : 0 });   // back: under the cells
+  // past the panel's edge (the one-piece board is 800 across, his acacia panel 600) the next panel follows, mirrored -
+  // like a second glue-up, no smeared edge: the panel's coordinates run on past 1 and fold back here
+  m.onBeforeCompile = sh => {
+    sh.uniforms.uCrop = { value: new THREE.Vector4(u.crop[0], u.crop[1], u.crop[2] - u.crop[0], u.crop[3] - u.crop[1]) };
+    sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nuniform vec4 uCrop;')
+      .replace('#include <map_fragment>', `#ifdef USE_MAP
+        vec2 wq = (vMapUv - uCrop.xy) / uCrop.zw; wq = 1.0 - abs(mod(wq, 2.0) - 1.0);
+        diffuseColor *= texture2D(map, uCrop.xy + wq * uCrop.zw);
+      #endif`);
+  };
+  m.customProgramCacheKey = () => 'wood-' + use;
+  return m;
+}
+function woodUV(geo, use, origin, ua, cells) {   // box-mapped texture coords for a part (its own frame: design mm,
+  const u = WOODS.uses[use], P = geo.attributes.position, N = geo.attributes.normal;   // y down); ua: the grain's axis;
+  const va = ua === 0 ? 2 : 0, uv = new Float32Array(P.count * 2);                    // cells: each 60 square its own
+  const at = (i, k) => (k === 0 ? P.getX(i) : k === 1 ? P.getY(i) : P.getZ(i)) - origin[k];   // piece of the panel
+  for (let i = 0; i < P.count; i++) {
+    const p = [at(i, 0), at(i, 1), at(i, 2)], n = [Math.abs(N.getX(i)), Math.abs(N.getY(i)), Math.abs(N.getZ(i))];
+    let a, b;
+    if (n[1] >= n[0] && n[1] >= n[2]) { a = p[ua]; b = p[va]; }   // top and bottom
+    else if (n[ua] >= n[va]) { a = p[va]; b = p[1]; }              // the ends
+    else { a = p[ua]; b = p[1]; }                                  // the long sides
+    if (cells) {                      // the square from its triangle's centre (a corner on a square's edge is ambiguous)
+      const t0 = i - i % 3, mid = k => (at(t0, k) + at(t0 + 1, k) + at(t0 + 2, k)) / 3;   // (creased meshes: no index)
+      const ci = Math.floor(mid(ua) / 60), cj = Math.floor(mid(va) / 60), k = ci + ':' + cj + use;
+      a += seeded(k + 'u') * (u.mm[0] * 0.94 - 60) - ci * 60; b += seeded(k + 'v') * (u.mm[1] * 0.9 - 60) - cj * 60;
+    }
+    uv[2 * i] = 0.03 + a / u.mm[0]; uv[2 * i + 1] = 0.05 + b / u.mm[1];   // past 1: the next panel (woodMaterial)
+  }
+  geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+}
+// The board's wood, in the studio and the web copies (Mike 2026-11-10: "Put it in our scene. And render it. And the grain
+// should run towards the back"): Acacia on the one-piece board's base sheet and top layer (and on the old separate board
+// and trays, if a scene still has them); in the studio the squares too - light and dark woods, each square its own piece
+// (the play version draws its own squares, in the light buckets). The grain runs along design x: robot <-> player.
+function woodApply(woods) {
+  WOODS = woods || WOODS;
+  if (!WOODS || !WOODS.uses) return;
+  const byModel = n => parts.filter(p => (models[p.model] || {}).name === n);
+  const put = (p, m) => { const old = p.mesh.material; m.clippingPlanes = axis !== 'off' ? [plane] : [];
+    p.mesh.material = m; p.clipMats = p.clipMats.filter(x => x !== old).concat([m]); };
+  const frame = woodMaterial('frame', true);
+  ['board top layer', 'board tray (white)', 'board tray (black)', 'board base sheet', 'board', 'capture trays'].forEach(n => byModel(n).forEach(p => {
+    const g = p.mesh.geometry; if (!g.boundingBox) g.computeBoundingBox();
+    woodUV(g, 'frame', g.boundingBox.min.toArray(), 0); put(p, frame);
+  }));
+  if (!PLAY) [['board light squares', 'light'], ['board dark squares', 'dark']].forEach(([n, w]) => byModel(n).forEach(p => {
+    const g = p.mesh.geometry; if (!g.boundingBox) g.computeBoundingBox();
+    woodUV(g, w, g.boundingBox.min.toArray(), 0, true); put(p, woodMaterial(w));
+  }));
+}
+function boardBuild() {                     // (the board's own wood: woodApply, from buildScene)
+  const W = WOODS; if (!W || !IK) return;
+  const byModel = n => parts.filter(p => (models[p.model] || {}).name === n);
+  ['board light squares', 'board dark squares'].forEach(n => byModel(n).forEach(p => { p.group.visible = false; }));
+  // the wood squares (one mesh per wood) and the buckets' rims + glows
+  const geos = { light: [], dark: [] }, place = [];
+  Object.entries(PLAYDATA.squares).forEach(([k, c]) => place.push([k, c, isDarkSq(k) ? 'dark' : 'light']));
+  ['white', 'black'].forEach(side => PLAYDATA.trays[side].forEach((c, i) => place.push([side + ':' + i, c, 'light'])));
+  ['white', 'black'].forEach(side => ((PLAYDATA.trays_unused || {})[side] || []).forEach((c, i) =>   // the trays' front
+    place.push([side + ':x' + i, c, 'light'])));             // outer buckets: out of the arm's reach, never lit (2026-11-12)
+  const o = CELL.outer / 2, h = CELL.pocket / 2, sh = new THREE.Shape(), hole = new THREE.Path();
+  sh.moveTo(-o, -o); sh.lineTo(o, -o); sh.lineTo(o, o); sh.lineTo(-o, o); sh.closePath();
+  hole.moveTo(-h, -h); hole.lineTo(-h, h); hole.lineTo(h, h); hole.lineTo(h, -h); hole.closePath(); sh.holes.push(hole);
+  const rimGeo = new THREE.ExtrudeGeometry(sh, { depth: CELL.up + 1, bevelEnabled: false });
+  rimGeo.rotateX(Math.PI / 2); rimGeo.translate(0, 1, 0);          // from 1 below the wood to CELL.up above it (y down)
+  const haloGeo = new THREE.PlaneGeometry(80, 80); haloGeo.rotateX(Math.PI / 2);
+  BOARD.off = new THREE.MeshStandardMaterial({ color: 0xeeebe4, roughness: 0.45, metalness: 0 });   // the printed rim, unlit
+  const mid = ((CELL.outer + CELL.pocket) / 4).toFixed(3);
+  Object.entries(GLOW).forEach(([kind, col]) => {
+    const red = col === 0xff2020, k = red ? 1.0 : 0.85;              // red looks dimmer than green or blue at the same power
+    BOARD.mats[kind] = new THREE.MeshStandardMaterial({ color: col, emissive: col, emissiveIntensity: red ? 2.2 : 1.6, roughness: 0.4, metalness: 0 });
+    BOARD.halos[kind] = new THREE.ShaderMaterial({ uniforms: { uCol: { value: new THREE.Color(col) } },
+      transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+      vertexShader: 'varying vec2 vP; void main() { vP = position.xz; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+      fragmentShader: `uniform vec3 uCol; varying vec2 vP;
+        void main() { float d = max(abs(vP.x), abs(vP.y)) - ${mid};      // from the rim's middle, in mm
+          float g = d < 0.0 ? exp(d / 6.0) : exp(-d / 3.0);              // the light spills in over the wood more than out
+          gl_FragColor = vec4(uCol, ${k.toFixed(2)} * g); }` });
+  });
+  BOARD.lights = new THREE.Group(); root.add(BOARD.lights);
+  place.forEach(([k, c, wood]) => {
+    const u = W.uses[wood], du = CELL.pocket / u.mm[0], dv = CELL.pocket / u.mm[1];
+    const g = new THREE.PlaneGeometry(CELL.pocket, CELL.pocket); g.rotateX(Math.PI / 2); g.translate(c[0], c[1], c[2]);
+    const u0 = seeded(k + 'u') * (1 - du), v0 = seeded(k + 'v') * (1 - dv), uv = g.attributes.uv;   // each square its own
+    for (let i = 0; i < uv.count; i++) uv.setXY(i, u0 + uv.getX(i) * du, v0 + uv.getY(i) * dv);   // piece of the panel, grain along x
+    geos[wood].push(g);
+    const rim = new THREE.Mesh(rimGeo, BOARD.off); rim.position.set(c[0], c[1], c[2]);
+    const halo = new THREE.Mesh(haloGeo, BOARD.halos.from); halo.position.set(c[0], c[1] - 0.2, c[2]);
+    halo.visible = false; halo.renderOrder = 100003; halo.raycast = () => {}; rim.raycast = () => {};
+    BOARD.lights.add(rim, halo); BOARD.cells[k] = { rim, halo };
+    BOARD.meshes.push(rim);
+  });
+  Object.entries(geos).forEach(([wood, list]) => {
+    const m = new THREE.Mesh(mergeGeometries(list), woodMaterial(wood)); m.raycast = () => {};
+    root.add(m); BOARD.meshes.push(m);
+  });
+  BOARD.on = true;
+}
+function cellSet(k, kind) {
+  const c = BOARD.cells[k]; if (!c) return;
+  c.rim.material = kind ? BOARD.mats[kind] : BOARD.off;
+  c.halo.visible = !!kind; if (kind) c.halo.material = BOARD.halos[kind];
+}
+function boardShow(L) {               // {cell: 'from' | 'to' | 'move'}: what is lit now (a blink runs on over it)
+  BOARD.lit = L || {};
+  for (const k in BOARD.cells) if (!(k in BOARD.blink)) cellSet(k, BOARD.lit[k]);
+}
+function boardBlink(k) { if (BOARD.on && BOARD.cells[k]) BOARD.blink[k] = performance.now() + 1600; }   // 4 red blinks
+function boardTick(now) {
+  if (!BOARD.on) return;
+  const covered = !!(DRAW.paper && DRAW.paper.visible);       // drawing: the paper lies over the board, the rims would show through
+  if (BOARD.lights.visible === covered) BOARD.lights.visible = !covered;
+  for (const k in BOARD.blink) {
+    const left = BOARD.blink[k] - now;
+    if (left <= 0) { delete BOARD.blink[k]; cellSet(k, BOARD.lit[k]); continue; }
+    cellSet(k, Math.floor((1600 - left) / 200) % 2 === 0 ? 'error' : null);   // lit first
+  }
+}
+function boardMoveLights() {          // a picked piece (green) and where it may go (blue); else the last move: from green, to red
+  const L = {};
+  if (VS.active && VS.sel) { L[VS.sel] = 'from'; VS.chess.moves({ square: VS.sel, verbose: true }).forEach(m => { L[m.to] = 'move'; }); }
+  else if (VS.active && VS.lastFT) { L[VS.lastFT[0]] = 'from'; L[VS.lastFT[1]] = 'to'; }
+  boardShow(L);
+}
 
 // ---------------------------------------------------------------- section
 const slider = $('pos'), posv = $('posv'), autoCb = $('auto'), flipBtn = $('flip');
@@ -1261,6 +1718,7 @@ cvs.addEventListener('pointerdown', e => { downXY = [e.clientX, e.clientY]; });
 const moved = (e) => !downXY || Math.hypot(e.clientX - downXY[0], e.clientY - downXY[1]) > 5;
 cvs.addEventListener('click', e => {
   if (e.button !== 0 || moved(e) || e.detail > 1) return;
+  if (PLAY) { vsClick(e); return; }                  // the play version: a click is a chess move, not a selection
   snap = selection.slice();
   const h = pick(e), add = e.ctrlKey || e.shiftKey || e.metaKey;
   if (!h) { if (!add) setSelection([]); return; }
@@ -1271,7 +1729,7 @@ cvs.addEventListener('click', e => {
   setSelection(add ? toggleSel(selection, it) : [it]);
 });
 cvs.addEventListener('dblclick', e => {
-  if (moved(e)) return;
+  if (PLAY || moved(e)) return;
   const h = pick(e), add = e.ctrlKey || e.shiftKey || e.metaKey;
   if (!h) return;
   const it = { kind: 'part', pid: h.p.pid, point: h.point.toArray() };
@@ -1613,6 +2071,7 @@ async function poll() {
     }
     $('status').textContent = '● live'; $('status').className = 'live';
   } catch (e) {
+    if (!(e instanceof TypeError && /fetch/i.test(e.message))) console.error('poll:', e);   // not just the server away
     $('status').textContent = '○ server off'; $('status').className = 'off';
   }
   polling = false;
@@ -1744,6 +2203,22 @@ window.viewerIK = {                        // scripted tests / Claude: grab ball
     return [r.left + (v.x + 1) / 2 * r.width, r.top + (1 - v.y) / 2 * r.height];
   },
   claw: () => ikClaw().toArray(),
+  motion: () => IK && IK.motion,                   // the live ik.motion (A/B tests change it in place; a reload restores it)
+  vsLiftCheck: (n = 1e9) => {                      // the play version's lift planner vs selfplay.py's lifts in the game
+    if (!vsLP() || !GAME) return null;
+    const pos = {}; PIECE_HOME.forEach(h => { pos[h.part] = h.at; });
+    const all = () => Object.entries(pos).map(([p, q]) => [p, p.split(' ')[1], q, p]);
+    let worst = { lift: 0, travel: 0 }, bad = [], prev = null, k = 0;
+    for (const mv of GAME.moves.slice(0, n)) {
+      const before = all(), [lift] = vsCarry(mv.part.split(' ')[1], mv.from, mv.to, before.filter(o => o[3] !== mv.part));
+      const dl = Math.abs(lift - mv.lift); worst.lift = Math.max(worst.lift, dl);
+      if (prev) { const [h] = vsEmpty(prev.to, mv.from, before), dt = Math.abs(h - mv.travel); worst.travel = Math.max(worst.travel, dt);
+        if (dt > 0.6 && bad.length < 8) bad.push(`${mv.name}: travel ${h} vs ${mv.travel}`); }
+      if (dl > 0.6 && bad.length < 8) bad.push(`${mv.name}: lift ${lift} vs ${mv.lift}`);
+      pos[mv.part] = mv.to; prev = mv; k++;
+    }
+    return { moves: k, worst, bad };
+  },
   setClaw: f => { setClaw(f); root.updateMatrixWorld(true); },   // open the claw 0..1 (fingers, plunger, servo horn)
   solve: (x, y, z) => ikSolve(new THREE.Vector3(x, y, z)),
   apply: s => { ikApply(s); placeLabels(); },
@@ -1779,7 +2254,11 @@ window.viewerIK = {                        // scripted tests / Claude: grab ball
         const t = p ? Math.max(p.T, 0.02) : st.t;
         if (st.kind === 'joint') Object.entries(st.to).forEach(([n, v]) => setJoint(n, v));
         else if (st.kind === 'line' || st.kind === 'arc') ikApply(ikSolve(new THREE.Vector3(...st.b)));
-        out.push({ say: st.say, t: +t.toFixed(2), kind: st.kind });
+        const Lp = p && p.T > 0 && st.kind !== 'joint' ? pathLen(st) : 0;   // the claw's top speed and speed-up, mm
+        out.push({ say: st.say, t: +t.toFixed(2), kind: st.kind, mode: p && p.mode, bind: p && p.bind, vk: p && p.v,
+                   cv: Lp ? +(p.vp * Lp).toFixed(0) : undefined, ca: Lp ? +(p.vp * Math.PI / (2 * p.Ta) * Lp).toFixed(0) : undefined,
+                   mm: st.a && st.b ? +Math.hypot(...st.a.map((v, i) => v - st.b[i])).toFixed(0) : undefined,
+                   rho: st.b ? +Math.hypot(st.b[0] - IK.yaw_axis[0], st.b[2] - IK.yaw_axis[1]).toFixed(0) : undefined });
       }
     }
     anim = null; Object.entries(saved).forEach(([n, v]) => setJoint(n, v));
@@ -1856,14 +2335,29 @@ window.viewerIK = {                        // scripted tests / Claude: grab ball
           if (!sol.ok && bad.length < 20) bad.push(`${mv.name}: ${st.say}`);
           return sol.angles;
         };
-        let prev = at(0), pv = null;
+        let prev = at(0), pv = null, mPrev = null, mPrev2 = null, aPrev = null;
+        const full = o => ({ ...from, ...o });
         for (let t = dt; t <= p.T + dt; t += dt) {
           const cur = at(t), v = {};
           for (const n of Object.keys(cur)) {
             v[n] = (cur[n] - prev[n]) / dt;
             const L = motionLimits(n), w = worst[n] || (worst[n] = { v: 0, a: 0 });
             w.v = Math.max(w.v, Math.abs(v[n]) / L.v);
-            if (pv) w.a = Math.max(w.a, Math.abs(v[n] - pv[n]) / dt / L.a);
+            if (pv) w.a = Math.max(w.a, Math.abs(v[n] - pv[n]) / dt / (L.a_cap || L.a));
+          }
+          if (dynModel()) {                        // the torque each motor really needs (gravity + every mass's
+            const ms = dynMasses(full(cur));       // acceleration, incl. the swing of the others), as a margin
+            if (mPrev && mPrev2) {
+              const acc = mPrev.map((mm, i) => [0, 1, 2].map(c => (ms[i].p[c] - 2 * mm.p[c] + mPrev2[i].p[c]) / (dt * dt)));
+              dynJoints().forEach((n, j) => {
+                const qa = ((full(cur)[n] - 2 * full(prev)[n] + (aPrev[n] ?? full(prev)[n])) / (dt * dt)) * D2R;
+                const tau = dynTorque(mPrev, acc, j) + dynRotor(n, j) * qa, g = dynTorque(mPrev, null, j);
+                const k = dynBudget(n) * dynModel().dynamics.margin, w = worst[n] || (worst[n] = { v: 0, a: 0 });
+                const m = k / Math.max(1e-9, Math.abs(tau));
+                if (w.m === undefined || m < w.m) { w.m = m; w.mg = k / Math.max(1e-9, Math.abs(g)); w.at = `${mv.name}: ${st.say || ''}`; }
+              });
+            }
+            mPrev2 = mPrev; mPrev = ms; aPrev = full(prev);
           }
           prev = cur; pv = v;
         }
@@ -1872,7 +2366,8 @@ window.viewerIK = {                        // scripted tests / Claude: grab ball
       }
     }
     anim = null; Object.entries(saved).forEach(([n, v]) => setJoint(n, v));
-    const res = Object.fromEntries(Object.entries(worst).map(([n, w]) => [n, { speed: +(w.v * 100).toFixed(0) + '%', accel: +(w.a * 100).toFixed(0) + '%' }]));
+    const res = Object.fromEntries(Object.entries(worst).map(([n, w]) => [n, { speed: +(w.v * 100).toFixed(0) + '%', accel: +(w.a * 100).toFixed(0) + '%',
+      ...(w.m !== undefined ? { torque: `x${w.m.toFixed(2)} (gravity alone x${w.mg.toFixed(2)})`, where: w.at } : {}) }]));
     if (bad.length) res.outOfReach = bad;
     return res;
   },
@@ -2037,7 +2532,7 @@ function rayAt(e) {
   ray.setFromCamera(ndc, camera);
 }
 view.addEventListener('pointerdown', e => {          // capture phase: runs before the orbit controls
-  if (!IK || e.button !== 0 || e.target !== renderer.domElement) return;
+  if (PLAY || !IK || e.button !== 0 || e.target !== renderer.domElement) return;   // no dragging the arm in the play version
   rayAt(e);
   let hit = ikBall.visible && ray.ray.distanceToPoint(ikBall.getWorldPosition(new THREE.Vector3())) < ikBall.scale.x * 2.5;
   if (!hit) { const h = pick(e, 'body'); hit = !!(h && ikGrabbable(h.p)); }
@@ -2112,6 +2607,7 @@ function setClaw(f) {
 function standIn(show) {                   // the dummy piece in the claw: hidden while the demo carries real pieces
   const want = (CLAW && CLAW.piece) || 'piece_stand_in';
   const p = parts.find(q => q.name === want) || parts.find(q => /piece_stand_in/.test(q.name)); if (!p) return;
+  if (PLAY) show = false;                    // the play version: never a dummy piece in the claw
   if (!show) { if (standInWas === null) standInWas = p.group.visible; setVis(p, false); }
   else { setVis(p, standInWas === null ? true : standInWas); standInWas = null; }
 }
@@ -2134,9 +2630,10 @@ function placePiece(mv, pt, yawDeg) {
   p.group.updateMatrixWorld(true);
 }
 function resetPieces() {
-  cancelRestart();
+  cancelRestart(); vsStop();
   anim = null; demoQueue = []; demoLoop = false; drawLoop = false; gameOn = false; setClaw(0); standIn(true);
   drawReset();
+  if (PLAY) joints.forEach(j => setJoint(j.name, j.home ?? 0));   // no Home button there: the robot goes home with the pieces
   pieceYaw = {};
   const done = new Set();
   PIECE_HOME.forEach(h => { done.add(h.part); placePiece(h, h.at, h.yaw || 0); pieceYaw[h.part] = h.yaw || 0; });
@@ -2144,6 +2641,7 @@ function resetPieces() {
   if ($('moveMsg')) $('moveMsg').textContent = '';
   gameSummary();
   placeLabels();
+  parkUI();
 }
 let demoQueue = [], pieceYaw = {}, demoLoop = false, demoRound = 0, drawLoop = false;
 let GAME = null, PIECE_HOME = [], gameOn = false, playT = 0;
@@ -2158,7 +2656,8 @@ function stopPlay() {
     const p = movePart(anim.mv.part), fg = CLAW && CLAW.fingers && movePart(CLAW.fingers[0].part);
     if (p && fg && fg.group.parent) { p.parent0 = p.parent0 || p.group.parent; fg.group.parent.attach(p.group); }
   }
-  anim = null; demoQueue = []; demoLoop = false; drawLoop = false; gameOn = false;
+  if (VS.active) vsStop('game stopped by Home');
+  anim = null; demoQueue = []; demoLoop = false; drawLoop = false; gameOn = false; parkUI();
   if (was && $('moveMsg')) $('moveMsg').textContent = `${was} stopped by Home`;
 }
 function stopHoming() {                      // Demo / Play game while a homing run is going: the homing stops
@@ -2212,6 +2711,325 @@ function playGame() {                       // the whole self-play game, both si
   demoQueue = GAME.moves.slice();
   playMove(demoQueue.shift(), demoQueue.length === 0, true);
 }
+
+// ---------------------------------------------------------------- the PLAY version (web_export.py --play)
+// Mike 2026-11-10: "a version that will play its self or against an opponent ... everything hidden not related to the
+// bot and the chess set ... so people can play this like a game or draw". A visitor plays the robot, or watches it play
+// both sides. chess.js keeps the rules; Stockfish (as the Pi will run it) picks the robot's moves; the arm makes them -
+// a capture's piece to its tray first, castling's rook, a promotion's queen from the tray (selfplay.py's Table, in JS).
+// The visitor's own moves: click a piece, then its square - the piece goes there at once, as a hand would put it (a
+// capture's piece to its tray, castling's rook too). Every carry and the empty claw's travel at VS_LIFT (kings are
+// 100 tall); the self-play game's planned lower lifts are not worked out here.
+const CHESS_URL = 'https://cdn.jsdelivr.net/npm/chess.js@1.4.0/dist/esm/chess.js';
+const SF_URL = 'https://cdn.jsdelivr.net/npm/stockfish.js@10.0.2/stockfish.js';
+const VS_LEVELS = { easy: { skill: 1, ms: 400 }, medium: { skill: 6, ms: 800 }, hard: { skill: 13, ms: 1500 }, full: { skill: 20, ms: 2500 } };
+const VS_REPEAT_S = 20;                       // watching: a new game this long after one ends
+const VS = { active: false, chess: null, human: 'white', token: 0, sel: null, over: '', thinking: null, thinkT0: 0,
+             board: {}, tray: { white: {}, black: {} }, last: '' };
+let ChessCls = null, SF = null, sfWait = null, sfGo = 0, vsMarkObjs = [], vsRepeat = null;
+const VS_LIFT = () => (PLAYDATA && PLAYDATA.lift) || 125;
+function vsMsg(t) { if ($('vsMsg')) $('vsMsg').textContent = t; }
+async function vsChess() { if (!ChessCls) ChessCls = (await import(CHESS_URL)).Chess; return ChessCls; }
+function sfBest(fen, lv) {                    // Stockfish's move (uci) for this position, or null
+  return new Promise(res => {
+    let done = false; const fin = m => { if (!done) { done = true; if (sfWait === fin) sfWait = null; res(m); } };
+    try {
+      if (!SF) {                              // a worker from the CDN: a same-origin blob that loads it
+        SF = new Worker(URL.createObjectURL(new Blob([`importScripts('${SF_URL}');`], { type: 'application/javascript' })));
+        SF.onmessage = e => { const s = String(e.data); if (!s.startsWith('bestmove')) return;
+          sfGo = Math.max(0, sfGo - 1); if (sfGo === 0 && sfWait) sfWait(s.split(' ')[1]); };   // a stopped search's answer is skipped
+        SF.onerror = () => { if (sfWait) sfWait(null); SF = null; sfGo = 0; };
+        SF.postMessage('uci');
+      }
+      sfWait = fin; sfGo++;
+      SF.postMessage('setoption name Skill Level value ' + lv.skill);
+      SF.postMessage('position fen ' + fen);
+      SF.postMessage('go movetime ' + lv.ms);
+    } catch (e) { fin(null); }
+    setTimeout(() => fin(null), lv.ms + 15000);   // no answer (no internet?): the caller picks a move itself
+  });
+}
+function vsSetup() {                          // which piece stands where: the start position + the spare queens (each
+  VS.board = {}; VS.tray = { white: {}, black: {} };   // in the tray spot its home is at: board_pieces.py SPARE_SPOT)
+  PIECE_HOME.forEach(h => { const m = h.part.match(/^(white|black) \w+ ([a-h][1-8]|spare)$/); if (!m) return;
+    if (m[2] !== 'spare') { VS.board[m[2]] = h.part; return; }
+    const k = ((TRAYS && TRAYS[m[1]]) || []).findIndex(s => Math.hypot(s[0] - h.at[0], s[1] - h.at[1], s[2] - h.at[2]) < 1);
+    VS.tray[m[1]][Math.max(k, 0)] = h.part; });
+}
+const vsPos = w => typeof w === 'string' ? PLAYDATA.squares[w] : PLAYDATA.trays[w[0]][w[1]];
+const vsWhere = w => typeof w === 'string' ? w : `${w[0]} tray ${w[1] + 1}`;
+const vsKind = part => part.split(' ').slice(0, 2).join(' ');
+function vsFree(c) { const n = PLAYDATA.trays[c].length; for (let i = 0; i < n; i++) if (!(i in VS.tray[c])) return i; return n - 1; }
+// ---- how high the robot lifts (Mike 2026-11-10: "It's lifting the parts really high again"): selfplay.py's
+// carry_height / empty_height in JS, with the pieces' height profiles from web_export.py (PLAYDATA.lifts). A carry goes
+// only as high as the pieces near its way need (10 just clear of the board when nothing is near), the empty claw's way
+// in from the last drop the same; out of home it still comes in at LIFT (as selfplay.py: that way isn't planned).
+let vsFP = null, vsOFP = null;
+const vsLP = () => PLAYDATA && PLAYDATA.lifts;
+function vsFingerPts() {                      // the closed claw's finger bars' outlines every 0.25 mm: [u, v]
+  if (vsFP) return vsFP; const out = [];
+  vsLP().BARS.forEach(b => { for (let i = 0; i < 4; i++) { const a = b[i], c = b[(i + 1) % 4];
+    const n = Math.ceil(Math.hypot(c[0] - a[0], c[1] - a[1]) / 0.25);
+    for (let s = 0; s < n; s++) out.push([a[0] + (c[0] - a[0]) * s / n, a[1] + (c[1] - a[1]) * s / n]); } });
+  return (vsFP = out);
+}
+function vsOpenPts() {                        // the open claw's three fingers: [u, v, z over the grip point]
+  if (vsOFP) return vsOFP; const O = vsLP().open, out = [];
+  for (let z = O.LO; z <= O.HI + 0.01; z += 1) {
+    const uo = z >= 5 ? -(37.45 - O.SLOPE * (z - 5)) : -37.56 + (z < 4 ? 3.49 : 0), ui = z < 5 ? -26.0 : uo + O.DEEP;
+    const cr = [[uo, -O.HALF], [ui, -O.HALF], [ui, O.HALF], [uo, O.HALF]], ring = [];
+    for (let i = 0; i < 4; i++) { const a = cr[i], c = cr[(i + 1) % 4], n = Math.max(1, Math.ceil(Math.hypot(c[0] - a[0], c[1] - a[1]) / 0.5));
+      for (let s = 0; s < n; s++) ring.push([a[0] + (c[0] - a[0]) * s / n, a[1] + (c[1] - a[1]) * s / n]); }
+    [0, 120, -120].forEach(deg => { const t = deg * D2R, co = Math.cos(t), si = Math.sin(t);
+      ring.forEach(([u, v]) => out.push([u * co - v * si, u * si + v * co, z])); });
+  }
+  return (vsOFP = out);
+}
+function vsPath(a, b) {                       // the grip point's way in plan, as the viewer moves it (line or arc): [x, z]
+  const s = hop(a, b, 0), n = Math.max(2, Math.ceil(Math.hypot(b[0] - a[0], b[2] - a[2]) * 1.6));
+  const P = [];
+  for (let k = 0; k <= n; k++) { const p = pathAt(s, k / n); P.push([p.x, p.z]); }
+  const ax = IK.yaw_axis;                     // and the claw's own frame there: u out from the yaw axis, v across
+  const U = P.map(([x, z]) => { let ux = x - ax[0], uz = z - ax[1]; const L = Math.hypot(ux, uz) || 1; ux /= L; uz /= L; return [ux, uz, -uz, ux]; });
+  return { P, U };
+}
+function vsNeedOut(need, C) { need.sort((x, y) => x[0] - y[0]); return [Math.max(C.LOW_LIFT, ...need.map(n => n[1])), need.map(n => n[2])]; }
+function vsCarry(kind, a, b, others) {        // the lowest lift a 'kind' piece carried a->b touches nothing at -> [lift, over]
+  const C = vsLP(), held = C.prof[kind], { P, U } = vsPath(a, b), F = vsFingerPts(), Z = C.ZTOP, need = [];
+  others.forEach(([where, k2, q]) => {
+    let D2 = 1e18, i0 = 0;
+    P.forEach((p, i) => { const d = (p[0] - q[0]) ** 2 + (p[1] - q[2]) ** 2; if (d < D2) { D2 = d; i0 = i; } });
+    const D = Math.sqrt(D2); if (D > C.NEAR) return;
+    let dF2 = 1e18;
+    for (let i = 0; i < P.length; i++) { const p = P[i], [ux, uz, vx, vz] = U[i];
+      for (const [fu, fv] of F) { const d = (p[0] + fu * ux + fv * vx - q[0]) ** 2 + (p[1] + fu * uz + fv * vz - q[2]) ** 2; if (d < dF2) dF2 = d; } }
+    const dF = Math.sqrt(dF2), ro = C.pad[k2];
+    let L = C.LOW_LIFT;
+    for (; L <= C.LIFT + 0.01; L += 0.5) {
+      let hit = false;
+      for (let z = 0; z < Z && !hit; z++) {
+        if (!(ro[z] > 0)) continue;
+        const hz = z - L, rh = hz >= 0 ? held[Math.min(Z - 1, Math.floor(hz))] : 0;
+        hit = (rh > 0 && rh + ro[z] + C.CLEAR > D) || (hz >= C.F_LO && hz <= C.F_HI && ro[z] + C.CLEAR > dF)
+          || (hz >= C.HUB_LO && C.HUB_R + ro[z] + C.CLEAR > D);
+      }
+      if (!hit) break;
+    }
+    L = Math.min(L, C.LIFT);
+    if (L > C.LOW_LIFT) need.push([i0, L, where]);
+  });
+  return vsNeedOut(need, C);
+}
+function vsEmpty(a, b, others) {              // the lowest the empty, open claw travels a->b touching nothing at -> [height, over]
+  const C = vsLP(), { P, U } = vsPath(a, b), F = vsOpenPts(), Z = C.ZTOP, need = [];
+  const reach = Math.max(...F.map(f => Math.hypot(f[0], f[1])));
+  others.forEach(([where, k2, q]) => {
+    const ro = C.pad[k2], romax = Math.max(...ro), lim = reach + romax + C.CLEAR + 1;
+    const dP = P.map(p => Math.hypot(p[0] - q[0], p[1] - q[2])), near = [];
+    dP.forEach((d, i) => { if (d <= lim) near.push(i); });
+    if (!near.length) return;
+    let D = 1e9, i0 = 0; dP.forEach((d, i) => { if (d < D) { D = d; i0 = i; } });
+    const dk = new Float64Array(F.length);
+    for (let j = 0; j < F.length; j++) { const fu = F[j][0], fv = F[j][1]; let m = 1e18;
+      for (const i of near) { const p = P[i], u = U[i];
+        const d = (p[0] + fu * u[0] + fv * u[2] - q[0]) ** 2 + (p[1] + fu * u[1] + fv * u[3] - q[2]) ** 2; if (d < m) m = d; }
+      dk[j] = Math.sqrt(m); }
+    let L = C.LOW_LIFT;
+    for (; L <= C.LIFT + 0.01; L += 0.5) {
+      let hit = false;
+      for (let j = 0; j < F.length && !hit; j++) { const rk = ro[Math.min(Z - 1, Math.max(0, Math.floor(F[j][2] + L)))]; hit = rk > 0 && rk + C.CLEAR > dk[j]; }
+      for (let z = 0; z < Z && !hit; z++) hit = ro[z] > 0 && z - L >= C.HUB_LO && C.HUB_R + ro[z] + C.CLEAR > D;
+      if (!hit) break;
+    }
+    L = Math.min(L, C.LIFT);
+    if (L > C.LOW_LIFT) need.push([i0, L, where]);
+  });
+  return vsNeedOut(need, C);
+}
+function vsReach(a, b) {                      // can the claw follow the travel step a -> b (the IK solves all the way)?
+  const s = hop(a, b, 0);
+  for (let k = 0; k <= 40; k++) if (!ikSolve(pathAt(s, k / 40)).ok) return false;
+  return true;
+}
+function vsAll() {                            // every piece as it stands: [where, kind, position, part]
+  const out = Object.entries(VS.board).map(([sq, p]) => [sq, p.split(' ')[1], vsPos(sq), p]);
+  ['white', 'black'].forEach(c => Object.entries(VS.tray[c]).forEach(([i, p]) => out.push([vsWhere([c, +i]), p.split(' ')[1], vsPos([c, +i]), p])));
+  return out;
+}
+function vsRelocs(m, colour) {               // a chess.js move -> the pieces that move, in the arm's order; the table follows
+  const other = colour === 'white' ? 'black' : 'white', out = [];
+  const go = (a, b) => { const before = vsAll(), part = VS.board[a]; delete VS.board[a]; VS.board[b] = part;
+    out.push({ part, a, b, before, what: `${vsKind(part)} ${a}-${b}` }); };
+  const off = (sq, c) => { const before = vsAll(), part = VS.board[sq]; delete VS.board[sq]; const i = vsFree(c); VS.tray[c][i] = part;
+    out.push({ part, a: sq, b: [c, i], before, what: `${vsKind(part)} off to the tray` }); };
+  const f = m.flags;
+  if (f.includes('e')) off(m.to[0] + m.from[1], other);
+  else if (f.includes('c')) off(m.to, other);
+  if (f.includes('k') || f.includes('q')) {
+    const r = m.from[1], ks = f.includes('k');
+    go(m.from, m.to); go((ks ? 'h' : 'a') + r, (ks ? 'f' : 'd') + r);
+  } else go(m.from, m.to);
+  if (f.includes('p')) {                      // a promotion (always a queen): the pawn out, a queen of that colour in (the
+    const was = Object.keys(VS.tray[colour]).map(Number).sort((x, y) => x - y);   // spare - back 2026-11-12 - or a
+    const q = was.find(i => / queen/.test(VS.tray[colour][i])) ?? was[0];         // captured one), else any captured
+    if (q !== undefined) {                    // piece as a stand-in; an empty tray: the pawn stays as the queen
+      off(m.to, colour);
+      const before = vsAll(), part = VS.tray[colour][q]; delete VS.tray[colour][q]; VS.board[m.to] = part;
+      out.push({ part, a: [colour, q], b: m.to, before, what: `${vsKind(part)} in as the new queen` });
+    }
+  }
+  return out;
+}
+function vsOver() {
+  const c = VS.chess, other = c.turn() === 'w' ? 'Black' : 'White';
+  if (c.isCheckmate()) return `Checkmate - ${other} wins`;
+  if (c.isStalemate()) return 'Stalemate - a draw';
+  if (c.isInsufficientMaterial()) return 'A draw - too few pieces left to mate';
+  if (c.isThreefoldRepetition()) return 'A draw - the same position three times';
+  if (c.isDraw()) return 'A draw - 50 moves without a capture or a pawn move';
+  return '';
+}
+function vsUI() { if ($('vsBtn')) $('vsBtn').innerHTML = VS.active ? '&#9632; Stop' : '&#9654; Start'; }
+async function vsStart() {
+  let C = null;
+  try { C = await vsChess(); } catch (e) {}
+  if (!C) { vsMsg('The chess rules could not load (no internet?)'); return; }
+  resetPieces(); stopHoming(); standIn(false); playT = 0;
+  VS.chess = new C(); VS.human = $('vsSide').value; VS.active = true; VS.over = ''; VS.sel = null; VS.last = ''; VS.lastFT = null;
+  VS.token++; vsSetup(); vsMarks(); vsUI();
+  if (SF) { if (sfGo) SF.postMessage('stop'); SF.postMessage('ucinewgame'); }
+  vsNext();
+}
+function vsStop(why) {
+  if (vsRepeat) { clearTimeout(vsRepeat); vsRepeat = null; }
+  if (!VS.active) return;
+  VS.active = false; VS.token++; VS.thinking = null; VS.sel = null; vsMarks(); vsUI();
+  if (SF && sfGo) SF.postMessage('stop');
+  vsMsg(why || '');
+}
+function vsNext() {                           // whose turn now: the visitor's, the robot's, or the game is over
+  if (!VS.active) return;
+  const end = vsOver();
+  if (end) {
+    VS.over = end; vsMsg(end);
+    if (VS.human === 'none') {                // watching: another game in a while
+      const tok = VS.token;
+      vsRepeat = setTimeout(() => { vsRepeat = null; if (VS.active && VS.token === tok) vsStart(); }, VS_REPEAT_S * 1000);
+      vsMsg(`${end} - a new game in ${VS_REPEAT_S} s`);
+    }
+    return;
+  }
+  const turn = VS.chess.turn() === 'w' ? 'white' : 'black';
+  if (VS.human === turn) vsMsg(`Your move (${turn})${VS.chess.isCheck() ? ' - check!' : ''}`);
+  else vsRobot(turn);
+}
+async function vsRobot(colour) {
+  const tok = VS.token, lv = VS_LEVELS[$('vsLevel').value] || VS_LEVELS.medium, c = VS.chess;
+  VS.thinking = colour; VS.thinkT0 = performance.now(); vsMsg(`The robot (${colour}) is thinking`);
+  const uci = await sfBest(c.fen(), lv);
+  if (tok !== VS.token || !VS.active) return;  // the game was stopped or restarted meanwhile
+  const legal = c.moves({ verbose: true });
+  let m = uci && legal.find(x => x.from + x.to === uci.slice(0, 4)), info = `Stockfish, ${$('vsLevel').value}`;
+  if (!m) { const caps = legal.filter(x => x.flags.includes('c')), pool = caps.length ? caps : legal;
+    m = pool[Math.floor(Math.random() * pool.length)]; info = 'a quick pick (Stockfish did not answer)'; }
+  const think = (performance.now() - VS.thinkT0) / 1000;
+  VS.thinking = null;
+  const label = `${c.moveNumber()}${colour === 'white' ? '.' : '...'}`;
+  const done = c.move({ from: m.from, to: m.to, promotion: 'q' }), san = `${label} ${done.san}`;
+  const rel = vsRelocs(done, colour), ply = c.history().length;
+  VS.last = san; VS.lastFT = [done.from, done.to]; vsMarks();   // the board shows the move before the arm makes it
+  const arm = rel.map((r, k) => ({ part: r.part, from: vsPos(r.a), to: vsPos(r.b), lift: VS_LIFT(), travel: VS_LIFT(),
+    over: [], what: r.what, fromSq: vsWhere(r.a), toSq: vsWhere(r.b), ply, side: colour, san,
+    name: `${san}  ${r.what}` + (rel.length > 1 ? ` (${k + 1}/${rel.length})` : ''),
+    msq: [done.from, done.to], msq_at: [vsPos(done.from), vsPos(done.to)], info: `${info}, ${think.toFixed(1)} s`, vs: true }));
+  if (vsLP()) arm.forEach((mv, k) => {        // each carry and each way in only as high as the pieces near it need
+    const r = rel[k], [lift, over] = vsCarry(r.part.split(' ')[1], mv.from, mv.to, r.before.filter(o => o[3] !== r.part));
+    mv.lift = lift; mv.over = over;
+    if (k > 0) { const [h, way] = vsEmpty(arm[k - 1].to, mv.from, r.before); mv.travel = h; mv.travel_over = way; arm[k - 1].leave = h; }
+    mv.leave = mv.travel;
+  });
+  if (vsLP()) {                               // the arm goes home after every move (the player's turn): its way in from
+    const homeC = ikClaw(homeAngles()).toArray(), up = (p, h) => [p[0], p[1] - h, p[2]];   // home and back as low as
+    const a0 = arm[0], [hin, wayIn] = vsEmpty(homeC, a0.from, rel[0].before);              // the pieces allow, both
+    if (vsReach(homeC, up(a0.from, hin))) {   // descending / climbing on the way (never under the planned height)
+      a0.travel = hin; a0.travel_over = wayIn; a0.planIn = true; if (arm.length === 1) a0.leave = hin; }
+    const z = arm[arm.length - 1], [hout] = vsEmpty(z.to, homeC, vsAll());
+    if (vsReach(up(z.to, hout), homeC)) { z.leave = hout; z.planOut = true; }
+  }
+  stopHoming(); gameOn = true; demoQueue = arm.slice(); vsMsg(`The robot (${colour}) plays ${san}`);
+  playMove(demoQueue.shift(), demoQueue.length === 0, true);
+}
+function vsSquareAt(e) {                      // the square under the mouse: a piece hit (its square), or the board top
+  rayAt(e); root.updateMatrixWorld(true);
+  const pcs = parts.filter(p => /^(white|black) /.test(p.name) && p.group.visible).map(p => p.mesh);
+  const hit = ray.intersectObjects(pcs, false)[0];
+  if (hit) { const nm = hit.object.userData.part && hit.object.userData.part.name;
+    const sq = Object.keys(VS.board).find(s => VS.board[s] === nm); if (sq) return sq; }
+  const up = new THREE.Vector3(0, -1, 0).applyQuaternion(root.getWorldQuaternion(new THREE.Quaternion()));
+  const plane = new THREE.Plane().setFromNormalAndCoplanarPoint(up, root.localToWorld(new THREE.Vector3(0, IK.board_y, 0)));
+  const p = ray.ray.intersectPlane(plane, new THREE.Vector3()); if (!p) return null;
+  const d = root.worldToLocal(p); let best = null, bd = 1e9;
+  Object.entries(PLAYDATA.squares).forEach(([s, c]) => { const k = Math.max(Math.abs(c[0] - d.x), Math.abs(c[2] - d.z)); if (k < bd) { bd = k; best = s; } });
+  return bd <= PLAYDATA.half ? best : null;
+}
+function vsClick(e) {                         // the visitor's move: a piece of theirs, then where it goes
+  if (!VS.active || VS.over) return;
+  const turn = VS.chess.turn() === 'w' ? 'white' : 'black';
+  const sq = vsSquareAt(e), pc = sq && VS.chess.get(sq);
+  if (anim || VS.thinking || turn !== VS.human) { if (sq) boardBlink(sq); return; }   // not their turn: an error
+  if (pc && pc.color === turn[0]) { VS.sel = sq === VS.sel ? null : sq; vsMarks(); return; }
+  const m = VS.sel && sq && VS.chess.moves({ square: VS.sel, verbose: true }).find(x => x.to === sq);
+  if (!m) { if (sq) boardBlink(sq); if (!BOARD.on) VS.sel = null; vsMarks(); return; }   // not a move: an error (the pick stays)
+  const label = `${VS.chess.moveNumber()}${turn === 'white' ? '.' : '...'}`;
+  const done = VS.chess.move({ from: m.from, to: m.to, promotion: 'q' });
+  vsRelocs(done, turn).forEach(r => placePiece({ part: r.part }, vsPos(r.b), pieceYaw[r.part] || 0));
+  VS.lastFT = [done.from, done.to];
+  VS.last = `${label} ${done.san}`; VS.sel = null; vsMarks();
+  vsNext();
+}
+const vsMat = {
+  sel: new THREE.MeshBasicMaterial({ color: 0xffc94a, transparent: true, opacity: 0.9, side: THREE.DoubleSide, depthWrite: false }),
+  to: new THREE.MeshBasicMaterial({ color: 0x39d98a, transparent: true, opacity: 0.85, side: THREE.DoubleSide, depthWrite: false }) };
+const vsGeo = { ring: new THREE.RingGeometry(21, 27, 48), dot: new THREE.CircleGeometry(9, 32) };
+function vsMarks() {                          // the picked piece's square (amber ring) and where it may go (green)
+  vsMarkObjs.forEach(o => root.remove(o)); vsMarkObjs = [];
+  if (BOARD.on) { boardMoveLights(); return; } // the wood board: its rims light up instead
+  if (!VS.active || !VS.sel || !IK) return;
+  const add = (sq, geo, mat) => { const o = new THREE.Mesh(geo, mat), c = PLAYDATA.squares[sq];
+    o.rotation.x = Math.PI / 2; o.position.set(c[0], IK.board_y - 0.8, c[2]); o.renderOrder = 100002; o.raycast = () => {};
+    root.add(o); vsMarkObjs.push(o); };
+  add(VS.sel, vsGeo.ring, vsMat.sel);
+  VS.chess.moves({ square: VS.sel, verbose: true }).forEach(m =>
+    add(m.to, /[ce]/.test(m.flags) ? vsGeo.ring : vsGeo.dot, vsMat.to));
+}
+function vsHud(now) {                         // the corner box between the robot's arm moves
+  const turn = VS.chess.turn() === 'w' ? 'white' : 'black', last = VS.last ? `<div class="sub">last move: ${VS.last}</div>` : '';
+  if (VS.over) return `<div class="who">Game over</div><div class="mv">${VS.over}</div>${last}`;
+  if (VS.thinking) return `<div class="who"><span class="pc ${VS.thinking}"></span>The robot is thinking…</div>`
+    + `<div class="clock">${Math.max(0, (now - VS.thinkT0) / 1000).toFixed(1)} s</div><div class="sub">Stockfish, ${$('vsLevel').value}</div>`;
+  return `<div class="who"><span class="pc ${turn}"></span>Your move${VS.chess.isCheck() ? ' - check!' : ''}</div>`
+    + `<div class="sub">click one of your pieces, then the square it goes to</div>${last}`;
+}
+function playInit() {                         // the play version's page: its name, its panel, its hints
+  $('appName').textContent = 'Robo Chess';
+  $('playSec').style.display = '';
+  const jh = $('jointsSec').querySelector('h3');
+  [...jh.childNodes].forEach(n => { if (n.nodeType === 3 && n.textContent.trim() === 'Joints') n.textContent = 'Robot '; });
+  $('hint').innerHTML = 'left drag: turn the view &middot; right drag: slide it &middot; wheel: zoom';
+  $('vsBtn').onclick = () => VS.active ? (resetPieces(), vsMsg('game stopped')) : vsStart();
+  vsMsg('Pick a side and press Start');
+  const vh = $('viewH');                      // "change that view button to say reset view. Keep the color."
+  vh.textContent = 'Reset view';
+  vh.title = 'Back to the player\'s seat: in front of the board, looking at its centre, the robot in view';
+  vh.onclick = playerView;
+  $('drawBtn').title = 'The arm draws on paper over the board with a Bic in the pen adapter (picked up from its stand in the white tray), over and over until Reset pieces';
+  $('moveReset').title = 'Pieces back where they started and the robot home (stops a game or a drawing)';
+  boardBuild();                               // the wood board and its light buckets (before the shadows: they cast too)
+  shadowInit();
+  $('aboutSec').style.display = '';           // "at the bottom left of our panel, a link to our project on GitHub"
+  if (PLAYDATA.github) { const a = $('aboutLink'); a.href = PLAYDATA.github; a.style.display = ''; }
+  vsChess().catch(() => {});                  // the rules load while the visitor reads
+}
 // Carries at the lift height go straight unless the straight line would pass close to the robot's own base (a tray on
 // one side to a square on the other): then they swing round over the board instead - turn and reach change evenly,
 // the height stays. Every frame still goes through the IK.
@@ -2223,6 +3041,11 @@ function axisDist(a, b) {                   // closest the segment a-b comes to 
 }
 function hop(a, b, t, extra = {}) {         // one travel step at a fixed height: a line, or an arc round the base
   return { kind: axisDist(a, b) < R_ROUTE ? 'arc' : 'line', a, b, t, ...extra };
+}
+function pathLen(s) {                      // a line / arc / poly step's length, mm
+  if (s.kind === 'poly') return s.cum[s.cum.length - 1];
+  if (s.kind === 'line') return Math.hypot(...s.a.map((v, k) => v - s.b[k]));
+  let L = 0, p = pathAt(s, 0); for (let k = 1; k <= 32; k++) { const q = pathAt(s, k / 32); L += q.distanceTo(p); p = q; } return L;
 }
 function pathAt(s, e) {                     // the grip point a share e along a line or arc step
   if (s.kind === 'poly') {                  // along a polyline by length (the drawing's smooth runs)
@@ -2249,7 +3072,7 @@ function playMove(mv, last = true, first = false) {
   // 2026-11-06: "it should only lift high enough to pick that piece up unless there's something in the way"). Out of
   // home it still comes in at 125: that way in isn't planned.
   const lift = mv.lift ?? 125, travel = mv.travel ?? lift, leave = mv.leave ?? travel, A = mv.from, B = mv.to;
-  const tin = first ? Math.max(travel, 125) : travel;
+  const tin = first && !mv.planIn ? Math.max(travel, 125) : travel;   // planIn: the play version planned the way in from home
   const A1 = up(A, lift), B1 = up(B, lift), AT = up(A, tin), BT = up(B, leave);
   const low = lift < travel, over = (mv.over || []).join(' '), tover = (mv.travel_over || []).join(' ');
   // the demo starts and ends at home (Mike's park pose: swung clear of the board, folded up, claw curled in);
@@ -2272,7 +3095,9 @@ function playMove(mv, last = true, first = false) {
     { kind: 'line', a: B1, b: B, t: 1.1, say: 'set down' },
     { kind: 'wait', t: 0.6, release: true, claw: 1, say: 'let go' },
     { kind: 'line', a: B, b: BT, t: 1.1, say: 'lift off' },
-    ...(last ? [{ kind: 'line', a: BT, b: homeUp, t: 0.4, say: 'up' },
+    ...(last && mv.planOut ? [{ ...hop(BT, homeClaw, 1.8), claw: 0, say: 'home' },   // the play version: from the planned
+                              { kind: 'joint', to: home, t: 0.2, say: 'home' }]      // lift-off height up to home on the way
+      : last ? [{ kind: 'line', a: BT, b: homeUp, t: 0.4, say: 'up' },
                 { ...hop(homeUp, homeClaw, 1.8), claw: 0, say: 'home' },
                 { kind: 'joint', to: home, t: 0.2, say: 'home' }] : []),
   ] };
@@ -2297,33 +3122,121 @@ function scurvePos(p, t) {
   if (t < p.Ta + p.Tc) return ramp(p.Ta) + p.vp * (t - p.Ta);
   return p.D - ramp(p.T - t);
 }
-function motionProfile(s, from) {                  // one move as a profile of s = 0..1
-  let vs = Infinity, as = Infinity;
-  const use = (n, d) => { if (d < 1e-6) return; const L = motionLimits(n); vs = Math.min(vs, L.v / d); as = Math.min(as, L.a / d); };
-  if (s.kind === 'joint') joints.forEach(j => { if (j.name in s.to) use(j.name, Math.abs(s.to[j.name] - from[j.name])); });
-  else if (s.kind === 'line' || s.kind === 'arc' || s.kind === 'poly') {   // trace the path through the IK: each joint's rates
-    const N = 48, A = [];
-    for (let k = 0; k <= N; k++) A.push(ikSolve(pathAt(s, k / N)).angles);
-    const d = Object.keys(A[0]).map(n => {         // n, max |dq/ds|, max |d2q/ds2|
-      let d1 = 0, d2 = 0;
-      for (let k = 1; k <= N; k++) d1 = Math.max(d1, Math.abs(A[k][n] - A[k - 1][n]) * N);
-      for (let k = 1; k < N; k++) d2 = Math.max(d2, Math.abs(A[k + 1][n] - 2 * A[k][n] + A[k - 1][n]) * N * N);
-      return [n, d1, d2];
-    });
-    d.forEach(([n, d1]) => use(n, d1));            // speed: q' s' <= v
-    // acceleration on a bent path: q'' s'^2 + q' s'' <= a, so a faster cruise leaves less for speeding up. Try cruise
-    // speeds up to the most allowed and keep the quickest move (was: always the most allowed - a higher speed limit
-    // could make a move slower)
-    d.forEach(([n, d1, d2]) => { const L = motionLimits(n); if (d2 > 1e-9) vs = Math.min(vs, Math.sqrt(0.5 * L.a / d2)); });
-    const accAt = v => { let a = Infinity; d.forEach(([n, d1, d2]) => { if (d1 < 1e-6) return; a = Math.min(a, (motionLimits(n).a - d2 * v * v) / d1); }); return a; };
-    let best = null;
-    for (let k = 1; k <= 16; k++) {
-      const v = vs * k / 16, p = scurve(1, v, accAt(v));
-      if (p.T > 0 && (!best || p.T < best.T)) best = p;
+// Pose-aware speed-up (Mike 2026-11-07: "speed up the acceleration on these arms ... it's really, really just takes
+// forever to get up to speed"). With ik.motion.dynamics and each joint's pullout / ratio / eff / rotor / a_cap
+// (tools/motor_speed.py --write) a move is timed by the arm's own dynamics along its path. Every joint's output torque:
+//     tau = A s'' + B s'^2 + G     A = sum m dp/ds . dp/dq,  B = sum m d2p/ds2 . dp/dq,  G = sum m g dz/dq
+// over the masses it carries (links as two points, drives at the joints, claw, a king; + its rotor J R^2 eff q'), so the
+// speed-up may use what the motor has left at every sample: |A| a <= pullout x ratio x eff / margin - |G| - |B| v^2,
+// and no joint above its a_cap (a motor rev/s^2 cap). A move is never slower than the plain per-joint limits (scalar a)
+// give it - J1's gravity alone at full reach is already over the margin, so there it moves as before.
+function dynModel() { const m = IK && IK.motion; return m && m.dynamics && m.dynamics.masses ? m : null; }
+function dynJoints() { return [IK.yaw, ...IK.chain, IK.wrist]; }
+function dynMasses(ang) {     // the arm's point masses at joint angles (deg): [{m kg, p [x,y,z] m, d [dp/dq for each dynJoint]}]
+  const M = dynModel().dynamics.masses, a = IK, L = a.link / 1000;
+  const q = dynJoints().map(n => (ang[n] ?? jA(n)) * D2R), c = Math.cos(q[0]), s = Math.sin(q[0]);
+  const J = [[0, 0]]; let sum = 0;                 // J1..J4 in the arm plane: x out from the yaw axis, z up
+  for (let k = 1; k <= 3; k++) { sum += q[k]; const p = J[k - 1]; J.push([p[0] + L * Math.cos(sum), p[1] + L * Math.sin(sum)]); }
+  const tilt = q[1] + q[2] + q[3] + q[4] - a.wrist_sum * D2R, t0 = a.tool[0] / 1000, t1 = a.tool[1] / 1000;
+  const tx = t0 * Math.cos(tilt) - t1 * Math.sin(tilt), tz = t0 * Math.sin(tilt) + t1 * Math.cos(tilt);
+  const at = (u, v, f) => [u[0] + (v[0] - u[0]) * f, u[1] + (v[1] - u[1]) * f], f1 = 0.5 - 0.5 / Math.sqrt(3), f2 = 1 - f1;
+  const pts = [];                                  // [kg, point, the last chain joint that moves it (1 = J1 ... 4 = J4)]
+  const add = (m, p, b) => { if (m > 0) pts.push([m, p, b]); };
+  for (let k = 0; k < 3; k++) { add(M.link / 2, at(J[k], J[k + 1], f1), k + 1); add(M.link / 2, at(J[k], J[k + 1], f2), k + 1); }
+  add(M.drive, J[1], 1); add(M.servo_on_b || 0, at(J[1], J[2], 0.45), 2); add(M.drive, J[2], 2); add(M.wrist_drive, J[3], 3);
+  add(M.claw, [J[3][0] + tx / 2, J[3][1] + tz / 2], 4); add(M.king, [J[3][0] + tx, J[3][1] + tz], 4);
+  return pts.map(([m, [x, z], b]) => {
+    const d = [[-x * s, x * c, 0]];                // the swivel swings it round the yaw axis
+    for (let k = 1; k <= 4; k++) {
+      if (k > b) { d.push([0, 0, 0]); continue; }
+      const P = J[k - 1], dx = -(z - P[1]), dz = x - P[0];
+      d.push([dx * c, dx * s, dz]);
     }
-    return best || scurve(1, vs, accAt(vs));
+    return { m, p: [x * c, x * s, z], d };
+  });
+}
+function dynTorque(ms, acc, j) {                   // joint j's output torque N.m: masses ms with accelerations acc (m/s^2)
+  const g = dynModel().dynamics.g; let t = 0;
+  ms.forEach((mm, i) => { const d = mm.d[j], A = acc ? acc[i] : [0, 0, 0]; t += mm.m * (A[0] * d[0] + A[1] * d[1] + (A[2] + g) * d[2]); });
+  return t;
+}
+function dynRotor(n, j) { const e = dynModel()[n] || {}; return (e.rotor || 0) * (e.ratio || 1) ** 2 * (e.eff || 1) + (j === 0 ? dynModel().dynamics.base_i || 0 : 0); }
+function dynBudget(n) { const e = dynModel()[n] || {}; return (e.pullout || 0) * (e.ratio || 1) * (e.eff || 1) / dynModel().dynamics.margin; }
+function moveRates(s, from) {                      // per sample of the move: each joint's |q'|, |q''| (deg per s) and A, B, G
+  const N = s.kind === 'joint' ? 24 : 48, A = [];
+  for (let k = 0; k <= N; k++) {
+    if (s.kind === 'joint') { const o = { ...from }; for (const n in s.to) o[n] = from[n] + (s.to[n] - from[n]) * k / N; A.push(o); }
+    else A.push({ ...from, ...ikSolve(pathAt(s, k / N)).angles });
   }
-  return scurve(1, vs, as);
+  const d1 = (f, k) => k === 0 ? (f(1) - f(0)) * N : k === N ? (f(N) - f(N - 1)) * N : (f(k + 1) - f(k - 1)) * N / 2;
+  const d2 = (f, k) => { const c = Math.min(N - 1, Math.max(1, k)); return (f(c + 1) - 2 * f(c) + f(c - 1)) * N * N; };
+  const dyn = dynModel(), DJ = dyn ? dynJoints() : [], P = dyn ? A.map(dynMasses) : null, out = [];
+  for (let k = 0; k <= N; k++) {
+    const r = {};
+    Object.keys(s.kind === 'joint' ? s.to : A[0]).forEach(n => { r[n] = { d1: Math.abs(d1(i => A[i][n], k)), d2: Math.abs(d2(i => A[i][n], k)) }; });
+    if (dyn) {
+      const v1 = P[k].map((_, i) => [0, 1, 2].map(c => d1(t => P[t][i].p[c], k)));
+      const v2 = P[k].map((_, i) => [0, 1, 2].map(c => d2(t => P[t][i].p[c], k)));
+      DJ.forEach((n, j) => {
+        const ri = dynRotor(n, j), G = dynTorque(P[k], null, j);
+        const q1 = d1(t => A[t][n], k) * D2R, q2 = d2(t => A[t][n], k) * D2R;
+        const Aj = dynTorque(P[k], v1, j) - G + ri * q1, Bj = dynTorque(P[k], v2, j) - G + ri * q2;
+        Object.assign(r[n] || (r[n] = { d1: 0, d2: 0 }), { A: Aj, B: Bj, G, budget: dynBudget(n) });
+      });
+    }
+    out.push(r);
+  }
+  return out;
+}
+function motionProfile(s, from) {                  // one move as a profile of s = 0..1
+  if (!(s.kind === 'joint' || s.kind === 'line' || s.kind === 'arc' || s.kind === 'poly')) return scurve(1, Infinity, Infinity);
+  const R = moveRates(s, from);
+  let vs = Infinity;                               // speed: q' s' <= v
+  R.forEach(r => Object.entries(r).forEach(([n, q]) => { if (q.d1 > 1e-6) vs = Math.min(vs, motionLimits(n).v / q.d1); }));
+  // and on a bent path no faster than the bend alone allows: q'' s'^2 <= a/2 (the old planner's cap - left out of the
+  // 2026-11-08 rewrite, a pen stroke's tight bends then had no cruise speed that worked and fell to a ~0 acceleration:
+  // Mike 2026-11-09 "it stops drawing after a few moves" = the hand's first stroke planned at 2506 s)
+  R.forEach(r => Object.entries(r).forEach(([n, q]) => { if (q.d2 > 1e-9) vs = Math.min(vs, Math.sqrt(0.5 * motionLimits(n).a / q.d2)); }));
+  if (!isFinite(vs)) return scurve(0, 1, 1);
+  // the speed-up at cruise v: on a bent path q'' s'^2 + q' s'' <= a, so a faster cruise leaves less for speeding up -
+  // try cruise speeds up to the most allowed and keep the quickest move
+  const kinAt = v => { let a = Infinity; R.forEach(r => Object.entries(r).forEach(([n, q]) => {
+    if (q.d1 > 1e-6) a = Math.min(a, (motionLimits(n).a - q.d2 * v * v) / q.d1); })); return a; };
+  const dynAt = v => { let a = Infinity; R.forEach(r => Object.entries(r).forEach(([n, q]) => {
+    const L = motionLimits(n), moving = q.d1 > 1e-6;
+    let lim = moving ? (L.a - q.d2 * v * v) / q.d1 : Infinity;     // no torque model / no torque to spare: as before
+    if (q.A !== undefined) {
+      const left = q.budget - Math.abs(q.G) - Math.abs(q.B) * v * v;
+      if (left > 0) lim = Math.min(Math.abs(q.A) > 1e-9 ? left / Math.abs(q.A) : Infinity,
+                                   moving && L.a_cap ? (L.a_cap - q.d2 * v * v) / q.d1 : Infinity);
+    }
+    a = Math.min(a, lim); })); return a; };
+  // bindAt (2026-11-13, Mike "some moves are slow, other moves are really fast"): the joint and sample that set the
+  // pace - viewerIK.demoPlan's bind. (Each joint keeping its own scalar floor was tried: no change, 13.01 min either
+  // way - on the far rows J1 itself sets the pace on 140 of 151 moves)
+  const bindAt = v => { let a = Infinity, who = null; R.forEach((r, k) => Object.entries(r).forEach(([n, q]) => {
+    const L = motionLimits(n), moving = q.d1 > 1e-6, kin = moving ? (L.a - q.d2 * v * v) / q.d1 : Infinity;
+    let dyn = -Infinity;
+    if (q.A !== undefined) { const left = q.budget - Math.abs(q.G) - Math.abs(q.B) * v * v;
+      if (left > 0) dyn = Math.min(Math.abs(q.A) > 1e-9 ? left / Math.abs(q.A) : Infinity,
+                                   moving && L.a_cap ? (L.a_cap - q.d2 * v * v) / q.d1 : Infinity); }
+    const lim = Math.max(kin, dyn); if (lim < a) { a = lim; who = { joint: n, at: +(k / (R.length - 1)).toFixed(2), torque: dyn >= kin }; } }));
+    return { a, who }; };
+  // TEST: ik.motion.claw = { v mm/s, a mm/s^2 } caps the grip point's own speed and speed-up along the path, so every
+  // move runs at one pace wherever it is on the board (s runs 0..1 over the path's length Lp mm)
+  const C = IK.motion && IK.motion.claw, Lp = C && s.kind !== 'joint' ? pathLen(s) : 0;
+  if (Lp > 1e-6 && C.v) vs = Math.min(vs, C.v / Lp);
+  const capA = Lp > 1e-6 && C.a ? C.a / Lp : Infinity;
+  const accAt = v => Math.min(capA,
+    Math.max(kinAt(v), dynModel() && !dynModel().dynamics.plan_off ? dynAt(v) : -Infinity));   // plan_off: A/B tests
+  let best = null;
+  for (let k = 1; k <= 16; k++) {
+    const v = vs * k / 16, a = accAt(v);
+    if (!(a > 0)) continue;
+    const p = scurve(1, v, a);
+    if (p.T > 0 && (!best || p.T < best.T)) { best = p; best.mode = dynModel() && dynAt(v) > kinAt(v) ? 'torque' : 'scalar'; best.v = v / vs; best.bind = bindAt(v).who; }
+  }
+  return best || scurve(1, vs / 16, Math.max(1e-6, kinAt(vs / 16)));
 }
 function animStep(now) {
   if (!anim) return;
@@ -2355,6 +3268,11 @@ function animStep(now) {
       else if (drawLoop) { anim = null; drawSheet(false); }   // the drawing: a new sheet, the pen still in the claw
       else if (demoLoop) {                         // the demo again, straight on (the pieces are back where they began)
         demoRound++; demoQueue = MOVES.slice(); anim = null; playMove(demoQueue.shift(), false);
+      } else if (anim.mv.vs) {                     // the play version: the robot's move is made, the arm home again
+        anim = null; gameOn = false; vsNext();
+      } else if (anim.mv.park) {                   // parked: the motors let go, so the arm is no longer homed
+        anim = null; PARKED = true; HOMED = false; parkUI(); postSelection(true);
+        $('moveMsg').textContent = `parked in the dock (${playT.toFixed(1)} s): motors off - Home brings it out`;
       } else {
         anim = null; setClaw(0); standIn(true);
         $('moveMsg').textContent = `${gameOn ? 'game' : 'demo'} done: ${(playT / 60).toFixed(1)} min of arm time`;
@@ -2385,6 +3303,7 @@ view.appendChild(dimLayer);
 let dimEls = [];
 let dimsOn = true;
 try { dimsOn = localStorage.getItem('robotstudio.dims') !== '0'; } catch (e) {}
+if (PLAY) dimsOn = false;                    // the play version: no measurements
 $('dimBtn').classList.toggle('on', dimsOn);
 $('dimBtn').onclick = () => {
   dimsOn = !dimsOn; $('dimBtn').classList.toggle('on', dimsOn);
@@ -2502,6 +3421,7 @@ function feaPartFor(name) {
   return parts.find(p => (models[p.model] && models[p.model].name === name)) || parts.find(p => p.name === name);
 }
 async function feaInit() {
+  if (STATIC) return;                          // the load test needs the studio's server (a web copy would ask the site for it)
   try {
     FEA.info = await (await fetch('/api/fea/info', { cache: 'no-store' })).json();
   } catch (e) { return; }
@@ -2988,6 +3908,7 @@ $('sndVol').oninput = () => {
   try { st = JSON.parse(localStorage.getItem('robotstudio.collapsed') || '{}'); } catch (e) {}
   document.querySelectorAll('#side > .sec').forEach(sec => {
     const h = sec.querySelector(':scope > h3'); if (!h) return;
+    if (PLAY && sec.id === 'viewSec') return;          // the play version: this heading is the Reset view button
     const key = sec.id || h.firstChild.textContent.trim();
     const chev = document.createElement('span'); chev.className = 'chev'; h.prepend(chev);
     const set = c => { sec.classList.toggle('collapsed', c); chev.textContent = c ? '\u25B8' : '\u25BE'; };
@@ -3036,6 +3957,7 @@ const cap = w => w ? w[0].toUpperCase() + w.slice(1) : '';
 function hudUpdate(now) {
   const H = $('gameHud'), mv = anim && anim.mv, s = anim && anim.steps[anim.i];
   const show = html => { if (html !== hudHtml) { hudHtml = html; H.innerHTML = html; } H.style.display = html ? 'block' : 'none'; };
+  if (VS.active && !anim) { sqFlash.forEach(m => { m.visible = false; }); show(vsHud(now)); return; }   // the play version, between arm moves
   if (mv && mv.draw) {                        // the drawing (no squares to flash: the board is under paper)
     sqFlash.forEach(m => { m.visible = false; });
     show(`<div class="who">Drawing · sheet ${DRAW.sheet} · ${DRAW.held >= 0 ? DRAW.pens[DRAW.held].name + ' pen' : 'no pen'}</div><div class="mv">${(s && s.item) || mv.item || ''}</div>`
@@ -3072,8 +3994,8 @@ function hudUpdate(now) {
   const ph = Math.cos(2 * Math.PI * SQ_FLASH_HZ * now / 1000);
   sqFlash.forEach((m, k) => {
     if (m.parent !== root) root.add(m);
-    m.visible = !!sq;
-    if (!sq) return;
+    m.visible = !!sq && !BOARD.on;                                          // (the play version's board lights its rims instead)
+    if (!m.visible) return;
     const [at, name] = sq[k];
     m.material = flipMaterial(k, !isDarkSq(name));                        // the other colour
     m.position.set(at[0], (IK ? IK.board_y : at[1]) - 0.6, at[2]);
@@ -3096,15 +4018,16 @@ function hudUpdate(now) {
 // draws: the pen tip on the paper = the grip point PEN_DROP above it, every frame through the IK (claw vertical).
 // The paper covers the 64 squares (the pieces are put away); ink where the tip touches it.
 const PEN_DROP = 20, PEN_UP = 6, PEN_SAFE = 40, STAND_H = 22, PAPER = 480, INK_W = 0.8, INK_STEP = 0.4;
-const PAPER_Y = 231.5;                       // design y of the paper's top: the squares' top 231.6, paper 0.1
+let PAPER_Y = 231.5;                         // design y of the paper's top: 0.1 over what it lies on (paperRest())
 // Mike 2026-11-06: "Can we add a couple of different pen colors, maybe three different colors? ... switch tools between
 // headings and underlining and in their different formats": three Bics, each in its own adapter, each in its own stand
 // in the white tray (tray spots 5, 6, 7 from the robot's end, 60 apart). Body text black, headings blue, their underlines
 // red; the pictures in all three. A pen change, like a CNC tool change: the held pen in over its stand from the board
 // side (STAGE in front of it) at PEN_SAFE, down, let go, straight up TOOL_UP - the standing adapters are 134 tall, the
 // open fingers clear them from there - over to the next, down over it (its spigot into the claw), grip, up and out.
-const PENS = [{ name: 'black', ink: 0x1b1b1f, tray: 'white', spot: 4 }, { name: 'blue', ink: 0x1d3c9e, tray: 'white', spot: 5 },
-  { name: 'red', ink: 0xb3261e, tray: 'white', spot: 6 }];
+// (2026-11-10: the trays lost their two rows by the robot - Mike: "only 16" - so the same three stands are spots 2, 3, 4)
+const PENS = [{ name: 'black', ink: 0x1b1b1f, tray: 'white', spot: 2 }, { name: 'blue', ink: 0x1d3c9e, tray: 'white', spot: 3 },
+  { name: 'red', ink: 0xb3261e, tray: 'white', spot: 4 }];
 const PEN_OF = { black: 0, blue: 1, red: 2 };
 // Mike 2026-11-06 ("multi color pens find max colors"): an SVG drawing brings its own pens - up to 20, one in each front-row
 // spot of both trays (the stands the arm reaches for a pen change) - in its own colours (svg_draw.py). The rest use PENS.
@@ -3145,18 +4068,17 @@ function drawBuild(set = PENS) {              // the stand-ins for a set of pens
     DRAW.pens.push({ ...P, g, stand, ink, n: 0, max, last: null, at: null, sg: null });
   });
   if (DRAW.paper) return;
-  const paper = new THREE.Mesh(new THREE.PlaneGeometry(PAPER, PAPER),
+  const paper = new THREE.Mesh(new THREE.PlaneGeometry(1, 1),          // sized to the board's top in playDraw
     new THREE.MeshStandardMaterial({ color: 0xf4f2ec, roughness: 0.95, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 }));
   paper.rotation.x = Math.PI / 2; paper.visible = false; root.add(paper); DRAW.paper = paper;
 }
 function boardCentre() {                     // the 64 squares' centre and the white tray's first spot, from where the pieces start
   const at = n => (PIECE_HOME.find(h => h.part === n) || {}).at;
   const a1 = at('white rook a1'), h8 = at('black rook h8');
-  return { c: a1 && h8 ? [(a1[0] + h8[0]) / 2, (a1[2] + h8[2]) / 2] : [-362, 30.6], spot: at('white queen spare') || [28, 232, 325.6] };
+  return { c: a1 && h8 ? [(a1[0] + h8[0]) / 2, (a1[2] + h8[2]) / 2] : [-362, 30.6], spot: (TRAYS && TRAYS.white[0]) || [-92, 232, 325.6] };
 }
-function penSpots() {                         // each pen's tray spot (60 apart from the robot's end) and its grip point there
-  const at = n => (PIECE_HOME.find(h => h.part === n) || {}).at;
-  const base = { white: at('white queen spare') || [28, 232, 325.6], black: at('black queen spare') || [28, 232, -264.4] };
+function penSpots() {                         // each pen's tray spot (the inner column, from the robot's end) and its grip point
+  const base = { white: (TRAYS && TRAYS.white[0]) || [-92, 232, 325.6], black: (TRAYS && TRAYS.black[0]) || [-92, 232, -264.4] };
   DRAW.pens.forEach(P => { const b = base[P.tray || 'white']; P.at = [b[0] - 60 * P.spot, b[1], b[2]]; P.sg = [P.at[0], P.at[1] - STAND_H, P.at[2]]; });
 }
 function inkClear() {
@@ -3195,10 +4117,46 @@ function drawUpdate() {
   const s = mv && mv.draw && anim.steps[anim.i];
   if (!(s && s.paper)) DRAW.pens.forEach(P => { P.last = null; });   // pen up: the next ink starts a new line
 }
+// Mike 2026-11-10 "part of the checkerboard seen through": the board's own edge lines round its 64 square pockets (its
+// top, design y 232 / 232.5) are drawn pulled toward the eye (edge-pull, ~3 mm at a normal view), so they showed through
+// the paper 0.5 mm above. While the paper is on, the board draws only its outline; the pocket lines come back with it off.
+// (2026-11-10: also the one-piece board's top layer - its bucket openings' edges under the paper - and, for any board,
+// only the lines under the sheet: the tray openings beside it keep theirs)
+function boardPaperEdges(paper) {
+  const bp = parts.find(p => p.name === 'board') || parts.find(p => p.name === 'board top layer');
+  if (!bp || !DRAW.paper) return;
+  if (!bp.edgesAll) {
+    const a = bp.edgeObj.geometry.attributes.position, b = bp.box, e = 0.01, keep = [];
+    const P = DRAW.paper, hx = P.scale.x / 2 - e, hz = P.scale.y / 2 - e;          // the sheet (scaled 1 x 1, flat)
+    const under = k => Math.abs(a.getX(k) - P.position.x) < hx && Math.abs(a.getZ(k) - P.position.z) < hz;
+    for (let i = 0; i < a.count; i += 2) {
+      const top = a.getY(i) < b.min.y + 3 && a.getY(i + 1) < b.min.y + 3;     // on the top: the face, a pocket, an opening
+      if (!top || !(under(i) && under(i + 1))) keep.push(a.getX(i), a.getY(i), a.getZ(i), a.getX(i + 1), a.getY(i + 1), a.getZ(i + 1));
+    }
+    bp.edgesAll = bp.edgeObj.geometry;
+    bp.edgesPaper = new THREE.BufferGeometry();
+    bp.edgesPaper.setAttribute('position', new THREE.Float32BufferAttribute(keep, 3));
+  }
+  bp.edgeObj.geometry = paper ? bp.edgesPaper : bp.edgesAll;
+}
+// the paper lies on the board's top: the one-piece board's face is 2.0 over the squares (the light buckets flush with
+// it, 2026-11-10), so there; else the squares (231.5: 0.1 over them)
+function paperRest() {
+  const tl = parts.find(p => p.name === 'board top layer');
+  PAPER_Y = tl ? tl.box.min.y - 0.1 : 231.5;
+}
+// Mike 2026-11-10 "I want to be able to set the color of the paper": the colour box by Draw (kept in this browser)
+function paperColour() {
+  const c = $('paperCol').value || '#f4f2ec';
+  try { localStorage.setItem('robotstudio.paper', c); } catch (e) {}
+  if (DRAW.paper) DRAW.paper.material.color.set(c);
+}
+try { const c = localStorage.getItem('robotstudio.paper'); if (c) $('paperCol').value = c; } catch (e) {}
+$('paperCol').oninput = paperColour;
 function drawReset() {                        // Reset pieces / Demo / Play game: pieces back, paper and pens put away
   if (!DRAW.pens.length) return;
   DRAW.pens.forEach(P => { if (P.g.parent !== root) root.add(P.g); P.g.visible = P.stand.visible = P.ink.visible = false; });
-  DRAW.paper.visible = false; DRAW.held = -1;
+  DRAW.paper.visible = false; DRAW.held = -1; boardPaperEdges(false);
   inkClear();
   if (DRAW.piecesWas) { parts.forEach(p => { if (p.name in DRAW.piecesWas) setVis(p, DRAW.piecesWas[p.name]); }); DRAW.piecesWas = null; }
 }
@@ -3460,6 +4418,7 @@ function drawInkStep(s, e) {                  // ink from where this run's ink g
   const q = pathAt(s, e); inkAdd(s.pen, q.x, q.z); s.inkL = L;
 }
 function drawSteps(items, pickup, held) {     // -> { steps, held: the pen in the claw at the end }
+  paperRest();
   const G = (xz, h) => [xz[0], PAPER_Y - PEN_DROP - h, xz[1]];     // the grip point with the pen tip h above the paper
   const IN_Y = PAPER_Y - PEN_DROP - PEN_SAFE;   // the tip PEN_SAFE over the paper / the tray (the stands' tops are 22 up)
   const steps = [];
@@ -3517,11 +4476,23 @@ function drawSteps(items, pickup, held) {     // -> { steps, held: the pen in th
 }
 function playDraw() {
   if (!IK) return;
+  paperRest();                                // the paper on the board's top (the one-piece board: its face)
   stopHoming(); resetPieces(); standIn(false); drawBuild(penSetFor($('drawWhat').value)); penSpots();
-  DRAW.piecesWas = {};                        // the pieces put away, the paper on, the pens in their stands
-  parts.forEach(p => { if (/^(white|black) /.test(p.name)) { DRAW.piecesWas[p.name] = p.group.visible; setVis(p, false); } });
-  const { c } = boardCentre();
-  DRAW.paper.position.set(c[0], PAPER_Y, c[1]); DRAW.paper.visible = true;
+  // the pieces put away, the paper on, the pens in their stands. Mike 2026-11-09: "Doesn't draw the entire chessboard top
+  // white" - the sheet covered only the 64 squares (480): now the board's whole top, its border too (510 square), and
+  // the squares under it are hidden while it's on (their outlines showed through the sheet)
+  DRAW.piecesWas = {};
+  parts.forEach(p => { if (/^(white|black) |^board (light|dark) squares/.test(p.name)) { DRAW.piecesWas[p.name] = p.group.visible; setVis(p, false); } });
+  const { c } = boardCentre(), bp = parts.find(p => p.name === 'board');
+  let sx = PAPER, sz = PAPER, cx = c[0], cz = c[1];
+  if (!bp) sx = sz = 8 * 60 + 2 * 15;        // the one-piece board (2026-11-10) has no 'board' part: its squares + 15 border
+  if (bp) {                                   // the board's box in the design frame (root's own)
+    root.updateMatrixWorld(true);
+    const b = new THREE.Box3().setFromObject(bp.mesh).applyMatrix4(root.matrixWorld.clone().invert());
+    sx = b.max.x - b.min.x; sz = b.max.z - b.min.z; cx = (b.min.x + b.max.x) / 2; cz = (b.min.z + b.max.z) / 2;
+  }
+  DRAW.paper.scale.set(sx, sz, 1);
+  DRAW.paper.position.set(cx, PAPER_Y, cz); DRAW.paper.visible = true; boardPaperEdges(true); paperColour();
   DRAW.pens.forEach(P => {
     P.stand.position.set(P.at[0], P.at[1] - STAND_H / 2, P.at[2]);
     P.g.position.set(...P.sg); P.g.quaternion.identity();
@@ -3601,6 +4572,9 @@ $('studioSel').onchange = async () => {
   location.href = studioUrl(st.port);
 };
 
+try { $('titleBox').open = localStorage.getItem('stepviewer.titleOpen') === '1'; } catch (e) {}
+$('titleBox').addEventListener('toggle', () => { try { localStorage.setItem('stepviewer.titleOpen', $('titleBox').open ? '1' : '0'); } catch (e) {} });
+
 renderer.setAnimationLoop(() => {
   bowdenUpdate();
   controls.update();
@@ -3619,15 +4593,20 @@ renderer.setAnimationLoop(() => {
   soundTick(performance.now());
   ikShow();
   updateDims();
+  boardTick(performance.now());
+  shadowTick(performance.now());
   renderer.render(scene, camera);
+  shadowCheck();
   placeLabels();
   if ($('caption').style.display === 'block') $('caption').textContent = captionText();
 });
 if (STATIC) {
   buildScene(STATIC.scene, false);
+  if (PLAY) playInit();
   if (STATIC.notes) renderNotes(STATIC.notes, '');
   applyState(STATIC.init || {});
   applyState(parseHash());
+  if (PLAY) playerView();                    // the play version opens in the player's seat
 } else {
   poll();
   setInterval(poll, 1000);
@@ -3637,7 +4616,8 @@ if (STATIC) {
 addEventListener('hashchange', () => applyState(parseHash()));
 resize();
 window.__viewer = { camera, controls, get parts() { return parts; }, get selection() { return selection; }, pick, setSelection,
-                    root, get rigs() { return RIGS; }, rigAngles, gearsUpdate, rigPlay };
+                    root, get rigs() { return RIGS; }, rigAngles, gearsUpdate, rigPlay, get IK() { return IK; }, get HOMING() { return HOMING; },
+                    get SHADOW() { return SHADOW; }, lamp, get WOODS() { return WOODS; }, get models() { return models; }, woodApply };
 </script>
 <script>
   setTimeout(() => { if (!window.__viewer) document.getElementById('err').style.display = 'flex'; }, 10000);

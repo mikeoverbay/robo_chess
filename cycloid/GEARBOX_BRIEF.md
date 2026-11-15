@@ -73,6 +73,12 @@ The turntable (J0) is NOT a cycloid. It is a printed bevel pair, m1.5 18:72 = 4:
 ## Current design (cycloid_spread)
 **Gear geometry**
 - 38 ring pins, 3 mm, on a 56 mm circle; 37 lobes → **37:1**.
+- Ring pin wall grooves in the housing ring are D3.2, radius 1.6 (`--ring-pin-hole`). The floor sockets were too, until
+  his two-piece housing made them D3.4 (2026-11-15, below).
+  - The Professor, 2026-11-07: his printer prints holes small; "make all of those radius 0.2 bigger", then
+    "Can we make it 0.1? So the radius will be 1.6."
+  - If they print true, a pin can move 0.1 out and backlash grows 1.13° → 1.88°: about 0.38° per 0.1 mm.
+  - Thinnest walls: 1.18 to a lid screw hole, 1.42 between grooves.
 - Eccentricity 0.368 (K1 0.50); lobe height 0.74.
 - Profile from the Younis formula, pulled in 0.10 all round (CLEAR, `--clear`). Disc 2 is disc 1 turned 180°.
 
@@ -80,6 +86,9 @@ The turntable (J0) is NOT a cycloid. It is a printed bevel pair, m1.5 18:72 = 4:
 - 8 output pins, 3 mm, on a 41 mm circle, in 3.84 mm holes. A support ring holds the pins at both ends; with one
   end only they hit ~490 MPa.
 - Two discs 6 mm thick (the same part), printed solid. The tested printed drive cracked at its eccentric bearing first.
+- Pull holes (Mike 2026-11-14, from his `print\lobe.step`): 2 × Ø2.5 through (M3 self-tap) on r 17.17 at 90°/270°
+  about the disc's own centre, between output holes, with a 0.8 × 45° lead-in on the top face. Fit the lead-in face up.
+  Two M3 screws lift a disc out; disc 1 brings the eccentric with it. (`PULL_*` in cycloid.py.)
 
 **Eccentric**
 - **ONE PIECE** since 2026-11-06 (Professor: "not really liking that little star coupling"). The star-keyed halves
@@ -100,6 +109,19 @@ The turntable (J0) is NOT a cycloid. It is a printed bevel pair, m1.5 18:72 = 4:
 **Bearings and body**
 - Output on 2 × 6808, spread 14 apart (ball rows 21 apart, was 7) by sleeves: outer 51.8/46, inner 44/40.2.
 - Body Ø70.5. Motor face to the output seat: 59.2.
+- Housing in two pieces (Mike 2026-11-15, his `print\hosuing 2 piece .step`, then "build the two-piece housing into
+  cycloid.py"): `housing_floor()` z 0..7.2 and `housing_ring()` 7.2..23.2; the gearbox lists "housing floor" and
+  "housing ring". cycloid.py makes his file exactly (0.000 mm³ either way).
+  - Floor: the ring pin sockets are Ø3.4 (`FLOOR_PIN_SOCKET`, his: 0.2 over the Ø3.2 grooves, so the ring places the
+    pins). The lid screws self-tap its Ø2.5 holes: 5.9 mm of thread.
+  - Ring: the lid screw holes are Ø3.4 clearance, then Ø3.0 (`LID_FIT_HOLE`) on the plain shank from z 19.4 to the
+    top. His words: "The bolts should line up the ring and the base."
+  - 0.6 × 45° chamfers (`JOINT_CHAMFER`) on the lid screw holes, both faces of the joint; 0.5 on the arm pilots.
+  - `housing(printed_pins)` is still there: the two pieces fused, for the stand-in, the animation and the pin gauge.
+  (Robo Chess gearbox)
+- Motor pilot recess under the housing: Ø22.2 × 3.2 deep (`PILOT_DEPTH`) for the 22 × 2 boss, 4.0 of floor above
+  it. It was 2.2 deep. The Professor, 2026-11-09, on his printed housing: "That's a little shallow. At least on this
+  one motor ... I'd move it a millimeter." (Robo Chess gearbox)
 
 **Hardware per joint**
 - 46 dowels, 3×20, hardened ISO 8734 m6 (52100 steel).
@@ -109,7 +131,20 @@ The turntable (J0) is NOT a cycloid. It is a printed bevel pair, m1.5 18:72 = 4:
   - Shank through lid + pin ring + a Ø3.4 clearance in the housing top down to z 18.0.
   - 17.3 mm of thread self-taps the Ø2.5 hole. Tip at z 0.7.
 - **CONFIRMED and ORDERED by the Professor (2026-11-06):** M3×55. "Keep the bolts the size that they are ... It's all
-  confirmed already." The arm-mount screws from below share these 6 holes; he has that in hand.
+  confirmed already." The arm-mount screws from below used to share these 6 holes; since 2026-11-15 they have
+  their own (next bullet).
+- Arm-mount screws (Mike 2026-11-15): "Six additional holes to bolt the arm segments onto. Same bolt diameter, for a
+  number 4 by 3/4 inch long wood screw", and "We have to be careful with how much we displace material".
+  - 6 × #4 × 3/4" wood screws come up through the arm plate into Ø2.4 pilots in the housing floor, z 0 to 16, with a
+    0.5 × 45° entry chamfer. Any plate from 3 to 8 mm leaves the screw tip in the pilot.
+  - On the lid circle, r 32.4, at 33.16 / 90 / 146.84 / 213.16 / 270 / 326.84°. A straight 30° turn off the lid
+    screws put two holes right behind a ring pin (60° is 6 1/3 pin pitches), so each sits midway between two pins.
+    The pattern repeats every 180°, not every 60°.
+  - Walls: 1.65 to the outside, 2.26 to the pin grooves (1.60 at the worst two with the straight turn).
+  - `ARM_SCREW_R` / `ARM_SCREW_ANGLES` / `ARM_SCREW_PILOT` / `ARM_PILOT_TOP` in cycloid.py; the arm session's
+    mockup_link.py reads them, gearbox_fit_check.py checks the arm and the shoulder column against them.
+  - Also in his two-piece housing (`print\hosuing 2 piece .step`), with 0.5 chamfers on both faces of the joint.
+  (Robo Chess gearbox)
 - Screws: 4 × M3×8 for the motor; 3 × M3×4×5 heat-set
   inserts (his, Amazon B0FDKYTMZ8: 4 long, 5 knurl) in the output flange face, r 15 at 0/120/240°: Ø4.2 holes
   (`--insert-hole`) 4.5 deep with a 0.3 lead-in; centre pocket Ø22 → Ø20 for a 2.5 knurl wall

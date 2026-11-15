@@ -6,7 +6,59 @@
   "J3": 0,
   "J4 wrist": 0
  },
- "items": [],
- "text": "",
- "time": "2026-11-06 23:17:51"
+ "items": [
+  {
+   "label": "P159.F1",
+   "kind": "face",
+   "part": 159,
+   "face": 1,
+   "edge": null,
+   "name": "insert 3: M3 x 4 x 5 brass heat-set insert (4 long, 5 knurl)",
+   "file": "gearbox_exploded_upright.step",
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\gearbox_exploded_upright.step",
+   "solid": 64,
+   "shown_offset": [
+    380,
+    209,
+    0
+   ],
+   "picked_at": [
+    374.072924721713,
+    -144.1604507442131,
+    -14.379789284851881
+   ],
+   "face_info": {
+    "type": "cylinder",
+    "area": 52.779,
+    "c": [
+     372.5,
+     -143.3,
+     -12.9904
+    ],
+    "r": 2.1,
+    "axis": [
+     0,
+     -1,
+     0
+    ],
+    "axis_at": [
+     372.5,
+     -141.3,
+     -12.9904
+    ],
+    "hole": false,
+    "f": 1,
+    "v0": 0,
+    "vn": 170,
+    "t0": 0,
+    "tn": 168,
+    "edges": [
+     1,
+     2
+    ]
+   }
+  }
+ ],
+ "text": "P159.F1: cylinder \u00d84.20 outside, axis -Y \u2014 insert 3: M3 x 4 x 5 brass heat-set insert (4 long, 5 knurl) \u00b7 52.8 mm\u00b2 \u00b7 centre (372.50, -143.30, -12.99) ",
+ "time": "2026-11-07 20:56:14"
 }

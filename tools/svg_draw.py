@@ -489,9 +489,10 @@ def board_frame():
 # row-1 pens. So a drawing gets up to MAX_PENS colours: the SVG's own if it has that few, else they are merged (weighted
 # k-means in L*a*b*, so close shades merge first and big areas keep their colour). Near-white is the paper: not drawn.
 # The shapes are painted in the SVG's own order first, so where one covers another only the top colour is drawn.
-MAX_PENS = 20
+# 2026-11-10: the trays are 8 rows now (Mike: "We don't need more than 16"), so 16 stands.
+MAX_PENS = 16
 PAPER_L, PAPER_CHROMA = 92.0, 12.0           # L*a*b*: this light and this grey is the paper's own colour
-STANDS = [("white", k) for k in range(10)] + [("black", k) for k in range(10)]
+STANDS = [("white", k) for k in range(8)] + [("black", k) for k in range(8)]
 
 
 def convert(svg_path, pitch, c, max_pens=MAX_PENS):
@@ -592,7 +593,7 @@ def main():
             print(f"   {p['tray']} tray {p['spot'] + 1:2d}: {p['name']:24s} {p['svg_colours']:2d} SVG colours, "
                   f"{len(p['lines']):5d} strokes (from {p['joined_from']} lines), {p['area_mm2'] / 100:8.1f} cm2")
     sc["drawings"] = out
-    open(SCENE, "w", encoding="utf-8").write(json.dumps(sc, indent=1))
+    open(SCENE + ".tmp", "w", encoding="utf-8").write(json.dumps(sc, indent=1)); os.replace(SCENE + ".tmp", SCENE)   # whole or not at all: the studio reads it every second
     print("scene.json drawings:", ", ".join(out))
 
 

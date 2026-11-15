@@ -15,13 +15,14 @@ variant), stl/ (every part flat as printed; the two parts that change with the p
 variants), report.txt (sizes, motion checks, part overlaps, loads, hardware list).
 
 z = 0 is the motor face.  Stack (mm):
-   0.0 .. 7.2   housing floor (motor screws from inside, heads 0.2 below its top)
+   0.0 .. 7.2   housing floor (motor screws from inside, heads 0.2 below its top) - its own part since 2026-11-15
+   7.2 .. 23.2  housing ring (the wall with the ring pin grooves), on the floor; the lid screws line it up
    7.7 .. 9.7   output support ring (holds the lower ends of the 8 output pins)
   10.2 .. 16.2  disc 1 (eccentric +e)       16.7 .. 22.7  disc 2 (eccentric -e, the same part turned 180 deg)
   23.2 .. 29.2  output flange back disc (upper ends of the output pins) inside the pin ring
   29.2 .. 43.2  two 6808s on the output journal, outer races in the lid
   43.2 .. 45.2  clamp ring on the upper inner race; the 70.5 output disc sits on it
-Ring pins: 3.5 mm in the floor, then in grooves in the housing wall that wrap 211 deg round them, tops
+Ring pins: 3.5 mm in D3.4 floor sockets, then in D3.2 grooves in the housing ring that wrap 209 deg round them, tops
 0.5 mm into the pin ring.  Output pins: 2 mm through the support ring, 4.5 mm into the flange.
 """
 import argparse
@@ -57,6 +58,10 @@ WALL_R = 27.6                # housing wall inner radius: the ring pins sit 0.4 
 
 # ---------------------------------------------------------------- stack
 FLOOR_T = 7.2                # 4.0 under the motor screw heads + 3.2 counterbore
+# Motor pilot recess under the housing, D22.2 for the NEMA 17's 22 x 2 boss. It was 2.2 deep; Mike 2026-11-09: "the
+# housing where the motor boss goes in. That's a little shallow. At least on this one motor ... I'd move it a
+# millimeter." Printed floor-down, the recess ceiling is a bridge, so it can sag onto the boss. 4.0 of floor stays above.
+PILOT_DEPTH = 3.2
 GAP = 0.5
 RING_T = 2.0                 # output support ring
 DISC_T = 6.0
@@ -103,6 +108,14 @@ COLLAR_D = 11.0              # the middle collar, concentric: r 5.5 -/+ e stays 
 HUB_BORE = 5.0               # --hub-bore
 CAM_D = 10.0                 # --cam-d
 ECC_BORE = 19.0              # --ecc-bore
+# Pull holes (Mike 2026-11-14, from his print\lobe.step: "I added two holes to this so I can pull it back out"): two
+# M3 self-tap holes through the disc, between output holes at 90 / 270 deg on the DISC's centre (his were on the
+# shaft axis, 0.37 over), 0.8 x 45 deg lead-in on the top face (up in the gearbox for both discs). Two M3 screws lift
+# a disc out; disc 1 brings the eccentric with it (its 6800 is up against the middle collar).
+PULL_HOLE = 2.5
+PULL_R = 17.17
+PULL_ANGLES = (90.0, 270.0)
+PULL_LEAD = 0.8
 # ONE-PIECE eccentric (Mike 2026-11-06: "I'm not really liking that little star coupling ... Can we make that one piece
 # and just make it longer so it covers more of the motor shaft?"; it replaced the two star-keyed halves). A 6800's 10 bore
 # can't pass the other cam (offset 2e = 0.74 the other way) or the middle collar, and there is only 1.5 between the
@@ -115,8 +128,23 @@ NECK_D, NECK_LEAD = 8.5, 0.75          # neck on cam 1's axis (wall 1.38 to the 
 SPACER_ECC = (12.2, 8.8)               # spacer ring on the neck, on cam 1's axis: OD (inner ring r 5.0..6.2 only), ID
 TOP_D = 9.0                            # concentric top above cam 2: r 4.5 + e = 4.87 < 5, bearing 2 slides past
 TOP_POCKET_CLEAR = 0.8                 # the flange's pocket over the top: this much radial room, 1.0 above it
-PIN_HOLE = 3.0               # --pin-hole: printed hole for a press-fit dowel; drill to 3.0
+PIN_HOLE = 3.0               # --pin-hole: printed hole for a press-fit dowel (the output pins); drill to 3.0
+# --ring-pin-hole: the housing's 38 ring pin floor sockets and wall grooves, radius 0.1 over the pin (r 1.6). Mike
+# 2026-11-07: "3D printer always prints holes too small ... make all of those radius 0.2 bigger, and I'll see if it fits"
+# (Cura's hole expansion misses the grooves: they are open to the cavity), then "Can we make it 0.1? So the radius will
+# be 1.6."
+RING_PIN_HOLE = 3.2
 PIN_CAP_HOLE = 3.3           # loose pockets over the ring pin tops in the pin ring
+# Two-piece housing (Mike 2026-11-15, his print\hosuing 2 piece .step: "I'm going to split the housing in half. So I
+# can print it in two pieces. I made the holes on the bottom piece a little bit bigger than the radiuses where the pins
+# actually sit on the inside of the upper half. I put some chamfers on some of the holes", then "build the two-piece
+# housing into cycloid.py"): housing_floor() z 0..FLOOR_T and housing_ring() FLOOR_T..Z_TOP. The ring's grooves place
+# the pins; the lid screws pass the ring in clearance and fit its holes on their plain shank at the top, so they centre
+# the ring on the floor (Mike: "The bolts should line up the ring and the base") and thread only into the floor.
+FLOOR_PIN_SOCKET = 3.4       # his: the floor's ring pin sockets, 0.2 over the grooves
+JOINT_CHAMFER = 0.6          # his: 45 deg on the lid screw holes, both faces of the joint
+LID_FIT_HOLE = 3.0           # the ring's lid screw holes on the plain shank (2.95..3.0), from the shank end + margin up
+LID_FIT_LEAD = 0.3           # 45 deg lead-in at the ring's top
 FLAT_START = 9.0             # 17HS19-2004S1: D flat starts 9 mm out (7.75 .. 10.25)
 FLAT_LATE = 10.25
 MOTOR_SCREW_L = 8
@@ -144,6 +172,20 @@ LID_SCREW_ANGLES = tuple(180.0 / N_PINS / 3 + 60.0 * k for k in range(6))   # 1.
 # forced into the tapped hole (its walls are ~1.6 thick there); the thread bites only below.
 LID_THREAD = 18.0
 LID_SHANK_MARGIN = 0.7          # clearance goes this far below the shank's end (runout, length tolerance)
+# Arm-mount screws (Mike 2026-11-15: the arm's screws "need to be rotated 30 degrees" off the lid screws, then for his
+# two-piece housing: "Six additional holes to bolt the arm segments onto. Same bolt diameter, for a number 4 by 3/4 inch
+# long wood screw" and "We have to be careful with how much we displace material"). On the lid circle, each hole moved
+# from the straight 30 deg turn to the nearest point MIDWAY between two ring pins (60 deg is 6 1/3 pin pitches, so a
+# straight turn puts two holes right behind a pin): wall to the pin grooves 2.26 at all six (1.60 at the worst two
+# before), to the outside 1.65. Symmetric about 90/270 deg; at least 25 deg from a lid screw. mockup_link.py (the
+# main session's) reads these. D2.4 pilot (as the arm's other #4 x 3/4" holes), up from the floor's underside to
+# ARM_PILOT_TOP, so 3/4" (19.05) through an arm plate of 3..8 mm never runs into solid plastic; 0.5 x 45 deg entry
+# chamfer for the lip a wood screw raises. Mike then: "Yes, add them" to the generated housing too (2026-11-15).
+ARM_SCREW_R = LID_SCREW_R
+ARM_SCREW_ANGLES = tuple(360.0 / N_PINS * n for n in (3.5, 9.5, 15.5, 22.5, 28.5, 34.5))   # 33.16, 90 ... 326.84
+ARM_SCREW_PILOT = 2.4
+ARM_PILOT_TOP = 16.0
+ARM_PILOT_LEAD = 0.5
 
 
 def lid_screw_len():
@@ -317,12 +359,12 @@ def motion_check(rep):
 
 
 # ---------------------------------------------------------------- printed parts (assembled position)
-def housing(printed_pins):
-    """Floor + wall. Steel: each ring pin in a 3.5 deep floor socket and a groove up the wall. Printed: the
-    pins grow out of the floor, fused to the wall."""
-    body = cyl(G.BODY_OD, Z_TOP)
-    cuts = [cyl(WALL_R * 2, Z_TOP, FLOOR_T),
-            cyl(22.2, 3.2, -1.0),                       # motor pilot 22 x 2
+def housing_floor(printed_pins):
+    """The housing's floor, z 0..FLOOR_T (Mike's two-piece housing): the motor pilot recess and shaft hole, the motor
+    screws from inside, the lid screws' self-tap holes, the arm screw pilots and - steel pins - the ring pin sockets,
+    D FLOOR_PIN_SOCKET (0.2 over the grooves: the ring places the pins). Chamfers on the joint face."""
+    body = cyl(G.BODY_OD, FLOOR_T)
+    cuts = [cyl(22.2, PILOT_DEPTH + 1.0, -1.0),         # motor pilot recess for the 22 x 2 boss
             cyl(8.0, FLOOR_T + 2, -1)]                  # shaft
     head_z = FLOOR_T - 0.2 - G.M3["head_h"]          # under-head plane 4.0
     for sx in (-1, 1):
@@ -330,21 +372,63 @@ def housing(printed_pins):
             x, y = sx * 15.5, sy * 15.5
             cuts.append(cyl(G.MOTOR_HOLE, FLOOR_T + 2, -1, x, y))
             cuts.append(cyl(G.COUNTERBORE_D, FLOOR_T, head_z, x, y))
-    z_clear = lid_shank_end() - LID_SHANK_MARGIN      # partly threaded lid screws: shank clearance from the top to here
+    rb, ch = G.BODY_HOLE / 2, JOINT_CHAMFER
+    for a in LID_SCREW_ANGLES:                        # the lid screws thread in here (and only here)
+        x, y = polar(LID_SCREW_R, a)
+        cuts += [cyl(G.BODY_HOLE, FLOOR_T + 2, -1, x, y),
+                 GS.cone(rb, rb + ch + 0.5, ch + 0.5, FLOOR_T - ch, x, y)]
+    rp, pl = ARM_SCREW_PILOT / 2, ARM_PILOT_LEAD
+    for a in ARM_SCREW_ANGLES:                        # arm-mount #4 x 3/4" wood screws, up from the arm plate, on into
+        x, y = polar(ARM_SCREW_R, a)                  # the ring; lead-in at the entry and on the joint face
+        cuts += [cyl(ARM_SCREW_PILOT, FLOOR_T + 2, -1, x, y),
+                 GS.cone(rp + pl + 0.5, rp, pl + 0.5, -0.5, x, y),
+                 GS.cone(rp, rp + pl + 0.5, pl + 0.5, FLOOR_T - pl, x, y)]
+    if not printed_pins:
+        cuts += [cyl(FLOOR_PIN_SOCKET, FLOOR_T - Z_PIN0 + 1, Z_PIN0, *polar(R_PINS, a)) for a in ring_pin_angles()]
+    return cut_all(body, cuts)
+
+
+def housing_ring(printed_pins):
+    """The housing's wall ring, z FLOOR_T..Z_TOP (Mike's two-piece housing). Steel: a D RING_PIN_HOLE groove up the
+    wall for each ring pin. Printed: the pins grow out of it, fused to the wall. The lid screws pass in clearance and
+    fit D LID_FIT_HOLE on their plain shank at the top, so they centre the ring on the floor."""
+    h = Z_TOP - FLOOR_T
+    body = cyl(G.BODY_OD, h, FLOOR_T)
+    cuts = [cyl(WALL_R * 2, h + 2, FLOOR_T - 1)]
+    rc, ch = G.M3["clear"] / 2, JOINT_CHAMFER
+    z_fit = lid_shank_end() + LID_SHANK_MARGIN        # clear of the thread's runout and the length tolerance
+    step = (G.M3["clear"] - LID_FIT_HOLE) / 2         # 45 deg from the clearance in to the fit
     for a in LID_SCREW_ANGLES:
         x, y = polar(LID_SCREW_R, a)
-        cuts.append(cyl(G.BODY_HOLE, Z_TOP + 2, -1, x, y))
-        if z_clear < Z_TOP:
-            cuts.append(cyl(G.M3["clear"], Z_TOP + 1 - z_clear, z_clear, x, y))
+        cuts.append(GS.cone(rc + ch + 0.5, rc, ch + 0.5, FLOOR_T - 0.5, x, y))                     # joint face
+        if z_fit < Z_TOP - 1.0:
+            cuts += [cyl(G.M3["clear"], z_fit - step - FLOOR_T + 1, FLOOR_T - 1, x, y),
+                     GS.cone(rc, LID_FIT_HOLE / 2, step, z_fit - step, x, y),
+                     cyl(LID_FIT_HOLE, Z_TOP - z_fit + 1, z_fit - 0.01, x, y),
+                     GS.cone(LID_FIT_HOLE / 2, LID_FIT_HOLE / 2 + LID_FIT_LEAD + 0.5, LID_FIT_LEAD + 0.5,
+                             Z_TOP - LID_FIT_LEAD, x, y)]
+        else:                                         # (a shank that ends above the ring: clearance all the way)
+            cuts.append(cyl(G.M3["clear"], h + 2, FLOOR_T - 1, x, y))
+    rp, pl = ARM_SCREW_PILOT / 2, ARM_PILOT_LEAD
+    for a in ARM_SCREW_ANGLES:                        # the arm screw pilots, on from the floor's
+        x, y = polar(ARM_SCREW_R, a)
+        cuts += [cyl(ARM_SCREW_PILOT, ARM_PILOT_TOP - FLOOR_T + 1, FLOOR_T - 1, x, y),
+                 GS.cone(rp + pl + 0.5, rp, pl + 0.5, FLOOR_T - 0.5, x, y)]
     if not printed_pins:
-        cuts += [cyl(PIN_HOLE, Z_TOP - Z_PIN0 + 1, Z_PIN0, *polar(R_PINS, a)) for a in ring_pin_angles()]
+        cuts += [cyl(RING_PIN_HOLE, h + 2, FLOOR_T - 1, *polar(R_PINS, a)) for a in ring_pin_angles()]
     b = cut_all(body, cuts)
     if printed_pins:
         for a in ring_pin_angles():
             x, y = polar(R_PINS, a)
-            b = b.fuse(cyl(PIN_D, Z_PIN0 + PIN_LEN - FLOOR_T + 0.01, FLOOR_T - 0.01, x, y))
+            b = b.fuse(cyl(PIN_D, Z_PIN0 + PIN_LEN - FLOOR_T, FLOOR_T, x, y))
         b = one_solid(b.clean())
     return b
+
+
+def housing(printed_pins):
+    """The two pieces as one solid, for whatever wants the housing as one body (the drive stand-in, the animation,
+    the pin gauge's check). The gearbox itself lists the floor and the ring."""
+    return one_solid(housing_floor(printed_pins).fuse(housing_ring(printed_pins)).clean())
 
 
 def support_ring(printed_pins):
@@ -364,6 +448,11 @@ def disc():
     hole_d = PIN_D + 2 * ECC + 2 * HOLE_CLEAR
     cuts = [cyl(ECC_BORE, DISC_T + 2, -1)]
     cuts += [cyl(hole_d, DISC_T + 2, -1, *polar(R_OUT, a)) for a in out_pin_angles()]
+    r = PULL_HOLE / 2
+    for a in PULL_ANGLES:                                         # pull holes, lead-in on top (45 deg, on past the face)
+        x, y = polar(PULL_R, a)
+        cuts += [cyl(PULL_HOLE, DISC_T + 2, -1, x, y),
+                 GS.cone(r, r + PULL_LEAD + 0.5, PULL_LEAD + 0.5, DISC_T - PULL_LEAD, x, y)]
     return cut_all(body, cuts)
 
 
@@ -502,7 +591,11 @@ def build(printed_pins, theta_deg, parts):
     th = math.radians(theta_deg)
     out = []                                       # (name, solid, colour, printed)
     blue, grey, steel, brass, black = (0.2, 0.45, 0.85), (0.6, 0.6, 0.62), (0.75, 0.75, 0.78), (0.8, 0.65, 0.2), (0.15, 0.15, 0.15)
-    out.append(("housing", parts["housing_p" if printed_pins else "housing_s"], blue, True))
+    fk, rk = ("floor_p", "ring_p") if printed_pins else ("floor_s", "ring_s")
+    if fk not in parts:                            # a caller's own parts dict from before the two-piece housing
+        parts[fk], parts[rk] = housing_floor(printed_pins), housing_ring(printed_pins)   # (gearbox_anim.py's)
+    out.append(("housing floor", parts[fk], blue, True))
+    out.append(("housing ring", parts[rk], blue, True))
     out.append(("pin ring", parts["pin_ring"], blue, True))
     out.append(("lid", parts["lid"], blue, True))
     c1, p1 = disc_pose(th, 1)
@@ -588,8 +681,10 @@ def overlaps(items, skip=()):
 
 
 def main():
-    global CLEAR, HUB_BORE, CAM_D, ECC_BORE, PIN_HOLE, INSERT_HOLE
+    global CLEAR, HUB_BORE, CAM_D, ECC_BORE, PIN_HOLE, INSERT_HOLE, RING_PIN_HOLE
     ap = argparse.ArgumentParser()
+    ap.add_argument("--ring-pin-hole", type=float, default=RING_PIN_HOLE,
+                    help="the housing's ring pin sockets and wall grooves (pins are 3.0)")
     ap.add_argument("--insert-hole", type=float, default=INSERT_HOLE, help="printed hole for the M3 x 4 x 5 heat-set inserts")
     ap.add_argument("--clear", type=float, default=CLEAR)
     ap.add_argument("--hub-bore", type=float, default=HUB_BORE)
@@ -599,7 +694,7 @@ def main():
     ap.add_argument("--spread", type=float, default=SPREAD, help="mm between the two output 6808s (the arm: 14)")
     a = ap.parse_args()
     CLEAR, HUB_BORE, CAM_D, ECC_BORE, PIN_HOLE = a.clear, a.hub_bore, a.cam_d, a.ecc_bore, a.pin_hole
-    INSERT_HOLE = a.insert_hole
+    INSERT_HOLE, RING_PIN_HOLE = a.insert_hole, a.ring_pin_hole
     set_spread(a.spread)
     out_dir = OUT if not SPREAD else os.path.join(os.path.dirname(OUT), "cycloid_spread")
     os.makedirs(os.path.join(out_dir, "step"), exist_ok=True)
@@ -620,14 +715,32 @@ def main():
     rmin = motion_check(rep)
     w(f"  disc material: bearing bore {ECC_BORE:g} -> output holes {R_OUT - (PIN_D + 2 * ECC) / 2 - HOLE_CLEAR - ECC_BORE / 2:.1f} mm, "
       f"output holes -> lobe roots {rmin - R_OUT - (PIN_D + 2 * ECC) / 2 - HOLE_CLEAR:.1f} mm")
-    sw = R_PINS - WALL_R
-    w(f"  ring pin grooves wrap {2 * (180 - math.degrees(math.acos(sw / (PIN_D / 2)))):.0f} deg of each pin "
-      f"(opening {2 * math.sqrt((PIN_D / 2) ** 2 - sw ** 2):.2f} < {PIN_D:g}: pins can't fall inwards)")
+    hx, hy = polar(PULL_R, PULL_ANGLES[0])
+    pull_out = min(math.hypot(hx - ox, hy - oy) for ox, oy in (polar(R_OUT, a) for a in out_pin_angles()))
+    pull_out -= PULL_HOLE / 2 + (PIN_D + 2 * ECC) / 2 + HOLE_CLEAR
+    w(f"  pull holes (2 x D{PULL_HOLE:g} on r {PULL_R:g} at {PULL_ANGLES[0]:g} / {PULL_ANGLES[1]:g}, {PULL_LEAD:g} lead-in on "
+      f"top): to the bearing bore {PULL_R - PULL_HOLE / 2 - ECC_BORE / 2:.1f} mm, to an output hole {pull_out:.1f} "
+      f"({pull_out - PULL_LEAD:.1f} at the lead-in), to the lobe roots {rmin - PULL_R - PULL_HOLE / 2:.1f}")
+    sw, gr = R_PINS - WALL_R, RING_PIN_HOLE / 2
+    gap = 2 * math.sqrt(gr ** 2 - sw ** 2)
+    w(f"  housing in two pieces (floor z 0..{FLOOR_T:g}, ring {FLOOR_T:g}..{Z_TOP:g}): floor sockets D{FLOOR_PIN_SOCKET:g}, "
+      f"the ring places the pins")
+    w(f"  ring pin grooves D{RING_PIN_HOLE:g} for the {PIN_D:g} pins; the grooves wrap "
+      f"{2 * (180 - math.degrees(math.acos(sw / gr))):.0f} deg round, opening {gap:.2f} "
+      + (f"< {PIN_D:g}: pins can't fall inwards" if gap < PIN_D else
+         f">= {PIN_D:g}: printed true, the groove doesn't clip the pin in (the floor socket and the pin ring hold it)"))
+    arm_pin = min(math.hypot(ax - px, ay - py) for ax, ay in (polar(ARM_SCREW_R, a) for a in ARM_SCREW_ANGLES)
+                  for px, py in (polar(R_PINS, a) for a in ring_pin_angles()))
+    w(f"  arm screw pilots (6 x D{ARM_SCREW_PILOT:g} up to z {ARM_PILOT_TOP:g} on r {ARM_SCREW_R:g} at "
+      + ", ".join(f"{a:.2f}" for a in ARM_SCREW_ANGLES) + " deg, midway between ring pins): wall to the outside "
+      f"{G.BODY_OD / 2 - ARM_SCREW_R - ARM_SCREW_PILOT / 2:.2f} mm, to the pin grooves "
+      f"{arm_pin - RING_PIN_HOLE / 2 - ARM_SCREW_PILOT / 2:.2f}")
 
     print("\n".join(rep))
     print("building parts ...", flush=True)
     G.FLAT_START = FLAT_START
-    parts = dict(housing_s=housing(False), housing_p=housing(True), pin_ring=pin_ring(), lid=lid(), disc=disc(),
+    parts = dict(floor_s=housing_floor(False), floor_p=housing_floor(True), ring_s=housing_ring(False),
+                 ring_p=housing_ring(True), pin_ring=pin_ring(), lid=lid(), disc=disc(),
                  hub=hub(), ecc_sp=ecc_spacer(), flange=output_flange(), sring_s=support_ring(False), sring_p=support_ring(True),
                  clamp=clamp_ring(), b6800=b6800(), b6808=GS.bearing_6808(), motor=motor_body(), shaft=motor_shaft(),
                  outdisc=out_disc())
@@ -680,13 +793,14 @@ def main():
 
     # ---- masses
     w("\nPrinted parts (solid nylon, g):")
-    names = [("housing (steel pins)", "housing_s"), ("housing (printed pins)", "housing_p"), ("pin ring", "pin_ring"),
+    names = [("housing floor (steel pins)", "floor_s"), ("housing floor (printed pins)", "floor_p"),
+             ("housing ring (steel pins)", "ring_s"), ("housing ring (printed pins)", "ring_p"), ("pin ring", "pin_ring"),
              ("lid", "lid"), ("disc (x2)", "disc"), ("eccentric (one piece)", "hub"), ("eccentric spacer", "ecc_sp"), ("output flange", "flange"),
              ("output support ring (steel pins)", "sring_s"), ("output support ring (printed pins)", "sring_p"),
              ("clamp ring", "clamp")] + ([("outer race spacer", "sp_out"), ("inner race spacer", "sp_in")] if SPREAD else [])
     for lab, k in names:
         w(f"  {lab:36s} {parts[k].Volume() * NYLON:6.1f}")
-    tot = sum(parts[k].Volume() for k in ("housing_s", "pin_ring", "lid", "hub", "ecc_sp", "flange", "sring_s", "clamp")
+    tot = sum(parts[k].Volume() for k in ("floor_s", "ring_s", "pin_ring", "lid", "hub", "ecc_sp", "flange", "sring_s", "clamp")
               + (("sp_out", "sp_in") if SPREAD else ())) + 2 * parts["disc"].Volume()
     w(f"  set with steel pins: {tot * NYLON:.0f} g printed + 46 dowels {46 * math.pi / 4 * PIN_D ** 2 * PIN_LEN * 7.85e-3:.0f} g "
       f"+ 2 x 6808 + 2 x 6800 + screws (the 5:1 gearbox it replaces: {591 - 390:.0f} g without the motor)")
@@ -694,33 +808,40 @@ def main():
     # ---- hardware
     w("\nHardware per joint: 46 dowels 3 x 20 (38 ring + 8 output) | 2 x 6800 10x19x5 | 2 x 6808 40x52x7 |")
     w("  4 x M3 x 8 motor screws (from inside, 4.0 into the motor's 4.5 deep threads) |")
+    tap_top = FLOOR_T - JOINT_CHAMFER                 # the floor's self-tap hole, under its joint chamfer
     fits = []
     for L in (20, 25, 30, 35, 40, 45, 50, 55, 60, 65):
         tip = Z_LID_STEP - L
-        if tip > Z_TOP - 4:
+        if tip > tap_top - 2:
             fits.append(f"x{L} too short")
         elif tip >= 0:
-            fits.append(f"x{L} {Z_TOP - tip:.1f} into the housing")
+            fits.append(f"x{L} {tap_top - tip:.1f} into the floor")
         else:
             fits.append(f"x{L} sticks out {-tip:.1f} under the floor")
     L, s_end = lid_screw_len(), lid_shank_end()
     tip = Z_LID_STEP - L
-    z_clear = min(Z_TOP, s_end - LID_SHANK_MARGIN)
+    z_fit = s_end + LID_SHANK_MARGIN
     w(f"  6 x M3 x {L} socket head cap screws, PARTLY threaded ({LID_THREAD:g} thread, ISO 4762), heads on the lid step "
-      f"at z {Z_LID_STEP:g}: the plain shank through lid + pin ring + a {G.M3['clear']:g} clearance in the housing's top "
-      f"down to z {z_clear:.1f} (shank ends at {s_end:.1f}), the thread self-tapping the {G.BODY_HOLE:g} hole below: "
-      f"{z_clear - max(tip, 0):.1f} mm of thread in the housing, tip {tip:.1f} above its underside |")
+      f"at z {Z_LID_STEP:g}: through lid + pin ring + the housing ring ({G.M3['clear']:g} clearance, then D{LID_FIT_HOLE:g} on "
+      f"the plain shank from z {z_fit:.1f} to its top: the screws centre the ring on the floor; the shank ends at "
+      f"{s_end:.1f}), the thread self-tapping the floor's {G.BODY_HOLE:g} hole: {tap_top - max(tip, 0):.1f} mm of thread, "
+      f"tip {tip:.1f} above the floor's underside |")
     w(f"     (fully threaded, for comparison: " + ", ".join(fits) + "; the tips come out beside the motor) |")
+    w(f"  arm mount (the arm's screws, not this kit): 6 x #4 x 3/4\" wood screws up through the arm plate into the "
+      f"housing's D{ARM_SCREW_PILOT:g} pilots ({ARM_PILOT_TOP:g} deep: any plate 3..8 mm) |")
     face = Z_BRG_TOP - 0.1
     w(f"  3 x M3 output screws through your 24 mm disc + the 2 mm clamp ring: M3 x 30 bites "
       f"{30 - (OUT_DISC_T + CLAMP_T) - (Z_DISC_OUT - CLAMP_T - face):.1f} into the insert, M3 x 40 ends "
       f"{(Z_DISC_OUT + OUT_DISC_T - 40) - Z_OUT_HOLE_BOTTOM:.1f} above the hole bottom | 3 x M3 x {INSERT_L:g} x {INSERT_D:g} "
       f"heat-set inserts in {INSERT_HOLE:g} holes {INSERT_DEPTH:g} deep, {INSERT_LEAD:g} lead-in, flush with the flange face")
     w("  Discs: print solid (100 % infill, 4+ walls) - the tested printed drive cracked round its eccentric bearing first.")
+    w(f"  Discs: lead-in face UP in the gearbox. To take a disc out, run two M3 screws into its D{PULL_HOLE:g} pull holes and "
+      f"lift; disc 1 brings the eccentric with it.")
     w("\nAssembly:")
-    w("  1  Drill the printed pin holes to 3.0 (housing floor sockets, support ring, flange sockets) so the dowels press in.")
-    w("  2  Motor to the housing: 4 x M3 x 8 from inside, heads into the counterbores.")
-    w("  3  Steel pins: press the 38 ring pins down the wall grooves into the floor (tops stand 0.5 above the housing).")
+    w("  1  Drill the printed output pin holes to 3.0 (support ring, flange sockets) so the dowels press in.")
+    w("  2  Motor to the housing floor: 4 x M3 x 8 from inside, heads into the counterbores. Housing ring on the floor.")
+    w(f"  3  Steel pins: slide the 38 ring pins down the ring's D{RING_PIN_HOLE:g} wall grooves into the floor's "
+      f"D{FLOOR_PIN_SOCKET:g} sockets (tops stand 0.5 above the ring).")
     w("  4  Press the 8 output pins into the support ring (flush underneath) and drop it in over the motor shaft.")
     w("  5  On the bench, the eccentric cartridge: press a 6800 into each disc, grease the lobes. Disc 1's bearing up")
     w("     onto cam 1 FROM BELOW (over the neck) to the middle collar, then the eccentric spacer up the neck under it;")
@@ -732,15 +853,18 @@ def main():
       "  7  Onto the flange journal: a 6808, the inner race spacer, the other 6808; push the lot up into the lid from\n"
       "     below with the outer race spacer between the two outer races (the lip stops the top race);")
     w("     pin ring under the lid; lower the three together so the flange sockets take the output pin tops.")
-    w("  8  6 lid screws through lid + pin ring into the housing.  9  Clamp ring on the upper inner race, your disc")
+    w("  8  6 lid screws through lid + pin ring + housing ring into the floor: they line the ring up on the floor and")
+    w("     clamp the stack.  9  Clamp ring on the upper inner race, your disc")
     w("     on top, 3 x M3 into the flange inserts: this clamps both inner races to the flange.")
     w("  Fits to tune after a test print: --clear (backlash), --hub-bore, --cam-d, --ecc-bore, --pin-hole, --insert-hole.")
 
     # ---- write
     print("writing STEP / STL ...", flush=True)
     frames = {  # part: (shape, z offset to put it on the bed, flip?)
-        "housing_steel_pins": (parts["housing_s"], 0.0, False),
-        "housing_printed_pins": (parts["housing_p"], 0.0, False),
+        "housing_floor_steel_pins": (parts["floor_s"], 0.0, False),
+        "housing_floor_printed_pins": (parts["floor_p"], 0.0, False),
+        "housing_ring_steel_pins": (parts["ring_s"], -FLOOR_T, False),
+        "housing_ring_printed_pins": (parts["ring_p"], -FLOOR_T, False),
         "pin_ring": (parts["pin_ring"], -Z_TOP, False),
         "lid": (parts["lid"], -Z_BRG, False),
         "disc": (parts["disc"], 0.0, False),

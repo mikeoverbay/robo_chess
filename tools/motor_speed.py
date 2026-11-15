@@ -76,6 +76,14 @@ def pullout(motor, rpm):
 # ---------------------------------------------------------------- the arm's gravity loads (arm plane: x out, z up)
 def loads(ik, rng, T):
     """output torques N.m at J1..J4 holding the arm at grip point T (design frame), claw vertical"""
+    j, masses = arm(ik, rng, T)
+    return [G * sum(m * (p[0] - Jk[0]) for m, p, beyond in masses if beyond >= k) / 1000.0
+            for k, Jk in enumerate(j, start=1)]
+
+
+def arm(ik, rng, T):
+    """the arm at grip point T (design frame), claw vertical: joints J1..J4 in the arm plane (mm: x out from the yaw
+    axis, z up from J1) and the masses [(kg, point, the first joint it is beyond: 1 = beyond J1 ...)]"""
     L = ik["link"]
     tool = ik["tool"]
     ax = ik["yaw_axis"]
@@ -107,10 +115,60 @@ def loads(ik, rng, T):
         (M_LINK, mid(J3, J4), 3), (M_WRIST_DRIVE[JOINT_MOTOR["J4 wrist"]], J4, 3),
         (M_CLAW, claw_c, 4), (M_KING, grip, 4),
     ]
+    return (J1, J2, J3, J4), masses
+
+
+# ---------------------------------------------------------------- acceleration (Mike 2026-11-07: "speed up the
+# acceleration on these arms ... it's really, really just takes forever to get up to speed")
+# A joint may speed up as hard as its motor can while still keeping the same x MARGIN over the load it then carries:
+#     pull-out(cruise rpm) >= MARGIN x [ (|gravity| + I_arm alpha) / (ratio eff) + J_rotor ratio alpha ]
+# taken at the worst pose (every square and tray spot, down on the board, 60 up and the 125 carry height). I_arm is
+# everything beyond the joint (point masses + each tube link's own m L^2 / 12). The swivel turns the whole arm: I about
+# the yaw axis from the same masses' reach, plus the turning base (ESTIMATED).
+ROTOR = {"48 mm (17HS19-2004S1)": 82e-7, "60 mm (73 N.cm, 2 A)": 120e-7,          # kg.m^2 (82 g.cm^2 = StepperOnline's
+         "23 mm pancake (15.5 N.cm)": 20e-7, "40 mm (44 N.cm, 1.7 A)": 57e-7}      # 17HS19 figure; the others ESTIMATED)
+SWIVEL = dict(motor="48 mm (17HS19-2004S1)", ratio=4.0, eff=0.90,                  # 18T:72T bevel, eff ESTIMATED
+              base_i=0.010)                     # kg.m^2: turntable, column, J1's drive, claw servo near the axis (ESTIMATED)
+
+
+def inertias(j, masses):
+    """kg.m^2 about J1..J4 (everything beyond each) and about the yaw axis (the whole arm, base not included)"""
+    rod = M_LINK * 0.2 ** 2 / 12
     out = []
-    for k, Jk in enumerate((J1, J2, J3, J4), start=1):
-        out.append(G * sum(m * (p[0] - Jk[0]) for m, p, beyond in masses if beyond >= k) / 1000.0)
-    return out
+    for k, Jk in enumerate(j, start=1):
+        i = sum(m * ((p[0] - Jk[0]) ** 2 + (p[1] - Jk[1]) ** 2) for m, p, beyond in masses if beyond >= k) / 1e6
+        out.append(i + rod * sum(1 for m, p, beyond in masses if m == M_LINK and beyond >= k))
+    yaw = sum(m * p[0] ** 2 for m, p, beyond in masses) / 1e6 + rod * 3
+    return out, yaw
+
+
+def accel_limits(ik, rng, mot, margin=MARGIN):
+    """{joint: (alpha deg/s^2 allowed at the worst pose, that pose, I there, the claw's sideways g for the swivel)}"""
+    spots = [BP.square_at(f + str(r)) for f in "abcdefgh" for r in range(1, 9)]
+    spots += BP.tray_spots("white") + BP.tray_spots("black")
+    names = ["J1 shoulder", "J2 elbow", "J3", "J4 wrist"]
+    worst = {}
+    for p in spots:
+        for up in (0.0, 60.0, 125.0):
+            T = [p[0], p[1] - up, p[2]]
+            j, masses = arm(ik, rng, T)
+            tg = loads(ik, rng, T)
+            ii, iyaw = inertias(j, masses)
+            for n, g, i in zip(names, tg, ii):
+                m = JOINT_MOTOR[n]
+                rpm = mot.get(n, {}).get("v", 0) * RATIO / 6
+                po = pullout(m, rpm) / margin
+                a = (po - abs(g) / (RATIO * EFF)) / (i / (RATIO * EFF) + ROTOR[m] * RATIO)
+                if n not in worst or a < worst[n][0]:
+                    worst[n] = (a, T, i, g)
+            m, r, e = SWIVEL["motor"], SWIVEL["ratio"], SWIVEL["eff"]
+            rpm = mot.get(ik["yaw"], {}).get("v", 0) * r / 6
+            iy = iyaw + SWIVEL["base_i"]
+            a = (pullout(m, rpm) / margin) / (iy / (r * e) + ROTOR[m] * r)
+            reach = (j[3][0] + ik["tool"][0]) / 1000.0
+            if ik["yaw"] not in worst or a < worst[ik["yaw"]][0]:
+                worst[ik["yaw"]] = (a, T, iy, reach)
+    return {n: (math.degrees(a), T, i, x) for n, (a, T, i, x) in worst.items()}
 
 
 def main():
@@ -156,8 +214,70 @@ def main():
                                          (0.5, .6), (0.355, .63)))
     print(f"\nshoulder: arm stretched out, I ~{inertia:.2f} kg.m^2 x {math.degrees(a1):.0f} deg/s^2 = {inertia * a1:.2f} N.m "
           f"(vs {worst[0]:.1f} N.m of gravity)")
+    accel(sc, ik, rng, mot)
     return new
 
 
+def accel(sc, ik, rng, mot):
+    """print each joint's acceleration limit; --write puts them and the viewer's torque model in scene ik.motion"""
+    lim = accel_limits(ik, rng, mot)
+    print(f"\nacceleration, x{MARGIN} margin kept with gravity + inertia + rotor at the WORST pose, capped at "
+          f"{MOTOR_ACC_CAP:g} rev/s^2 at the motor (printed cycloid / printed arm: raise after a bench run):")
+    out = {}
+    for n in [ik["yaw"], "J1 shoulder", "J2 elbow", "J3", "J4 wrist"]:
+        a, T, i, x = lim[n]
+        ratio = SWIVEL["ratio"] if n == ik["yaw"] else RATIO
+        cap = MOTOR_ACC_CAP * 360 / ratio
+        old = mot.get(n, {}).get("a", 40)
+        # the scalar a = the worst pose's limit, never below today's (J1: gravity alone at full reach already eats the
+        # margin, so its scalar stays and the viewer's pose-aware planner gives it more where the pose allows)
+        out[n] = max(old, math.floor(min(a, cap) / 5) * 5)
+        extra = (f"the claw ~{x * math.radians(out[n]) / G:.2f} g sideways at {x * 1000:.0f} mm out" if n == ik["yaw"]
+                 else f"I {i:.3f} kg.m^2, gravity {x:.2f} N.m")
+        print(f"  {n:12s} worst pose {a:7.0f} deg/s^2 (at {[round(v) for v in T]}; {extra}), cap {cap:4.0f} "
+              f"-> a {out[n]:4.0f} (was {old})")
+    return out
+
+
+MOTOR_ACC_CAP = 40.0             # rev/s^2 at the motor (~ an Ender's X motor at 1600 mm/s^2): until bench-tested
+
+
+def write_motion(sc, ik, rng, mot):
+    """scene ik.motion: new scalar a's, each joint's torque figures and the arm's mass model (the viewer's planner)"""
+    out = accel(sc, ik, rng, mot)
+    for n, a in out.items():
+        e = mot.setdefault(n, {})
+        if n == ik["yaw"]:
+            m, ratio, eff = SWIVEL["motor"], SWIVEL["ratio"], SWIVEL["eff"]
+        else:
+            m, ratio, eff = JOINT_MOTOR[n], RATIO, EFF
+        rpm = e.get("v", 30) * ratio / 6
+        e.update(a=a, ratio=ratio, eff=eff, pullout=round(pullout(m, rpm), 4), rotor=ROTOR[m],
+                 a_cap=round(MOTOR_ACC_CAP * 360 / ratio, 1), motor=m)
+    mot["dynamics"] = {
+        "why": "2026-11-07 Mike: 'speed up the acceleration ... takes forever to get up to speed'. tools/motor_speed.py "
+               "--write. The viewer's planner times each move with the arm's own dynamics along its path: every joint's "
+               "torque = sum of m (a - g) . dp/dq over the masses below (+ rotor J R^2 eff q''), kept under "
+               "pullout x ratio x eff / margin at every sample of the move; a joint's acceleration is never held below "
+               "its scalar a (today's) nor above a_cap (motor rev/s^2 cap). Masses kg: links as two points (their own "
+               "m L^2/12), drives at the joints, claw half way down the tool, a king at the grip.",
+        "margin": MARGIN, "g": G,
+        "masses": {"link": M_LINK, "drive": M_DRIVE, "wrist_drive": M_WRIST_DRIVE[JOINT_MOTOR["J4 wrist"]],
+                   "servo_on_b": M_SERVO_ON_B, "claw": M_CLAW, "king": M_KING},
+        "base_i": SWIVEL["base_i"],
+    }
+    bak = os.path.join(os.path.dirname(SCENE), "scene_before_accel_backup.json")
+    if not os.path.exists(bak):
+        with open(bak, "w", encoding="utf-8") as f:
+            json.dump(json.load(open(SCENE, encoding="utf-8")), f, indent=1)
+    with open(SCENE, "w", encoding="utf-8") as f:
+        json.dump(sc, f, indent=1)
+    print(f"wrote {SCENE} ik.motion (backup {os.path.basename(bak)})")
+
+
 if __name__ == "__main__":
-    main()
+    if "--write" in sys.argv:
+        _sc = json.load(open(SCENE, encoding="utf-8"))
+        write_motion(_sc, _sc["ik"], {j["name"]: (j["min"], j["max"]) for j in _sc["joints"]}, _sc["ik"]["motion"])
+    else:
+        main()

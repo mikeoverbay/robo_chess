@@ -1,9 +1,18 @@
 {
  "view": {
-  "rig": "gearbox motor",
-  "rig_view": "cut disc 1",
-  "rig_play": true,
-  "rig_rpm": 30
+  "view": "iso",
+  "zoom": 5.5,
+  "at": [
+   675.0,
+   205.0,
+   10.0
+  ]
  },
- "view_seq": 59
+ "view_seq": 75,
+ "highlight": [
+  {
+   "part": 269,
+   "color": "#e0a030"
+  }
+ ]
 }

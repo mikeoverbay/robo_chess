@@ -9,7 +9,10 @@ Motion, input turned 0..360 deg in 1 deg steps, both discs (720 poses):
   output pins in the disc holes: gap 0.050 mm all the way round
   backlash with the motor held: 1.13 deg at the output (disc 0.85 + output pin holes 0.28) = 9.6 mm at the wrist from joint 3 (487 mm)
   disc material: bearing bore 19 -> output holes 9.1 mm, output holes -> lobe roots 3.6 mm
-  ring pin grooves wrap 211 deg of each pin (opening 2.89 < 3: pins can't fall inwards)
+  pull holes (2 x D2.5 on r 17.17 at 90 / 270, 0.8 lead-in on top): to the bearing bore 6.4 mm, to an output hole 4.9 (4.1 at the lead-in), to the lobe roots 7.6
+  housing in two pieces (floor z 0..7.2, ring 7.2..23.2): floor sockets D3.4, the ring places the pins
+  ring pin grooves D3.2 for the 3 pins; the grooves wrap 209 deg round, opening 3.10 >= 3: printed true, the groove doesn't clip the pin in (the floor socket and the pin ring hold it)
+  arm screw pilots (6 x D2.4 up to z 16 on r 32.4 at 33.16, 90.00, 146.84, 213.16, 270.00, 326.84 deg, midway between ring pins): wall to the outside 1.65 mm, to the pin grooves 2.26
 
 Disc spline vs the exact profile: area 2187.86 vs 2187.89 mm^2 (-0.002 %)
 
@@ -29,11 +32,13 @@ Loads at joint 3's design torque 9.38 N*m (gear_ratio.py: straight out, gripper 
   each output insert (M3 x 4 x 5, if the clamp's friction carried none): 208 N sideways, 10.4 MPa on the nylon (stall 15.8; allowable 20.7, half moulded nylon's 41.4); knurl wall 2.50 to the centre pocket, 2.45 to the journal OD
 
 Printed parts (solid nylon, g):
-  housing (steel pins)                   50.6
-  housing (printed pins)                 56.5
+  housing floor (steel pins)             26.9
+  housing floor (printed pins)           28.3
+  housing ring (steel pins)              21.8
+  housing ring (printed pins)            27.1
   pin ring                               12.7
   lid                                    51.7
-  disc (x2)                              12.0
+  disc (x2)                              11.9
   eccentric (one piece)                   1.0
   eccentric spacer                        0.2
   output flange                          39.5
@@ -42,19 +47,21 @@ Printed parts (solid nylon, g):
   clamp ring                              1.7
   outer race spacer                       6.9
   inner race spacer                       3.9
-  set with steel pins: 196 g printed + 46 dowels 51 g + 2 x 6808 + 2 x 6800 + screws (the 5:1 gearbox it replaces: 201 g without the motor)
+  set with steel pins: 194 g printed + 46 dowels 51 g + 2 x 6808 + 2 x 6800 + screws (the 5:1 gearbox it replaces: 201 g without the motor)
 
 Hardware per joint: 46 dowels 3 x 20 (38 ring + 8 output) | 2 x 6800 10x19x5 | 2 x 6808 40x52x7 |
   4 x M3 x 8 motor screws (from inside, 4.0 into the motor's 4.5 deep threads) |
-  6 x M3 x 55 socket head cap screws, PARTLY threaded (18 thread, ISO 4762), heads on the lid step at z 55.7: the plain shank through lid + pin ring + a 3.4 clearance in the housing's top down to z 18.0 (shank ends at 18.7), the thread self-tapping the 2.5 hole below: 17.3 mm of thread in the housing, tip 0.7 above its underside |
-     (fully threaded, for comparison: x20 too short, x25 too short, x30 too short, x35 too short, x40 7.5 into the housing, x45 12.5 into the housing, x50 17.5 into the housing, x55 22.5 into the housing, x60 sticks out 4.3 under the floor, x65 sticks out 9.3 under the floor; the tips come out beside the motor) |
+  6 x M3 x 55 socket head cap screws, PARTLY threaded (18 thread, ISO 4762), heads on the lid step at z 55.7: through lid + pin ring + the housing ring (3.4 clearance, then D3 on the plain shank from z 19.4 to its top: the screws centre the ring on the floor; the shank ends at 18.7), the thread self-tapping the floor's 2.5 hole: 5.9 mm of thread, tip 0.7 above the floor's underside |
+     (fully threaded, for comparison: x20 too short, x25 too short, x30 too short, x35 too short, x40 too short, x45 too short, x50 too short, x55 5.9 into the floor, x60 sticks out 4.3 under the floor, x65 sticks out 9.3 under the floor; the tips come out beside the motor) |
+  arm mount (the arm's screws, not this kit): 6 x #4 x 3/4" wood screws up through the arm plate into the housing's D2.4 pilots (16 deep: any plate 3..8 mm) |
   3 x M3 output screws through your 24 mm disc + the 2 mm clamp ring: M3 x 30 bites 3.9 into the insert, M3 x 40 ends 14.7 above the hole bottom | 3 x M3 x 4 x 5 heat-set inserts in 4.2 holes 4.5 deep, 0.3 lead-in, flush with the flange face
   Discs: print solid (100 % infill, 4+ walls) - the tested printed drive cracked round its eccentric bearing first.
+  Discs: lead-in face UP in the gearbox. To take a disc out, run two M3 screws into its D2.5 pull holes and lift; disc 1 brings the eccentric with it.
 
 Assembly:
-  1  Drill the printed pin holes to 3.0 (housing floor sockets, support ring, flange sockets) so the dowels press in.
-  2  Motor to the housing: 4 x M3 x 8 from inside, heads into the counterbores.
-  3  Steel pins: press the 38 ring pins down the wall grooves into the floor (tops stand 0.5 above the housing).
+  1  Drill the printed output pin holes to 3.0 (support ring, flange sockets) so the dowels press in.
+  2  Motor to the housing floor: 4 x M3 x 8 from inside, heads into the counterbores. Housing ring on the floor.
+  3  Steel pins: slide the 38 ring pins down the ring's D3.2 wall grooves into the floor's D3.4 sockets (tops stand 0.5 above the ring).
   4  Press the 8 output pins into the support ring (flush underneath) and drop it in over the motor shaft.
   5  On the bench, the eccentric cartridge: press a 6800 into each disc, grease the lobes. Disc 1's bearing up
      onto cam 1 FROM BELOW (over the neck) to the middle collar, then the eccentric spacer up the neck under it;
@@ -64,6 +71,7 @@ Assembly:
   7  Onto the flange journal: a 6808, the inner race spacer, the other 6808; push the lot up into the lid from
      below with the outer race spacer between the two outer races (the lip stops the top race);
      pin ring under the lid; lower the three together so the flange sockets take the output pin tops.
-  8  6 lid screws through lid + pin ring into the housing.  9  Clamp ring on the upper inner race, your disc
+  8  6 lid screws through lid + pin ring + housing ring into the floor: they line the ring up on the floor and
+     clamp the stack.  9  Clamp ring on the upper inner race, your disc
      on top, 3 x M3 into the flange inserts: this clamps both inner races to the flange.
   Fits to tune after a test print: --clear (backlash), --hub-bore, --cam-d, --ecc-bore, --pin-hole, --insert-hole.

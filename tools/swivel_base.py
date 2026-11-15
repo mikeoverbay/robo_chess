@@ -338,6 +338,11 @@ def j0_reach_max():
     import board_pieces as BP                                  # (it imports this module: load it only when asked)
     pts = [BP.square_at(f + r) for f in "abcdefgh" for r in "12345678"]
     pts += BP.tray_spots("white") + BP.tray_spots("black")
+    # 2026-11-10: the trays lost their two rows beside the robot (Mike: "only 16", no spare queens). The J0 home magnet
+    # (home_magnet_xy) and the cover's roof were placed for the old corner spot, so those rows stay in here: re-running
+    # this or hall_homing.py doesn't move them.
+    y0 = 4 * SQ + BORDER + BP.TRAY_GAP + BP.TRAY_PITCH / 2
+    pts += [BP.design(-28.0 + r * BP.TRAY_PITCH, s * (y0 + c * BP.TRAY_PITCH)) for r in (0, 1) for c in (0, 1) for s in (-1, 1)]
     yaws = [math.degrees(math.atan2(-(p[2] - AB.Z_MID), -p[0])) for p in pts]
     return max(yaws), min(yaws)
 

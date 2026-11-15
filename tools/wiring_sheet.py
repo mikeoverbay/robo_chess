@@ -30,7 +30,9 @@ HALF, INNER = 29.9, 27.7
 LANE = {"ROW": -8.5, "GND": -2.54, "data": 0.0, "5V": 2.54}
 COL = {"ROW": "#7b4fd0", "GND": "#111111", "data": "#f08c00", "5V": "#d62728", "column": "#1f6fd0", "white": "#8a8a8a"}
 FILES, RANKS = (0, 1, 2), (5, 6, 7)                  # a, b, c ; ranks 6, 7, 8
-CW_EDGE, CW_GND, CW_5V, CW_HOLE, CW_B0, CW_B1, CW_OUT = -30.45, -34.45, -38.45, -32.05, -42.45, -47.25, -48.75
+import causeway as CW  # noqa: E402  (the causeway's own numbers, so the sheet follows it)
+CW_EDGE, CW_GND, CW_5V, CW_HOLE = CW.EDGE, CW.X(CW.U_GND), CW.X(CW.U_5V), CW.X(CW.U_HOLE)
+CW_B0, CW_B1, CW_OUT = CW.X(CW.CH_U0), CW.X(CW.CH_U1), CW.X(CW.WIDTH)
 BW_Y0, BW_Y1, BW_C0, BW_C1 = 450.45, 460.45, 453.35, 458.55
 COL_X = 20.6
 LW_BARE, LW_INS = 1.6, 1.2
@@ -151,7 +153,7 @@ def main():
     callout(12, X + 12, Y + 23, (X + COL_X, Y + 24.3))
     callout(13, CW_GND + 0.2, 7 * P + 20)
     callout(14, CW_5V - 0.2, 7 * P + 13)
-    callout(15, CW_B0 - 2.4, 7 * P + 26)
+    callout(15, (CW_B0 + CW_B1) / 2, 7 * P + 26)
     callout(16, 110, (BW_C0 + BW_C1) / 2)
     callout(17, -40, 457)
 

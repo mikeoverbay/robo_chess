@@ -6,6 +6,7 @@ Turntable base. Shoulder turntable. Arm 1, arm 2, arm 3. Wrist. Claw mount. Claw
 the gearboxes are the same, we need one good working printable model. I believe the wrist is part of the gearbox.")
 
     python print_parts.py
+    python print_parts.py "Arm (print 3)" "Shoulder turntable"     (just those groups; the others are not rewritten)
 
 Writes robo_chess/print/<group>.step, one file per group, each a flat set of named bodies (no folders) in their
 assembled places - only what gets printed: no motors, bearings, servo, horn, fittings, dowels, magnets or Hall chips.
@@ -21,8 +22,8 @@ Export each body to STL in Shapr3D; orient it in the slicer. "(print N)" = how m
   Chess pieces           each CAD piece and the two pedestals as SEPARATE bodies (print them apart: magnet glued
                          into the pedestal's bottom pocket, pennies in its top cavity, then the piece glued on - which
                          closes the cavity; fused they'd seal it). ONE pedestal for all: a stepped recess, queen / king
-                         (28.8 bottoms) in its 29.3 top step, the rest (25.3..25.5) in the 25.9 step below. Counts are both sides plus
-                         the two spare queens. The knight is Mike's own STL (chessboard/pieces/Knight_10x2mm.stl).
+                         (28.8 bottoms) in its 29.3 top step, the rest (25.3..25.5) in the 25.9 step below. Counts are both sides
+                         (+ a spare queen a side: out 2026-11-10, back 2026-11-12). The knight is Mike's own STL (chessboard/pieces/Knight_10x2mm.stl).
 Re-run after any change (and cycloid.py --spread 14 after a gearbox change). Nothing outside print/ is touched.
 """
 import os
@@ -68,7 +69,8 @@ GROUPS = [
                        (CLAW, "claw plunger", "Claw plunger", ORANGE),
                        (CLAW, "claw finger0", "Claw finger 1 (one part, print 3)", BLUE),
                        (CLAW, "claw finger1", "Claw finger 2", BLUE), (CLAW, "claw finger2", "Claw finger 3", BLUE)]),
-    ("Gearbox assembly (print 4)", [(GEARBOX, "housing", "Gearbox housing", BLUE),
+    ("Gearbox assembly (print 4)", [(GEARBOX, "housing floor", "Gearbox housing floor", BLUE),   # two-piece
+                                    (GEARBOX, "housing ring", "Gearbox housing ring", BLUE),     # (2026-11-15)
                                     (GEARBOX, "output support ring", "Gearbox output support ring", GREY),
                                     (GEARBOX, "disc 1", "Gearbox disc 1 (one part, print 2)", ORANGE),
                                     (GEARBOX, "disc 2", "Gearbox disc 2", ORANGE),
@@ -81,8 +83,8 @@ GROUPS = [
                                     (GEARBOX, "outer race spacer", "Gearbox outer race spacer", BLUE),
                                     (GEARBOX, "clamp ring", "Gearbox clamp ring", GREY)]),
 ]
-PIECES = [("Pawn", 16), ("Rook", 4), ("Bishop", 4), ("Queen", 4), ("King", 2)]   # both sides + 2 spare queens
-PEDESTALS = [("", 34)]                        # one pedestal for every piece: 32 + the 2 spare queens
+PIECES = [("Pawn", 16), ("Rook", 4), ("Bishop", 4), ("Queen", 4), ("King", 2)]   # both sides + a spare queen each
+PEDESTALS = [("", 34)]                        # one pedestal for every piece (the spares back 2026-11-12)
 
 
 def main():
@@ -98,7 +100,11 @@ def main():
         assert len(s.Solids()) == 1 and BRepCheck_Analyzer(s.wrapped).IsValid(), f"{name}: not one clean solid"
         return s
 
-    groups = [(f, [(part(src, nm), body, col) for src, nm, body, col in items]) for f, items in GROUPS]
+    only = sys.argv[1:]                                    # group names: write just those (e.g. "Arm (print 3)")
+    for f in only:
+        assert f in [g for g, _ in GROUPS] + ["Chess pieces"], f"no group {f!r}"
+    groups = [(f, [(part(src, nm), body, col) for src, nm, body, col in items]) for f, items in GROUPS
+              if not only or f in only]
     pieces = []
     for i, (kind, n) in enumerate(PIECES):                 # side by side, standing on z 0
         s = part(PIECE.format(kind), None)
@@ -109,7 +115,8 @@ def main():
         b = s.BoundingBox()
         pieces.append((s.translate(V(45.0 * i - b.center.x, 60.0 - b.center.y, -b.zmin)),
                        f"Pedestal (print {n})", BLUE))
-    groups.append(("Chess pieces", pieces))
+    if not only or "Chess pieces" in only:
+        groups.append(("Chess pieces", pieces))
     for f, bodies in groups:
         write_flat([(body, s, cq.Color(*col)) for s, body, col in bodies], os.path.join(OUT, f + ".step"))
         print(f"{f + '.step':34s} " + ", ".join(body for _, body, _ in bodies))

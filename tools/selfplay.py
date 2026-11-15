@@ -19,7 +19,8 @@ little to mate (the device would shuffle on until the repetition rule), and a dr
 
 Arm: every chess move becomes pick-and-place moves for the viewer - a capture first takes the captured piece to its
 colour's tray (white's on the a-file side, black's on the h-file side), castling moves the king then the rook, en
-passant lifts the passed pawn, a promotion swaps the pawn for that side's spare queen from the tray.
+passant lifts the passed pawn, a promotion swaps the pawn for a queen of that side from its tray (its spare - back
+2026-11-12 - or a captured one), else any captured piece of that side as a stand-in.
 Carry height (Mike, 2026-11-05: "only lift the piece if there are pieces in the way ... if it's an open path, just lift
 high enough to move it across the board, maybe 10 mm max"; then "why are we lifting it all the way up above a king
 when we're only moving a piece over pawns ... are we not checking what's in the way of the path, and how high those
@@ -463,7 +464,7 @@ class Table:
             if sq:
                 self.on[sq] = part
             else:
-                self.tray[colour][0] = part
+                self.tray[colour][BP.SPARE_SPOT] = part     # the spare queen
         self.arm = []
 
     def pos(self, where):
@@ -505,10 +506,10 @@ class Table:
         self.moved.add(part)
         self.lift(part, a, b, f"{part.rsplit(' ', 1)[0]} {a}-{b}")
 
-    def queen_in(self, sq, colour):     # a promotion: a queen of that colour from its tray
-        pick = [i for i, p in self.tray[colour].items() if " queen" in p]
-        if not pick:
-            pick = list(self.tray[colour])                 # no queen left: any piece stands in for it
+    def queen_in(self, sq, colour, only):   # a promotion: a queen of that colour from its tray (the spare, or a captured
+        pick = [i for i in only if " queen" in self.tray[colour][i]]       # one); only: the spots filled before the
+        if not pick:                                                        # pawn went in
+            pick = list(only)                              # no queen there: any piece of that colour stands in for it
         i = sorted(pick)[0]
         part = self.tray[colour].pop(i)
         self.on[sq] = part
@@ -570,9 +571,10 @@ def play(seed, skill):
                 table.go(r0 + frm[1], r1 + frm[1])
             else:
                 table.go(frm, to)
-            if mv.promotion:
+            if mv.promotion and table.tray[colour]:                # (an empty tray - the spare used, nothing else of
+                was = set(table.tray[colour])                      #  theirs taken: the pawn stays as the queen)
                 table.off(to, colour)                              # the pawn leaves ...
-                table.queen_in(to, colour)                         # ... and a queen comes in
+                table.queen_in(to, colour, was)                    # ... and a captured queen (or a stand-in) comes in
             num = board.fullmove_number
             label = f"{num}{'.' if board.turn else '...'} {board.san(mv)}"
             for k, a in enumerate(table.arm[first:]):
@@ -672,7 +674,7 @@ def replan():
     for b in bad[:10]:
         print("   ", b)
     travel_summary(mv)
-    open(SCENE, "w", encoding="utf-8").write(json.dumps(sc, indent=1))
+    open(SCENE + ".tmp", "w", encoding="utf-8").write(json.dumps(sc, indent=1)); os.replace(SCENE + ".tmp", SCENE)   # whole or not at all: the studio reads it every second
 
 
 def main():
@@ -716,7 +718,7 @@ def main():
     sc["game"] = {"title": f"{title} plays itself", "seed": seed, "skill": args.skill, "result": result,
                   "reason": reason, "plies": len(board.move_stack), "think_s": round(think_total, 1),
                   "pgn": str(game.mainline_moves()), "moves": table.arm, "reach_ok": not bad}
-    open(SCENE, "w", encoding="utf-8").write(json.dumps(sc, indent=1))
+    open(SCENE + ".tmp", "w", encoding="utf-8").write(json.dumps(sc, indent=1)); os.replace(SCENE + ".tmp", SCENE)   # whole or not at all: the studio reads it every second
     print(f"scene.json game: {len(table.arm)} arm moves; the Mega would think {think_total / 60:.1f} min in all")
 
 

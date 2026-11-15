@@ -1,59 +1,12 @@
 {
  "joints": {
-  "J0 swivel": 0,
-  "J1 shoulder": 0,
-  "J2 elbow": 0,
-  "J3": 0,
-  "J4 wrist": 0
+  "J0 swivel": 130.0009293665705,
+  "J1 shoulder": 100.07924799588656,
+  "J2 elbow": -100.07924799588656,
+  "J3": -100.07924799588656,
+  "J4 wrist": 145.07924799588656
  },
- "items": [
-  {
-   "label": "P1.F24",
-   "kind": "face",
-   "part": 1,
-   "face": 24,
-   "edge": null,
-   "name": "mockup plus link",
-   "file": "mockup_link_plus.step",
-   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\complete assembly\\mockups\\mockup_link_plus.step",
-   "solid": 0,
-   "shown_offset": null,
-   "picked_at": [
-    9.849766565026584,
-    20.88945111778375,
-    67.19999694824219
-   ],
-   "face_info": {
-    "type": "plane",
-    "area": 4142.553,
-    "c": [
-     -8.0182,
-     0,
-     67.2
-    ],
-    "n": [
-     0,
-     0,
-     1
-    ],
-    "f": 24,
-    "v0": 11602,
-    "vn": 395,
-    "t0": 18908,
-    "tn": 401,
-    "edges": [
-     26,
-     42,
-     141,
-     147,
-     148,
-     149,
-     150,
-     151
-    ]
-   }
-  }
- ],
- "text": "P1.F24: plane, normal +Z \u2014 mockup plus link \u00b7 4142.6 mm\u00b2 \u00b7 centre (-8.02, 0.00, 67.20) at Z 67.20",
- "time": "2026-11-06 22:39:49"
+ "items": [],
+ "text": "",
+ "time": "2026-11-15 04:05:11"
 }

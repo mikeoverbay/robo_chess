@@ -11,11 +11,16 @@ Kept (drive frame: housing bottom z 0, axis on z, the same frame as the arm's jo
   - output: clamp ring 48 dia top face at z 45.2 (where a link's cup sits), flange face at 43.1 inside it,
     3 x insert holes 4.0 dia on r 15 at 0/120/240 deg for the M3 output screws
   - 6 x lid screw holes on r 32.4 at 1.58 + 60k deg: 3.4 through lid and pin ring, 2.5 down the housing to its
-    bottom (the M3 x 16 mount screws come up into these from the link plate)
+    bottom
+  - 6 x arm screw pilots (since 2026-11-15; the link plate's #4 x 3/4" wood screws come up into these, no longer into
+    the lid screw holes): D2.4 up from the bottom to z 16 on cycloid.ARM_SCREW_R at ARM_SCREW_ANGLES (cycloid.housing's)
   - motor: Mike's own NEMA 17 (cycloid/nema17.step, from nema17.py) under the housing, front face on the housing
     bottom, kept as its own parts ("NEMA 17" black body, "NEMA 17 end caps") so they keep their colours; the shaft
     is cut at the housing bottom (inside, it would only overlap the filled stand-in)
-Out: robo_chess/cycloid/cycloid_drive_standin.step (also seen as complete assembly/cycloid gearbox/...).
+  - two bodies since 2026-11-15, as Mike's two-piece housing: "housing floor" (z 0..7.2) and "cycloid drive" (the
+    ring and everything above it); same outside as before, the joint at z 7.2
+Out: robo_chess/cycloid/cycloid_drive_standin.step (also seen as complete assembly/cycloid gearbox/...): "housing
+floor", "cycloid drive", "NEMA 17", "NEMA 17 end caps".
 """
 import math
 import os
@@ -34,6 +39,7 @@ from regroup_assembly import write_step  # noqa: E402
 
 OUT = os.path.join(os.path.dirname(HERE), "cycloid", "cycloid_drive_standin.step")
 MOTOR_CHAMFER = 4.5            # corner chamfer leg: 42.3 - 4.5 -> 26.7 from the axis (53.4 across)
+ARM_PILOT_TOP = C.ARM_PILOT_TOP  # the arm screw pilots come with C.housing() (since 2026-11-15)
 
 
 def motor():
@@ -71,6 +77,10 @@ def main():
         x, y = C.polar(C.LID_SCREW_R, a)
         for z in (-0.5 + 1.0, 10.0, 26.0, 35.0, 43.0):
             assert not solid.isInside(cq.Vector(x, y, z)), f"lid screw hole closed at z {z}"
+    for a in C.ARM_SCREW_ANGLES:
+        x, y = C.polar(C.ARM_SCREW_R, a)
+        for z in (0.2, 7.2, ARM_PILOT_TOP - 0.2):
+            assert not solid.isInside(cq.Vector(x, y, z)), f"arm screw pilot closed at z {z}"
     for a in C.OUT_SCREW_ANGLES:
         x, y = C.polar(C.OUT_SCREW_R, a)
         assert not solid.isInside(cq.Vector(x, y, 40.0)), "output insert hole closed"
@@ -78,6 +88,15 @@ def main():
     bb = solid.BoundingBox()
     print(f"one solid, {len(solid.Faces())} faces, {solid.Volume() / 1000:.0f} cm^3; "
           f"x {bb.xmin:.2f}..{bb.xmax:.2f}  z {bb.zmin:.2f}..{bb.zmax:.2f}")
+    # Mike 2026-11-15: "Gearbox housing is now made of two pieces" (his print/hosuing 2 piece .step: floor z 0..7.2,
+    # ring 7.2..23.2). Same outside, so the stand-in is cut at the joint: "housing floor" + "cycloid drive" (the ring
+    # and everything above it, filled, as before).
+    slab = lambda z0, z1: cq.Solid.makeBox(100, 100, z1 - z0, cq.Vector(-50, -50, z0))
+    floor = solid.intersect(slab(-1.0, C.FLOOR_T)).clean()
+    rest = solid.intersect(slab(C.FLOOR_T, 100.0)).clean()
+    assert len(floor.Solids()) == 1 and len(rest.Solids()) == 1, "the split left loose pieces"
+    assert abs(floor.Volume() + rest.Volume() - solid.Volume()) < 0.01, "the split lost material"
+    print(f"   housing floor {floor.Volume() / 1000:.1f} cm^3 (z 0..{C.FLOOR_T:g}), cycloid drive {rest.Volume() / 1000:.1f} cm^3")
 
     body, caps = N.load()
     caps = N.trimmed_caps(caps, 0.0)
@@ -86,7 +105,8 @@ def main():
         if v > 0.05:
             print(f"   OVERLAP motor {n} x housing: {v:.2f} mm^3")
     assy = cq.Assembly(name="cycloid_drive_standin")
-    assy.add(solid, name="cycloid drive", color=cq.Color(0.83, 0.55, 0.25))
+    assy.add(floor, name="housing floor", color=cq.Color(0.83, 0.55, 0.25))
+    assy.add(rest, name="cycloid drive", color=cq.Color(0.83, 0.55, 0.25))
     assy.add(body, name="NEMA 17", color=cq.Color(0.12, 0.12, 0.13))
     assy.add(caps, name="NEMA 17 end caps", color=cq.Color(0.78, 0.79, 0.81))
     write_step(assy, OUT)

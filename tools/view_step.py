@@ -519,11 +519,17 @@ class App:
                     sc["claw"] = self.read_json("scene.json", {}).get("claw")         # finger pins / plunger for animation
                     sc["bowden"] = self.read_json("scene.json", {}).get("bowden")     # the claw's Bowden tube route
                     sc["piece_home"] = self.read_json("scene.json", {}).get("piece_home", [])   # where each piece starts
+                    sc["trays"] = self.read_json("scene.json", {}).get("trays")      # every tray spot (board_pieces.py)
                     sc["game"] = self.read_json("scene.json", {}).get("game")         # a self-play game (selfplay.py)
                     sc["homing"] = self.read_json("scene.json", {}).get("homing")     # home switches (hall_homing.py)
                     sc["gears"] = self.read_json("scene.json", {}).get("gears")       # models geared to a joint (pinion)
                     sc["rigs"] = self.read_json("scene.json", {}).get("rigs")         # test rigs (gearbox_anim.py)
                     sc["drawings"] = self.read_json("scene.json", {}).get("drawings")  # SVGs as pen strokes (svg_draw.py)
+                    try:                                       # Mike's wood pictures for the board (woods.py)
+                        import woods as WD
+                        sc["woods"] = WD.wood_data(embed=False, quiet=True)
+                    except Exception:
+                        sc["woods"] = None
                     # colour rules: [{"match": regex on "<model> / <part>", "color": "#rrggbb"}], first match wins,
                     # for every part whose scene entry has no colour of its own (Mike: printed parts one filament)
                     rules = self.read_json("scene.json", {}).get("colors") or []
@@ -693,6 +699,13 @@ def make_handler(app):
                     self.send(200, json.dumps(FEA.status()))
                 elif u.path == "/api/fea/result":
                     self.send(200, FEA.result())
+                elif u.path.startswith("/textures/"):         # Mike's wood pictures (robo_chess\textures, woods.py)
+                    import woods as WD
+                    p = WD.texture_file(u.path[len("/textures/"):])
+                    if p:
+                        self.send(200, open(p, "rb").read(), WD.mime(p))
+                    else:
+                        self.send(404, "{}")
                 else:
                     self.send(404, "{}")
             except Exception as e:

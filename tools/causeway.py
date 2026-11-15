@@ -40,13 +40,17 @@ BUCKET_HALF = 29.9
 LANES = {"ROW": -8.5, "GND": -2.54, "data": 0.0, "5V": 2.54}
 GAP = 0.55                               # off the cells, as his strip
 T = 4.5                                  # bottom trenches 1.0, top grooves 1.0 / channel 1.5, >= 2.0 of plastic between
-LANE_W, LANE_D = 1.0, 1.0                # bare 20 AWG trenches (bottom) and kynar grooves (top)
-U_GND, U_5V = 4.0, 8.0                   # bus lanes, measured out from the board-side edge
+LANE_W, LANE_D = 1.0, 1.0                # bare 22 AWG solid (0.64, his, 2026-11-07) trenches (bottom), grooves (top)
+U_GND, U_5V = 4.0, 7.5                   # bus lanes, measured out from the board-side edge (+5 was 8.0)
 U_HOLE = 1.6                             # the rank's through-holes, just off the board
 HOLE_D = 1.2
 POCKET_D, POCKET_DEPTH = 4.5, 1.7        # solder room where a tap meets a bus (bottom); 0.6 clear of the D in hole
-CH_U0, CH_U1, CH_D = 12.0, 16.8, 1.4     # top bundle channel: 8 ROW + 8 LED data wires (0.55 kynar), 8 across x 2 deep
-WIDTH = 18.3
+# 2026-11-10: the top layer is cut in 3 pieces with a seam at |Y| 255 (arm frame), 14.55 past the causeway's board-side
+# edge, and the causeway must stay inside the main piece (its wires go into the main's cells). Was 18.3 wide (bundle 12.0..
+# 16.8 x 1.4, 8 across x 2 deep); now the bundle is 4 x 4 in a narrower, deeper channel past the +5 pocket (to u 9.75),
+# with nothing under it on the bottom face.
+CH_U0, CH_U1, CH_D = 10.4, 12.8, 2.4     # top bundle channel: 8 ROW + 8 LED data wires (0.55 kynar), 4 across x 4 deep
+WIDTH = 14.0                             # outer edge 0.55 inside the seam
 SPLITS, SPLIT_GAP = (150.0, 330.0), 0.2  # 3 printable pieces, cut between ranks
 
 
@@ -111,6 +115,12 @@ def main():
             q = bucket.translate(V(0, j * PITCH, 0))
             assert q.intersect(box(-BUCKET_HALF + 0.45, -BUCKET_HALF + 0.55, y - 0.05, y + 0.05, 0.3, 0.6)).Volume() < 1e-9, \
                 f"no wall notch for {k} at rank {j}"
+    chan = box(*xspan(CH_U0, CH_U1), y0 - 1, y1 + 1, T - CH_D, T + 1)        # top cuts vs bottom pockets: plastic left
+    p5 = cyl(POCKET_D, X(U_5V), LANES["5V"], -1, POCKET_DEPTH)
+    gp = cyl(POCKET_D, X(U_GND), LANES["GND"], -1, POCKET_DEPTH)
+    grooves = [top(U_HOLE, CH_U0 + 0.5, LANES[k]) for k in ("ROW", "data")] + [top(U_HOLE, U_5V, LANES["5V"])]
+    skin = min([chan.distance(p5), chan.distance(gp)] + [g.distance(p) for g in grooves for p in (p5, gp)])
+    assert skin >= 0.7, f"only {skin:.2f} of plastic between a top cut and a bottom pocket"
     ys = sorted(LANES.values())
     print(f"causeway: x {xa:.2f}..{xb:.2f} ({WIDTH} wide, {GAP} off the cells), y {y0}..{y1}, {T} thick; "
           f"{s.Volume() / 1000:.1f} cm^3")
@@ -118,7 +128,7 @@ def main():
           f"straight in, D{POCKET_D} solder pockets at both bus joints")
     print(f"   through-holes D{HOLE_D} at x {X(U_HOLE):.2f} for +5 / ROW / D in; +5 down again at x {X(U_5V):.2f}")
     print(f"   top: grooves {LANE_W} x {LANE_D}, bundle channel x {X(CH_U1):.2f}..{X(CH_U0):.2f} {CH_D} deep (ROW x 8 + "
-          f"LED data x 8); plastic between the faces >= {T - LANE_D - max(LANE_D, CH_D, POCKET_DEPTH):.1f}")
+          f"LED data x 8); thinnest plastic between a top cut and a bottom solder pocket {skin:.2f}")
     print(f"   rank feature spacing {min(b - a for a, b in zip(ys, ys[1:])):.2f} -> {min(b - a for a, b in zip(ys, ys[1:])) - HOLE_D:.2f}"
           f" of plastic between neighbouring holes; clear of the cells by {clear:.2f}; every rank's 4 lanes meet a notch")
     a = cq.Assembly(name="causeway_part")

@@ -16,5 +16,11 @@
   "dir": "viewer_sessions/case",
   "who": "Robot arm control and kinematics",
   "what": "the electronics case (electronics_case.py)"
+ },
+ "twin": {
+  "port": 8769,
+  "dir": "viewer_sessions/twin",
+  "who": "Robot arm control and kinematics",
+  "what": "TEST: two 48 mm shoulder motors belted 1:1 (twin_motor.py)"
  }
 }

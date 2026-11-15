@@ -41,11 +41,29 @@ A sister session, **Robo Chess gearbox**, works from `robo_chess\cycloid\GEARBOX
 - a-file at z 240.6, h-file at z −179.4.
 - Board top y 232. The square tiles' tops are at 231.6.
 
-**Trays.** Each side has a 2-column × 10 tray at 60 mm pitch, 10 mm off the board's side. White's is on the a-file side.
+**Trays.** Each side has a 2-column × 8 tray (plus a 9th row by rank 1, below) at 60 mm pitch, 10 mm off the board's side. White's is on the a-file side.
 - `board_pieces.py` builds them (TRAY_*) and writes `board_trays.stl`.
-- The spare queen sits on each tray's first spot.
-- The front rows double as the 20 pen stands of the draw demo. Tell Robot Studio before moving them.
+- Each tray's inner column doubles as the draw demo's pen stands (16). Tell Robot Studio before moving them.
 - Tray pitch must be ≥ 55 mm along the finger line; 40 collided with the claw.
+- **16 spots per tray** (spare queens: see below; the Professor, 2026-11-10: "We don't need more than 16 ... you don't need
+  spares"). Clip the two rows at the robot end, where the spare queen was: 2 × 8, centres X 92..512 in the arm frame.
+  That gives 32 tray lights and 16 pen stands. DONE by Robot arm control and kinematics in board_pieces.py
+  (TRAY_ROWS 8, TRAY_X0 92); checked 2026-11-10.
+  - Spot centres X 92..512 at 60 pitch, Y ±295 inner and ±355 outer. These are the old rows 2-9, so reach is
+    unchanged.
+  - Buckets X 62..542, Y ±265..385. The draw demo's 16 pen stands are each tray's inner column.
+- **The spare queens are back, one per side** (the Professor, 2026-11-12: "The extra queens are missing"; relayed by
+  Robot arm control and kinematics). The trays stay 2 × 8. Each tray's spare sits in spot 9 (index 8): the outer
+  column, the row nearest the robot, centre X 92, |Y| 355. At most 15 captures plus the spare = 16, so a tray never
+  overflows. The print list is now 4 queens and 34 pedestals. The board doesn't change.
+- **A 9th row, flush with the main's front** (the Professor, relayed by Robot arm control and kinematics, 2026-11-12).
+  The tray pieces now run X 47..617 (570 × 145), and there is a 9th row of buckets at X 572, beside rank 1.
+  - The inner one (|Y| 295, index 16) is a 17th usable spot. The arm reaches it with the claw up to 104 mm high.
+  - The outer one (|Y| 355) is 673 from the yaw axis, out of reach. It is a bucket for looks only, never used or lit.
+  - 36 tray buckets in all, 34 of them usable. Indices 0..15 haven't moved. The STEPs are board_tray_white/black.step.
+- **Light buckets at the tray spots too** (the Professor, relayed by Robot arm control and kinematics, 2026-11-10).
+  Not designed yet: 34 lit (the two out-of-reach buckets stay dark unless he wants them lit for symmetry). Open: a
+  Hall under each tray spot as well? The LED chains and Mega pins for 34 more cells.
 
 **Pieces.** His STLs, measured and rebuilt as CAD.
 - `tools\chess_pieces.py` writes `chessboard\pieces\step\<Name>.step`: hexagon sections with twisted bodies.
@@ -74,6 +92,9 @@ Robo chessboard design wrote this section.
 **What it's for.**
 - A lit ring around a square shows which piece the robot picked and where it's going.
 - The Hall under each square confirms each pick-up and set-down, and catches the human's moves.
+- Rim colours (the Professor, relayed by Robot arm control and kinematics, 2026-11-10): start green, end red, possible
+  moves blue; an error blinks red.
+- Woods (same relay): Acacia for the frame and trays, Ackland Hevea for the dark squares; textures in `textures\`.
 
 **Each square:**
 - An opaque cover in the square's colour.
@@ -253,7 +274,7 @@ square_cell.py's outputs. Don't rerun square_cell.py over his work.
   - His plan: run it the whole length of the board as the main bus, fan each rank's lanes into it, and give each
     joint a round soldering pocket.
 
-## Back way (`toolsack_way.py` -> `chessboard\cellack_way.step`, 2026-11-06)
+## Back way (`tools\back_way.py` -> `chessboard\cell\back_way.step`, 2026-11-06)
 His words: "I want that signal to come to the back ... everything's going to be back there. We'll have the shortest
 run of wires." Also: Hall GND from the LEDs' GND bus, Hall + from the ROW pins along the left edge looking toward
 the robot (the causeway), signal out the back.
@@ -311,24 +332,29 @@ go with our Octopus."
 
 ## Edge causeway, BUILT (`tools\causeway.py` -> `chessboard\cell\causeway.step`, 2026-11-06)
 His ask: "make it as wide as you need to make it. And we'll have to work the board around it."
-- **Size and place:** 16.5 wide × 4.5 thick × 480 long, off the -x edge, 0.55 from the cells. Printed as 3 pieces,
-  179.8 / 179.8 / 119.8, cut between ranks.
+- **Size and place (narrowed 2026-11-10):** 14.0 wide × 4.5 thick × 480 long, off the a-file edge, 0.55 from the
+  cells: board x −44.45..−30.45, arm Y −254.45..−240.45. Printed as 3 pieces, 179.8 / 179.8 / 119.8, cut between
+  ranks.
+  - It was 18.3 wide and reached Y −258.75, across the 3-piece top layer's seam at |Y| 255. It must stay in the main
+    piece because its wires go into the main piece's cells. It now ends 0.55 inside the seam.
+- **Bare wire (his, 2026-11-07): 22 AWG solid copper, 0.64.** Measured in the STEPs: every bare run is 0.99 wide x
+  1.0 deep - plate lanes, bucket wall notches, causeway buses, rank stubs and top grooves. That leaves 0.35 of
+  clearance and the wire sits 0.36 below the face. Holes D1.2; bus solder pockets D4.5 x 1.7 deep.
 - **Bottom face (bare, soldered from below):**
-  - GND bus at x -34.45 and +5 bus at x -38.45, 1.0 × 1.0, open at both ends.
+  - GND bus at x -34.45 and +5 bus at x -37.95 (was -38.45), 1.0 × 1.0, open at both ends.
   - Each rank's GND runs straight into the GND bus.
   - D4.5 × 1.7 solder pockets at both bus joints.
-- **Through-holes:** D1.2 at x -32.05 for each rank's +5 / ROW / D in / return. The +5 comes down again at x -38.45,
-  so it crosses over the GND bus on the top face.
-- **Top face (insulated kynar only):** 1.0 grooves, each at its own y, into one bundle channel (x -45.45..-42.45,
-  1.5 deep). The channel carries the 8 ROW wires and the data hops: rank r's return -> rank r+1's D in, and rank 0's
-  D in from the controller at the y -29.9 end.
-- **Clearances:** nothing crosses. At least 1.34 of plastic between holes, 0.64 between the GND pocket and the D in
-  hole, 1.8 between the faces.
-- **NEW CELL LANE:** "return" at y -13 under every square: a base-plate trench plus notches through both x walls. It
-  carries each rank's D out back from the far end.
-  - At the +x end, each rank needs a short insulated jumper from its data lane (y 0) to its return lane (y -13). It
-    crosses the bare GND and ROW lanes, so it must be insulated.
-- **Still open:** the column wires (8, along the files) leave at the rank-0 / rank-7 ends and need their own way out.
+- **Through-holes:** D1.2 at x -32.05 for each rank's +5 / ROW / D in. The +5 comes down again at x -37.95, so it
+  crosses over the GND bus on the top face.
+- **Top face:** 1.0 grooves, each at its own y, into one bundle channel at x -43.25..-40.85, 2.4 deep. It holds the
+  8 ROW and 8 LED data wires (30 AWG kynar, 0.55), 4 across × 4 deep, and nothing is under it on the bottom face.
+- **Clearances, measured by causeway.py:** nothing crosses.
+  - At least 1.34 of plastic between neighbouring holes, and 0.64 between the GND pocket and the D in hole.
+  - The thinnest plastic between a top cut and a bottom solder pocket is 0.76: the +5 pocket's rim beside the bundle.
+    It was 1.8 before the narrowing, and the script now asserts at least 0.7.
+- The return lane and the data hops are gone: each rank has its own data wire (see the Controller section).
+- The column wires leave by the back way.
+- **Wiring sheet:** `tools\wiring_sheet.py` reads these numbers from causeway.py.
 - **Superseded:** the edge_bus_gnd / 5v strips (files kept). In Robot Studio the preview now shows the cells plus the
   causeway.
 
@@ -357,8 +383,8 @@ His ask: "make it as wide as you need to make it. And we'll have to work the boa
   - Everything is open on the underside, and nothing crosses. Checked: clear of the edge cells, every feeder lines up
     with its lane's notch.
 - **ROW** (8 wires to the Nano) and **data** (rank-to-rank hops) are not in the strips yet.
-- **Shown in his Robot Studio window** (`toolsus_preview.py`, after telling Robot Studio):
-  - 3 entries in scene.json, named "chessboard preview: ...", files `viewer_sessionoard_bus_preview_*.step`.
+- **Shown in his Robot Studio window** (`tools\bus_preview.py`, after telling Robot Studio):
+  - 3 entries in scene.json, named "chessboard preview: ...", files `viewer_session\board_bus_preview_*.step`.
   - They show the 16 cells of the two edge files plus the 6 strip pieces, in the design frame.
   - Moved 560 along -x so they sit on the floor in front of the real board.
   - Re-running only rewrites the files.
@@ -417,7 +443,54 @@ Hall on a centre stem, and he rejected it.
   - Glowing buckets that touch may light their neighbours.
   - The case support that leaves the undersides reachable.
 
-## One-piece wooden base (the Professor, 2026-11-06; concept only)
+## One-piece board: base sheet + 25 mm top layer (the Professor, relayed by Robot arm control and kinematics, 2026-11-10)
+Robo chessboard design wrote this section. It replaces the stacked box below; the electronics-bay rings are gone.
+**Arm frame:** yaw axis at 0,0; X toward the player; Y to the player's right. From our board frame: X = 572 − y,
+Y = x − 210 (rank 8 nearest the robot at X 152, the a-file on the player's left at Y −210).
+- **Base sheet** under everything: X −225..762, Y ±400 (987 × 800). Without the dock its back edge is X −141 (903 deep).
+  Robot and dock screw to the bare sheet; arm heights unchanged.
+- **Top layer, 25 thick, U-shaped:**
+  - It runs full width from X 107 to the front edge at 762. The squares are X 122..602, Y ±240.
+  - Two tray arms run back to X 47 at |Y| 250..400 (X −73 before the 16-spot trays). Tray buckets are X 62..542,
+    Y ±265..385.
+  - Between the arms, behind X 107, it is open for the robot.
+- **His asks:** front margin = side width = 160; room at the back for the robot's base.
+- **Robot base** X −126..65, Y ±65; turntable Ø154 at 0,0. **Dock** X −210..−69, Y 50..184.
+- **Our wiring fits the borders:**
+  - The causeway is Y −258.75..−240.45, leaving 6.3 to white's tray buckets at −265.
+  - The back way is X 111.55..121.55, leaving 4.5 to the layer's back edge at 107.
+- **Open, ours to settle with him:**
+  - The base sheet's thickness.
+  - How the layers join.
+  - 800 is wider than his 2×4 ft stock and the CNC's 610 Y travel. DECIDED (his pick, 2026-11-10): buy a 4×4 ft
+    sheet for the base. It is still wider than the CNC's Y travel, so saw the rectangle and drill to templates.
+  - The cells are 24 tall and two 1/2" plies are about 24, against the 25 asked.
+  - **Flush rims (his ask, relayed 2026-11-10):** the main session's `tools\one_piece_board.py` puts the face at sheet
+    + 27, flush with the rims, and the wood at sheet + 25 (the arm's height). A 24 cell then has its underside 3.0 above
+    the sheet. Options sent to the main session:
+    - A (my pick): a 3 mm pocket under the robot, so the top layer is 24, two 12 mm plies.
+    - B: a 3 mm sub-floor under the cells.
+    - C: 27-tall cells.
+  - **DECIDED: A** (his pick, relayed 2026-11-10; built by `tools\one_piece_board.py`):
+    - The sheet's top is 3 above the robot's face, and the cells sit on the sheet.
+    - The top layer is Z 3..27 over the robot's face, 24 thick, with its face flush with the rims. It covers X 107..762,
+      and the tray arms X 47..107 at |Y| 250..400.
+    - One 3-deep pocket for the robot and dock together, 0.5 clearance all round: robot base X −126.5..65.5, Y ±65.5;
+      dock X −210.5..−68.5, Y 49.5..184.5.
+    - The sheet is 12 thick, a guess until he measures it.
+  - **Top layer in 3 pieces** (relayed 2026-11-10; his CNC's window is 24 in). All pieces are 24 thick.
+    - Main board: X 107..617, Y ±255, 510 × 510. The front is cut 15 past rank 1, his ask.
+    - Tray pieces: X 47..617 (flush with the main's front, 2026-11-12), |Y| 255..400, 570 × 145 each. White's is on −Y. Each butts the main's side edge.
+    - The base sheet, 800 × 842, is over his window, so the robot/dock pockets are open again. The main session
+      suggested option B: a 1/8" hardboard bottom in each piece.
+  - **What the main piece must leave room for, under its border:**
+    - The causeway: Y −255..−240.45, X 122..602, 4.5 tall.
+    - The back way: X 111.55..121.55, Y ±240, 3.7 tall.
+    - With two 12 mm plies, both are through-slots in the lower ply. The wires leave at the back a-file corner (X 107,
+      Y −241..−255) into the open area beside the robot.
+  - Where the Mega and the Octopus go.
+
+## One-piece wooden base (the Professor, 2026-11-06; concept only; SUPERSEDED in part by the section above)
 **His aims:**
 - A CNC-cut wooden case that holds everything: the squares' light buckets and conduits, the Nano, the Octopus, and the
   display at the front (the human's end).

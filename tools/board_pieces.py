@@ -55,9 +55,36 @@ BACK_RANK = ["Rook", "Knight", "Bishop", "Queen", "King", "Bishop", "Knight", "R
 KNIGHT_FACES_DEG = 90.0          # the knight STL's head points +y; turn it so it faces along x
 TYPES = ("Pawn", "Rook", "Knight", "Bishop", "Queen", "King")
 COLOURS = {"white": "#ece4d0", "black": "#2c2c31"}
-# capture trays: 2 columns at the squares' pitch (the open claw needs the room), 10 rows from beside the robot out
-# toward rank 1, 10 mm off the board's side; every spot checked in reach by selfplay.py
-TRAY_GAP, TRAY_PITCH, TRAY_ROWS, TRAY_COLS, TRAY_X0 = 10.0, 60.0, 10, 2, -28.0
+# capture trays: 2 columns at the squares' pitch (the open claw needs the room), 10 mm off the board's side; every spot
+# checked in reach by selfplay.py. Mike 2026-11-10 (relayed by the Robo chessboard design session, "Yes, pass it on"):
+# "We don't need more than 16 ... And you don't need spares. I would clip off the end of it where you have the queen now"
+# - 8 rows (was 10 from X -28), the two by the robot cut off: the 16 spots left are the same places as before (rows 2..9)
+TRAY_GAP, TRAY_PITCH, TRAY_ROWS, TRAY_COLS, TRAY_X0 = 10.0, 60.0, 8, 2, 92.0
+# Mike 2026-11-12: "I don't have the Queen's. The extra queens are missing." -> one spare queen a side again, in the
+# 16 spots: the outer column's spot by the robot (index 8, X 92). It still fits: a king is never taken, so at most 15
+# captured + the spare = 16; and a promotion's pawn goes in before its queen comes out, with the pawn and the king
+# still on the board then (17 - 2 = 15 off at most), so there's always a free spot for it
+SPARE_SPOT = TRAY_ROWS
+# Mike 2026-11-12: "Can we extend the tray to be flush with the front of the board? Even though we can't use that one
+# square just to keep it symmetric? ... That would give us 17 usable squares" - a 9th row of buckets at X 572, beside
+# rank 1. Its inner spot is the 17th (index 16, filled last, so every index before it stays put; the IK reaches it up
+# to a 104 claw height - 15 captured + the spare never need it). Its outer one (673 from the yaw axis) is out of reach:
+# a bucket for the look, never used (tray_unused)
+FRONT_X = TRAY_X0 + TRAY_ROWS * TRAY_PITCH
+
+
+def tray_xy(colour):
+    """tray_spots in the swivel frame (X, Y): the 2 x 8, then the 17th (the 9th row's inner spot)"""
+    side = -1.0 if colour == "white" else 1.0
+    y0 = 4 * S.SQ + S.BORDER + TRAY_GAP + TRAY_PITCH / 2
+    return ([(TRAY_X0 + r * TRAY_PITCH, side * (y0 + c * TRAY_PITCH)) for c in range(TRAY_COLS) for r in range(TRAY_ROWS)]
+            + [(FRONT_X, side * y0)])
+
+
+def tray_unused_xy(colour):
+    """the 9th row's outer bucket (swivel frame): out of the arm's reach, there only so the tray is a full 2 x 9"""
+    side = -1.0 if colour == "white" else 1.0
+    return [(FRONT_X, side * (4 * S.SQ + S.BORDER + TRAY_GAP + TRAY_PITCH * 1.5))]
 SCENE = os.path.join(OUT, "scene.json")
 
 
@@ -104,16 +131,19 @@ def square_at(name):
 
 def tray_spots(colour):
     """the tray spots for colour's pieces off the board, in filling order (inner column from beside the robot out,
-    then the outer one), design frame. White's are on the a-file side (-y), black's on the h-file side."""
-    side = -1.0 if colour == "white" else 1.0
-    y0 = 4 * S.SQ + S.BORDER + TRAY_GAP + TRAY_PITCH / 2
-    return [design(TRAY_X0 + r * TRAY_PITCH, side * (y0 + c * TRAY_PITCH))
-            for c in range(TRAY_COLS) for r in range(TRAY_ROWS)]
+    then the outer one, then the 17th beside rank 1), design frame. White's are on the a-file side (-y), black's on the h-file side."""
+    return [design(x, y) for x, y in tray_xy(colour)]
+
+
+def tray_unused(colour):
+    """tray_unused_xy in the design frame (the viewer draws its rim, never lit)"""
+    return [design(x, y) for x, y in tray_unused_xy(colour)]
 
 
 def setup():
     """[(part, type, colour, square or None, at, yaw)]: the start position plus each side's spare queen in its tray
-    (for a promotion). Knights face the other side: yaw about design up."""
+    spot SPARE_SPOT (for a promotion; out 2026-11-10, back 2026-11-12). Knights face the other side: yaw about design
+    up."""
     out = []
     for colour, back, pawns, face in (("white", 1, 2, -1), ("black", 8, 7, 1)):
         layout = [(BACK_RANK[i], i, back) for i in range(8)] + [("Pawn", i, pawns) for i in range(8)]
@@ -121,7 +151,7 @@ def setup():
             sq = "abcdefgh"[fi] + str(rank)
             yaw = KNIGHT_FACES_DEG * face if name == "Knight" else 0.0
             out.append((f"{colour} {name.lower()} {sq}", name, colour, sq, square_at(sq), yaw))
-        out.append((f"{colour} queen spare", "Queen", colour, None, tray_spots(colour)[0], 0.0))
+        out.append((f"{colour} queen spare", "Queen", colour, None, tray_spots(colour)[SPARE_SPOT], 0.0))
     return out
 
 
@@ -135,6 +165,8 @@ def write_scene():
               len(models) - 1) + 1
     new = [{"path": os.path.join(OUT, "board_trays.stl"), "name": "capture trays", "part_name": "capture trays",
             "color": "#5b3a24", "pick": False}]
+    if any(isinstance(m, dict) and m.get("name") == "board top layer" for m in models):
+        new = []                     # the one-piece board (one_piece_board.py, 2026-11-10) carries the trays now
     home = []
     for part, kind, colour, sq, pos, yaw in setup():
         ext = "step" if kind in CAD_TYPES else "stl"   # the CAD pieces as STEP: real faces and edges
@@ -143,7 +175,9 @@ def write_scene():
         home.append({"part": part, "at": pos, "yaw": yaw})
     sc["models"] = models[:at] + new + models[at:]
     sc["piece_home"] = home
-    open(SCENE, "w", encoding="utf-8").write(json.dumps(sc, indent=1))
+    sc["trays"] = {c: tray_spots(c) for c in ("white", "black")}   # every tray spot (design frame), for the viewer
+    sc["trays_unused"] = {c: tray_unused(c) for c in ("white", "black")}   # the out-of-reach front buckets
+    open(SCENE + ".tmp", "w", encoding="utf-8").write(json.dumps(sc, indent=1)); os.replace(SCENE + ".tmp", SCENE)   # whole or not at all: the studio reads it every second
     print(f"scene.json: {len(home)} pieces + trays, piece_home written")
 
 

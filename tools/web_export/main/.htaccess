@@ -1,0 +1,9 @@
+# Robot Studio (web_export.py): send the page compressed, and always check for a newer copy
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html application/json
+</IfModule>
+<IfModule mod_headers.c>
+  <FilesMatch "\.html$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+</IfModule>

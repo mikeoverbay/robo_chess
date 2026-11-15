@@ -30,8 +30,9 @@ NAVY, STEEL, BRASS, BLACK, GREY = (0.2, 0.3, 0.6), (0.75, 0.75, 0.78), (0.8, 0.6
 # bottom to top: (name prefix(es), colour). Each level is everything whose name starts with one of its prefixes.
 LEVELS = [
     (("motor body", "motor shaft"), BLACK),       # stays put
-    (("housing",), BLUE),
-    (("motor screw",), BLACK),                     # from inside the housing, down into the motor
+    (("housing floor",), BLUE),                    # the two-piece housing (2026-11-15): the floor on the motor,
+    (("motor screw",), BLACK),                     # from inside the floor, down into the motor,
+    (("housing ring",), BLUE),                     # then the ring on the floor
     (("ring pin",), STEEL),                        # down the wall grooves into the floor
     (("output support ring",), NAVY),
     (("output pin",), STEEL),                      # pressed into the support ring

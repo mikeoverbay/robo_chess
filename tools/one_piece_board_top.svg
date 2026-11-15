@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="780" height="800" viewBox="0 0 780 800" font-family="Arial, Helvetica, sans-serif">
+  <title>One-piece board, top view (proposal 2026-11-10)</title>
+  <rect width="780" height="800" fill="#ffffff"/>
+  <text x="40" y="30" font-size="16" font-weight="bold" fill="#222">One-piece board - top view (player at the bottom, robot at the top), mm</text>
+
+  <!-- base sheet: X -225..762, Y -400..400 (scale 0.6; x = 40 + (Y+400)*0.6, y = 50 + (X+225)*0.6) -->
+  <rect x="40" y="50" width="480" height="592.2" fill="#e3d7c1" stroke="#7d6c52" stroke-width="1.2"/>
+  <!-- the 25 mm top layer, U-shaped: full width from X 107 to the front, tray arms back to X -73 -->
+  <path d="M40,141.2 L130,141.2 L130,249.2 L430,249.2 L430,141.2 L520,141.2 L520,642.2 L40,642.2 Z" fill="#c99a5b" stroke="#6b4a2b" stroke-width="1.2"/>
+
+  <!-- 64 squares, 36 px = 60 mm, a1 dark at the player's left -->
+  <g stroke="#6b4a2b" stroke-width="0.5">
+    <g id="r0">
+      <rect x="136" y="258.2" width="36" height="36" fill="#e6c590"/><rect x="172" y="258.2" width="36" height="36" fill="#5a3b24"/>
+      <rect x="208" y="258.2" width="36" height="36" fill="#e6c590"/><rect x="244" y="258.2" width="36" height="36" fill="#5a3b24"/>
+      <rect x="280" y="258.2" width="36" height="36" fill="#e6c590"/><rect x="316" y="258.2" width="36" height="36" fill="#5a3b24"/>
+      <rect x="352" y="258.2" width="36" height="36" fill="#e6c590"/><rect x="388" y="258.2" width="36" height="36" fill="#5a3b24"/>
+    </g>
+    <g id="r1">
+      <rect x="136" y="294.2" width="36" height="36" fill="#5a3b24"/><rect x="172" y="294.2" width="36" height="36" fill="#e6c590"/>
+      <rect x="208" y="294.2" width="36" height="36" fill="#5a3b24"/><rect x="244" y="294.2" width="36" height="36" fill="#e6c590"/>
+      <rect x="280" y="294.2" width="36" height="36" fill="#5a3b24"/><rect x="316" y="294.2" width="36" height="36" fill="#e6c590"/>
+      <rect x="352" y="294.2" width="36" height="36" fill="#5a3b24"/><rect x="388" y="294.2" width="36" height="36" fill="#e6c590"/>
+    </g>
+    <use href="#r0" y="72"/><use href="#r1" y="72"/>
+    <use href="#r0" y="144"/><use href="#r1" y="144"/>
+    <use href="#r0" y="216"/><use href="#r1" y="216"/>
+  </g>
+
+  <!-- 40 tray buckets: X -58..542, Y +/-265..385 -->
+  <g fill="#ecd6ab" stroke="#6b4a2b" stroke-width="0.5">
+    <defs><g id="col">
+      <rect x="0" y="150.2" width="35.9" height="35.9"/><rect x="0" y="186.2" width="35.9" height="35.9"/>
+      <rect x="0" y="222.2" width="35.9" height="35.9"/><rect x="0" y="258.2" width="35.9" height="35.9"/>
+      <rect x="0" y="294.2" width="35.9" height="35.9"/><rect x="0" y="330.2" width="35.9" height="35.9"/>
+      <rect x="0" y="366.2" width="35.9" height="35.9"/><rect x="0" y="402.2" width="35.9" height="35.9"/>
+      <rect x="0" y="438.2" width="35.9" height="35.9"/><rect x="0" y="474.2" width="35.9" height="35.9"/>
+    </g></defs>
+    <use href="#col" x="49"/><use href="#col" x="85"/><use href="#col" x="439"/><use href="#col" x="475"/>
+  </g>
+  <text x="85" y="138" font-size="12" text-anchor="middle" fill="#3b2a16">White tray</text>
+  <text x="475" y="138" font-size="12" text-anchor="middle" fill="#3b2a16">Black tray</text>
+
+  <!-- on the bare sheet: robot base X -126..65, Y +/-65; turntable dia 154 at 0,0; dock X -210..-69, Y 50..184 -->
+  <rect x="310" y="59" width="80.4" height="84.6" fill="none" stroke="#666" stroke-width="1" stroke-dasharray="5 3"/>
+  <text x="350" y="80" font-size="12" text-anchor="middle" fill="#444">Dock</text>
+  <rect x="241" y="109.4" width="78" height="114.6" fill="#d7d3f3" stroke="#534AB7" stroke-width="1"/>
+  <circle cx="280" cy="185" r="46.2" fill="#c3bdf0" stroke="#534AB7" stroke-width="1"/>
+  <text x="280" y="190" font-size="14" font-weight="bold" text-anchor="middle" fill="#26215C">Robot</text>
+
+  <text x="280" y="600" font-size="13" text-anchor="middle" fill="#3b2a16">Player's side - front strip 160</text>
+
+  <!-- depth dimensions -->
+  <g stroke="#333" stroke-width="0.8">
+    <line x1="545" y1="50" x2="545" y2="642.2"/>
+    <line x1="539" y1="50" x2="551" y2="50"/><line x1="539" y1="141.2" x2="551" y2="141.2"/>
+    <line x1="539" y1="258.2" x2="551" y2="258.2"/><line x1="539" y1="546.2" x2="551" y2="546.2"/>
+    <line x1="539" y1="642.2" x2="551" y2="642.2"/>
+  </g>
+  <g font-size="12" fill="#222">
+    <text x="558" y="92">152 bare sheet</text><text x="558" y="107" fill="#666">robot + dock stand here</text>
+    <text x="558" y="195">195 tray arms</text><text x="558" y="210" fill="#666">beside the robot</text>
+    <text x="558" y="398">480 squares (8 x 60)</text>
+    <text x="558" y="590">160 front</text>
+    <text x="558" y="680" font-weight="bold">987 deep (38.9 in)</text>
+    <text x="558" y="696" fill="#666">903 without the dock</text>
+  </g>
+
+  <!-- width dimensions -->
+  <g stroke="#333" stroke-width="0.8">
+    <line x1="40" y1="665" x2="520" y2="665"/>
+    <line x1="40" y1="659" x2="40" y2="671"/><line x1="136" y1="659" x2="136" y2="671"/>
+    <line x1="424" y1="659" x2="424" y2="671"/><line x1="520" y1="659" x2="520" y2="671"/>
+  </g>
+  <g font-size="12" fill="#222" text-anchor="middle">
+    <text x="88" y="686">160</text><text x="280" y="686">480</text><text x="472" y="686">160</text>
+    <text x="280" y="706" font-weight="bold">800 wide (31.5 in)</text>
+  </g>
+
+  <!-- legend -->
+  <g font-size="12" fill="#222">
+    <rect x="40" y="726" width="16" height="12" fill="#e3d7c1" stroke="#7d6c52"/><text x="62" y="736">Base sheet (one piece, 800 x 987)</text>
+    <rect x="300" y="726" width="16" height="12" fill="#c99a5b" stroke="#6b4a2b"/><text x="322" y="736">Top layer, 25 thick (squares, trays, front)</text>
+    <rect x="40" y="748" width="16" height="12" fill="#ecd6ab" stroke="#6b4a2b"/><text x="62" y="758">Light bucket: 64 squares + 40 tray spots</text>
+    <rect x="300" y="748" width="16" height="12" fill="#d7d3f3" stroke="#534AB7"/><text x="322" y="758">Robot on the bare sheet: heights as today</text>
+    <text x="40" y="784" fill="#666">Proposal from Robot arm control and kinematics, 2026-11-10. The board's design belongs to the Robo chessboard design session.</text>
+  </g>
+</svg>
