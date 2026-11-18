@@ -81,6 +81,11 @@ The turntable (J0) is NOT a cycloid. It is a printed bevel pair, m1.5 18:72 = 4:
   - Thinnest walls: 1.18 to a lid screw hole, 1.42 between grooves.
 - Eccentricity 0.368 (K1 0.50); lobe height 0.74.
 - Profile from the Younis formula, pulled in 0.10 all round (CLEAR, `--clear`). Disc 2 is disc 1 turned 180°.
+- Fitted to Mike's printer and housing (2026-11-17, from his test disc at Cura horizontal expansion 0/0; his pin gauge
+  puts the pins' inner edges on 52.90). His words: "reduce the OD on diameter by 0.05. Keep the pin radius, but move
+  everything in" - the profile is drawn for pins on 55.95 (`DISC_PIN_R`); output holes +0.1 in the model only
+  (`OUT_HOLE_PRINT`, 3.94); bore 18.98 ("just a little tighter"). Print the discs at Cura 0/0. Also written as
+  `print\Revised lobe disk.step`. (Robo Chess gearbox)
 
 **Output and discs**
 - 8 output pins, 3 mm, on a 41 mm circle, in 3.84 mm holes. A support ring holds the pins at both ends; with one
@@ -92,13 +97,20 @@ The turntable (J0) is NOT a cycloid. It is a printed bevel pair, m1.5 18:72 = 4:
 
 **Eccentric**
 - **ONE PIECE** since 2026-11-06 (Professor: "not really liking that little star coupling"). The star-keyed halves
-  are gone. It runs z 7.5..24.5 on 6800s (the discs' Ø19 bore). Bottom to top:
+  are gone. It runs z 7.5..27.25 on 6800s (the discs' Ø19 bore). Bottom to top:
   - neck Ø8.5 on cam 1's axis, with a 45° lead-in
   - cam 1 Ø10 at +e
   - middle collar Ø11, concentric
   - cam 2 Ø10 at −e
-  - top Ø9, concentric, up into a Ø10.6 × 2.3 pocket in the flange's underside
-- The D grips z 10.75..24.5.
+  - a Ø9 step, concentric, to z 23.05
+  - the top journal Ø8.15 (modelled over 8 for his printer; `TOP_JOURNAL`), z 23.05..27.25, 0.3 lead-in on top
+- **Top bearing** (Mike 2026-11-17: "support the end of the camshaft and put it into the output"; "I want to use these
+  thinner, smaller ones"): an 8 × 14 × 4 flanged bearing, 15.6 × 0.8 flange (MF148 / F678 size), PRESSED onto the
+  journal on the bench, flange down, 0.2 above the Ø9 step. The output flange's underside has a Ø14 finger-push
+  pocket (to z 27.55) and a Ø15.9 × 0.85 flange seat; it slides down over the bearing at assembly. It props the
+  eccentric's top: peak motor shaft bending about 25-40 % less, but ONLY with no play (scratchpad top_support2.py:
+  0.03 of play and it carries almost nothing). The steel of a 24 mm shaft ends at z 24, inside the bearing.
+- The D grips z 10.75..27.25 (the motor shaft only reaches 24).
 - A solid one-piece can't take both bearings from the top. The lower 6800 can't pass cam 2 (offset 0.74 the other
   way) or the collar, and there is only 1.5 between the bearings.
 - So disc 1's bearing goes on FROM BELOW. The old bottom collar is a loose **eccentric spacer** ring (Ø12.2 × Ø8.8 ×
@@ -126,6 +138,7 @@ The turntable (J0) is NOT a cycloid. It is a printed bevel pair, m1.5 18:72 = 4:
 **Hardware per joint**
 - 46 dowels, 3×20, hardened ISO 8734 m6 (52100 steel).
 - 2 × 6800 and 2 × 6808.
+- 1 × 8×14×4 flanged bearing (15.6 × 0.8 flange, MF148 / F678 size) on the eccentric's top, in the output flange.
 - Lid screws (Professor 2026-11-06): 6 × M3×55 socket head cap screws, partly threaded (18 thread, ISO 4762).
   - He chose 55 because M3×58 is special order.
   - Shank through lid + pin ring + a Ø3.4 clearance in the housing top down to z 18.0.

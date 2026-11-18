@@ -19,7 +19,8 @@ z = 0 is the motor face.  Stack (mm):
    7.2 .. 23.2  housing ring (the wall with the ring pin grooves), on the floor; the lid screws line it up
    7.7 .. 9.7   output support ring (holds the lower ends of the 8 output pins)
   10.2 .. 16.2  disc 1 (eccentric +e)       16.7 .. 22.7  disc 2 (eccentric -e, the same part turned 180 deg)
-  23.2 .. 29.2  output flange back disc (upper ends of the output pins) inside the pin ring
+  23.2 .. 29.2  output flange back disc (upper ends of the output pins) inside the pin ring; the top bearing
+                (8 x 14 x 4 flanged) in its underside, 23.25 .. 27.25, on the eccentric's top journal
   29.2 .. 43.2  two 6808s on the output journal, outer races in the lid
   43.2 .. 45.2  clamp ring on the upper inner race; the 70.5 output disc sits on it
 Ring pins: 3.5 mm in D3.4 floor sockets, then in D3.2 grooves in the housing ring that wrap 209 deg round them, tops
@@ -53,7 +54,14 @@ CLEAR = 0.10                 # disc profile pulled in this far all round (runnin
 N_OUT = 8                    # output pins
 R_OUT = 20.5                 # output pin circle radius
 OUT_ANGLE0 = 22.5            # first output pin angle, deg (clear of the 3 output screws at 0/120/240)
-HOLE_CLEAR = 0.05            # output pin hole: pin + 2 e + this each side
+HOLE_CLEAR = 0.05            # output pin hole: pin + 2 e + this each side (as printed: the checks and backlash use it)
+# The disc fitted to Mike's printer and housing, 2026-11-17, from his test disc printed with Cura's horizontal expansion
+# at 0 (outside 53.27 for 53.45, output holes 3.71..3.76 for 3.84; it "wants to go" in the housing, about 0.05 tight):
+#   "reduce the OD on diameter by 0.05. Keep the pin radius, but move everything in" -> the disc profile is drawn for
+#   ring pins on DISC_PIN_R (the housing keeps R_PINS: his pin gauge puts the pins' inner edges on 52.90)
+#   "add 0.1 to those ... output pin holes" -> OUT_HOLE_PRINT on the holes' diameter, in the model only
+DISC_PIN_R = R_PINS - 0.025
+OUT_HOLE_PRINT = 0.10
 WALL_R = 27.6                # housing wall inner radius: the ring pins sit 0.4 mm proud of it
 
 # ---------------------------------------------------------------- stack
@@ -107,7 +115,8 @@ B6800_INNER_OD, B6800_OUTER_ID = 12.4, 16.6  # check model only (envelope)
 COLLAR_D = 11.0              # the middle collar, concentric: r 5.5 -/+ e stays on both 6800 inner rings (r 5.0..6.2)
 HUB_BORE = 5.0               # --hub-bore
 CAM_D = 10.0                 # --cam-d
-ECC_BORE = 19.0              # --ecc-bore
+ECC_BORE = 18.98             # --ecc-bore. Was 19.0 (a finger-push fit at Cura 0); Mike 2026-11-17: "drop the bore by
+                             # 0.02 ... just a little tighter"
 # Pull holes (Mike 2026-11-14, from his print\lobe.step: "I added two holes to this so I can pull it back out"): two
 # M3 self-tap holes through the disc, between output holes at 90 / 270 deg on the DISC's centre (his were on the
 # shaft axis, 0.37 over), 0.8 x 45 deg lead-in on the top face (up in the gearbox for both discs). Two M3 screws lift
@@ -127,7 +136,25 @@ PULL_LEAD = 0.8
 NECK_D, NECK_LEAD = 8.5, 0.75          # neck on cam 1's axis (wall 1.38 to the 5 bore); 45 deg cone up to the cam
 SPACER_ECC = (12.2, 8.8)               # spacer ring on the neck, on cam 1's axis: OD (inner ring r 5.0..6.2 only), ID
 TOP_D = 9.0                            # concentric top above cam 2: r 4.5 + e = 4.87 < 5, bearing 2 slides past
-TOP_POCKET_CLEAR = 0.8                 # the flange's pocket over the top: this much radial room, 1.0 above it
+# Top bearing (Mike 2026-11-17: "flange bearings ... bearing OD is 14 ... flange OD is 15.6 ... thickness is 4 ... bore is
+# 8 ... support the end of the camshaft and put it into the output" / "Flange thickness is 0.8" / "I don't want to add more
+# weight. I want to use these thinner, smaller ones"): an 8 x 14 x 4 flanged bearing (MF148 / F678 size) pressed into
+# the output flange's underside props the eccentric's top, so the motor shaft is no longer a bare cantilever (peak
+# bending about 25-40 % less). Only with NO play. The bearing PRESSES onto the eccentric's journal on the bench (modelled
+# over 8 for his printer: outsides print small, the disc 0.18 under at Cura 0 - tune it); the flange's pocket is his
+# finger-push fit (a 19.0 bore took the 6800 that way at Cura 0), so the flange slides on over the bearing at assembly.
+TOP_BRG_ID, TOP_BRG_OD, TOP_BRG_W = 8.0, 14.0, 4.0
+TOP_BRG_FL_D, TOP_BRG_FL_T = 15.6, 0.8
+TOP_BRG_INNER_OD, TOP_BRG_OUTER_ID = 9.8, 12.2   # check model only (envelope)
+TOP_BRG_Z = 23.25                      # bearing bottom = its flange's underside: 0.05 inside the flange's face (Z_TOP)
+TOP_BRG_POCKET = 14.0                  # printed pocket for the 14 OD (finger push, no play)
+TOP_BRG_FL_SEAT = 15.9                 # counterbore for the 15.6 flange, 0.85 deep from the face
+TOP_BRG_ROOM = 0.3                     # pocket floor this far over the bearing and the journal: nothing touches its top
+TOP_JOURNAL = 8.15                     # the eccentric's journal in the 8 bore: modelled for a press as printed
+TOP_JOURNAL_LEAD = 0.3                 # 45 deg lead-in on its top
+TOP_STEP_GAP = 0.2                     # the D9 step under the journal stops this far below the bearing's inner ring
+TOP_BRG_NAME = (f"top bearing: flanged ball bearing, {TOP_BRG_ID:g} bore x {TOP_BRG_OD:g} OD x {TOP_BRG_W:g} wide, "
+                f"{TOP_BRG_FL_D:g} x {TOP_BRG_FL_T:g} flange (MF148 / F678 size)")
 PIN_HOLE = 3.0               # --pin-hole: printed hole for a press-fit dowel (the output pins); drill to 3.0
 # --ring-pin-hole: the housing's 38 ring pin floor sockets and wall grooves, radius 0.1 over the pin (r 1.6). Mike
 # 2026-11-07: "3D printer always prints holes too small ... make all of those radius 0.2 bigger, and I'll see if it fits"
@@ -228,13 +255,14 @@ def out_pin_angles():
 # ---------------------------------------------------------------- the disc profile
 def profile_xy(n_per_lobe=48, clear=None):
     """Disc outline in the disc's own frame (centre at the origin), for the pose where the disc centre is at
-    (+ECC, 0) and the ring pins are at 360*k/38 deg: every pin then sits PIN_D/2 + clear from it."""
+    (+ECC, 0) and the ring pins are at 360*k/38 deg: every pin on DISC_PIN_R then sits PIN_D/2 + clear from it."""
     c = CLEAR if clear is None else clear
     rr = PIN_D / 2 + c
+    R = DISC_PIN_R
     t = np.linspace(0, 2 * math.pi, LOBES * n_per_lobe, endpoint=False)
-    psi = np.arctan2(np.sin((1 - N_PINS) * t), R_PINS / (ECC * N_PINS) - np.cos((1 - N_PINS) * t))
-    x = R_PINS * np.cos(t) - rr * np.cos(t + psi) - ECC * np.cos(N_PINS * t)
-    y = -R_PINS * np.sin(t) + rr * np.sin(t + psi) + ECC * np.sin(N_PINS * t)
+    psi = np.arctan2(np.sin((1 - N_PINS) * t), R / (ECC * N_PINS) - np.cos((1 - N_PINS) * t))
+    x = R * np.cos(t) - rr * np.cos(t + psi) - ECC * np.cos(N_PINS * t)
+    y = -R * np.sin(t) + rr * np.sin(t + psi) + ECC * np.sin(N_PINS * t)
     return np.stack([x, y], 1)
 
 
@@ -331,7 +359,7 @@ def motion_check(rep):
                         n_world @ inward / np.linalg.norm(n_world), -1, 1))))
     w(f"Motion, input turned 0..360 deg in 1 deg steps, both discs (720 poses):")
     w(f"  disc never inside a ring pin: {'PASS' if pens == 0 else f'FAIL ({pens} poses)'}; least gap to a ring pin "
-      f"{worst:.3f} mm (designed {CLEAR:g})")
+      f"{worst:.3f} mm (designed {CLEAR:g}, + the profile moved in {R_PINS - DISC_PIN_R:g})")
     w(f"  ring pins within {CLEAR + 0.02:.2f} of the disc at once: {min(touch)} .. {max(touch)} of {N_PINS} "
       "(in a perfect print all share the load; in practice about half)")
     w(f"  disc to the housing wall {wall:.2f} mm; contact on the ring pins up to {contact_ang:.0f} deg off 'straight in' "
@@ -445,7 +473,7 @@ def support_ring(printed_pins):
 def disc():
     face = cq.Face.makeFromWires(disc_wire())
     body = cq.Solid.extrudeLinear(face, V(0, 0, DISC_T))
-    hole_d = PIN_D + 2 * ECC + 2 * HOLE_CLEAR
+    hole_d = PIN_D + 2 * ECC + 2 * HOLE_CLEAR + OUT_HOLE_PRINT
     cuts = [cyl(ECC_BORE, DISC_T + 2, -1)]
     cuts += [cyl(hole_d, DISC_T + 2, -1, *polar(R_OUT, a)) for a in out_pin_angles()]
     r = PULL_HOLE / 2
@@ -458,21 +486,27 @@ def disc():
 
 def ecc_z():
     """(bottom, bearing 1 seat, bearing 2 seat, top) of the one-piece eccentric"""
-    return (FLOOR_T + 0.3, Z_D1 + (DISC_T - B6800_W) / 2, Z_D2 + (DISC_T - B6800_W) / 2, Z_TOP + 1.3)   # 7.5 10.7 17.2 24.5
+    return (FLOOR_T + 0.3, Z_D1 + (DISC_T - B6800_W) / 2, Z_D2 + (DISC_T - B6800_W) / 2,
+            TOP_BRG_Z + TOP_BRG_W)                     # 7.5 10.7 17.2 27.25 (the top of the top bearing; was 24.5)
 
 
 def hub():
     """The one-piece eccentric on the D shaft, bottom up: neck + 45 deg lead-in on cam 1's axis (+e along x), cam 1,
-    the 11 concentric middle collar (stops both bearings' inner rings), cam 2 (-e), the concentric top up into the
-    flange. Disc 1's 6800 goes on from below, disc 2's from above (see NECK_D)."""
+    the 11 concentric middle collar (stops both bearings' inner rings), cam 2 (-e), a short concentric D9 step, then the
+    D TOP_JOURNAL journal up through the top bearing in the flange. Disc 1's 6800 goes on from below, disc 2's from
+    above (see NECK_D)."""
     z0, b1, b2, zt = ecc_z()
     zn = b1 - NECK_LEAD
+    zj = TOP_BRG_Z - TOP_STEP_GAP                      # 23.05: the journal starts here, the D9 step stops here
     body = one_solid(cyl(NECK_D, zn - z0, z0, ECC, 0)
                      .fuse(GS.cone(NECK_D / 2, CAM_D / 2, NECK_LEAD, zn, ECC, 0))
                      .fuse(cyl(CAM_D, B6800_W, b1, ECC, 0))
                      .fuse(cyl(COLLAR_D, b2 - (b1 + B6800_W), b1 + B6800_W))
                      .fuse(cyl(CAM_D, B6800_W, b2, -ECC, 0))
-                     .fuse(cyl(TOP_D, zt - (b2 + B6800_W), b2 + B6800_W)).clean())
+                     .fuse(cyl(TOP_D, zj - (b2 + B6800_W), b2 + B6800_W))
+                     .fuse(cyl(TOP_JOURNAL, zt - TOP_JOURNAL_LEAD - zj, zj))
+                     .fuse(GS.cone(TOP_JOURNAL / 2, TOP_JOURNAL / 2 - TOP_JOURNAL_LEAD, TOP_JOURNAL_LEAD,
+                                   zt - TOP_JOURNAL_LEAD)).clean())
     body = body.cut(cyl(HUB_BORE, zt - z0 + 2, z0 - 1))
     # D flat: material back in the bore beyond x = -(2.5 - 0.5), from past the latest flat start to the top
     zf = FLAT_LATE + 0.5
@@ -501,7 +535,8 @@ def output_flange():
     # (the star key drives the upper eccentric).
     zt = ecc_z()[3]
     cuts = [cyl(7.0, (Z_BRG + 1.0) + 0.5 - (Z_TOP - 1), Z_TOP - 1),      # motor shaft tip, through
-            cyl(TOP_D + 2 * TOP_POCKET_CLEAR, zt + 1.0 - (Z_TOP - 1), Z_TOP - 1),   # the one-piece eccentric's top
+            cyl(TOP_BRG_POCKET, zt + TOP_BRG_ROOM - (Z_TOP - 1), Z_TOP - 1),       # the top bearing (press) ...
+            cyl(TOP_BRG_FL_SEAT, TOP_BRG_Z + TOP_BRG_FL_T - (Z_TOP - 1), Z_TOP - 1),   # ... its flange's seat
             cyl(CENTRE_POCKET_D, face - (Z_BRG + 1.0) + 1, Z_BRG + 1.0)]  # lightening pocket from the face
     for a in out_pin_angles():
         cuts.append(cyl(PIN_HOLE, 4.5 + 1, Z_TOP - 1, *polar(R_OUT, a)))
@@ -551,6 +586,16 @@ def b6800():
     outer = ring(B6800_OD, B6800_OUTER_ID, B6800_W)
     seal = ring(B6800_OUTER_ID + 0.05, B6800_INNER_OD - 0.05, 0.3, 0.3).fuse(
         ring(B6800_OUTER_ID + 0.05, B6800_INNER_OD - 0.05, 0.3, B6800_W - 0.6))
+    return one_solid(inner.fuse(outer).fuse(seal))
+
+
+def top_bearing():
+    """the 8 x 14 x 4 flanged bearing in its place in the output flange, flange down"""
+    z = TOP_BRG_Z
+    inner = ring(TOP_BRG_INNER_OD, TOP_BRG_ID, TOP_BRG_W, z)
+    outer = ring(TOP_BRG_OD, TOP_BRG_OUTER_ID, TOP_BRG_W, z).fuse(ring(TOP_BRG_FL_D, TOP_BRG_OUTER_ID, TOP_BRG_FL_T, z))
+    seal = ring(TOP_BRG_OUTER_ID + 0.05, TOP_BRG_INNER_OD - 0.05, 0.3, z + 0.3).fuse(
+        ring(TOP_BRG_OUTER_ID + 0.05, TOP_BRG_INNER_OD - 0.05, 0.3, z + TOP_BRG_W - 0.6))
     return one_solid(inner.fuse(outer).fuse(seal))
 
 
@@ -618,6 +663,9 @@ def build(printed_pins, theta_deg, parts):
     b68 = f"ball bearing 6800, {B6800_ID:g} bore x {B6800_OD:g} OD x {B6800_W:g} wide"
     out.append((f"6800 in disc 1: {b68}", parts["b6800"].translate(V(c1[0], c1[1], Z_D1 + 0.5)), steel, False))
     out.append((f"6800 in disc 2: {b68}", parts["b6800"].translate(V(c2[0], c2[1], Z_D2 + 0.5)), steel, False))
+    if "top_brg" not in parts:                     # a caller's own parts dict from before the top bearing
+        parts["top_brg"] = top_bearing()           # (gearbox_anim.py's)
+    out.append((TOP_BRG_NAME, parts["top_brg"], steel, False))
     for k in range(2):
         out.append((f"6808 {k + 1}: ball bearing 6808, 40 bore x 52 OD x {G.CAGE_W:g} wide",
                     parts["b6808"].translate(V(0, 0, Z_BRG + k * (G.CAGE_W + SPREAD))), steel, False))
@@ -705,8 +753,10 @@ def main():
     k1 = ECC * N_PINS / R_PINS
     w(f"cycloid.py - {LOBES}:1 cycloidal drive on the 17HS19 (z = 0 at the motor face)")
     w(f"Ring: {N_PINS} pins {PIN_D:g} mm on a {2 * R_PINS:g} circle; eccentricity {ECC:g} (K1 {k1:.2f}), lobe height "
-      f"{2 * ECC:.2f}; disc profile pulled in {CLEAR:g}; {N_OUT} output pins on a {2 * R_OUT:g} circle in "
-      f"{PIN_D + 2 * ECC + 2 * HOLE_CLEAR:.2f} holes.")
+      f"{2 * ECC:.2f}; disc profile pulled in {CLEAR:g} from pins on a {2 * DISC_PIN_R:g} circle (his printer); "
+      f"{N_OUT} output pins on a {2 * R_OUT:g} circle in {PIN_D + 2 * ECC + 2 * HOLE_CLEAR:.2f} holes as printed "
+      f"(modelled {PIN_D + 2 * ECC + 2 * HOLE_CLEAR + OUT_HOLE_PRINT:.2f}); disc bore {ECC_BORE:g} on the 6800's "
+      f"{B6800_OD:g}.")
     w(f"Body {G.BODY_OD:g} OD; motor face to the output disc seat {Z_DISC_OUT:g} mm."
       + (f" Output 6808s SPREAD {SPREAD:g} apart (ball rows {G.CAGE_W + SPREAD:g} apart, was {G.CAGE_W:g}) by a printed "
          f"sleeve between the outer races ({SPACER_OUT[0]:g} / {SPACER_OUT[1]:g}) and one between the inner races "
@@ -721,6 +771,13 @@ def main():
     w(f"  pull holes (2 x D{PULL_HOLE:g} on r {PULL_R:g} at {PULL_ANGLES[0]:g} / {PULL_ANGLES[1]:g}, {PULL_LEAD:g} lead-in on "
       f"top): to the bearing bore {PULL_R - PULL_HOLE / 2 - ECC_BORE / 2:.1f} mm, to an output hole {pull_out:.1f} "
       f"({pull_out - PULL_LEAD:.1f} at the lead-in), to the lobe roots {rmin - PULL_R - PULL_HOLE / 2:.1f}")
+    zt = ecc_z()[3]
+    w(f"  top bearing ({TOP_BRG_ID:g} x {TOP_BRG_OD:g} x {TOP_BRG_W:g}, {TOP_BRG_FL_D:g} x {TOP_BRG_FL_T:g} flange) z "
+      f"{TOP_BRG_Z:g}..{zt:g} in the output flange's underside: D{TOP_BRG_POCKET:g} pocket to z {zt + TOP_BRG_ROOM:g}, "
+      f"flange seat D{TOP_BRG_FL_SEAT:g} x {TOP_BRG_Z + TOP_BRG_FL_T - Z_TOP:.2f}; on the eccentric's D{TOP_JOURNAL:g} "
+      f"journal z {TOP_BRG_Z - TOP_STEP_GAP:g}..{zt:g} (wall {(TOP_JOURNAL - HUB_BORE) / 2:.2f} round the D{HUB_BORE:g} bore); "
+      f"a {G.SHAFT_LEN:g} mm motor shaft ends at z {G.SHAFT_LEN:g}; wall from the pocket to an insert's screw hole "
+      f"{OUT_SCREW_R - 1.6 - TOP_BRG_FL_SEAT / 2:.1f}")
     sw, gr = R_PINS - WALL_R, RING_PIN_HOLE / 2
     gap = 2 * math.sqrt(gr ** 2 - sw ** 2)
     w(f"  housing in two pieces (floor z 0..{FLOOR_T:g}, ring {FLOOR_T:g}..{Z_TOP:g}): floor sockets D{FLOOR_PIN_SOCKET:g}, "
@@ -742,7 +799,8 @@ def main():
     parts = dict(floor_s=housing_floor(False), floor_p=housing_floor(True), ring_s=housing_ring(False),
                  ring_p=housing_ring(True), pin_ring=pin_ring(), lid=lid(), disc=disc(),
                  hub=hub(), ecc_sp=ecc_spacer(), flange=output_flange(), sring_s=support_ring(False), sring_p=support_ring(True),
-                 clamp=clamp_ring(), b6800=b6800(), b6808=GS.bearing_6808(), motor=motor_body(), shaft=motor_shaft(),
+                 clamp=clamp_ring(), b6800=b6800(), top_brg=top_bearing(), b6808=GS.bearing_6808(), motor=motor_body(),
+                 shaft=motor_shaft(),
                  outdisc=out_disc())
     if SPREAD:
         parts.update(sp_out=spacer_outer(), sp_in=spacer_inner())
@@ -753,10 +811,19 @@ def main():
 
     # ---- checks: overlaps at three input angles, both pin variants
     w("\nPart overlaps (every pair, common volume > 0.001 mm^3), assembled at three input angles:")
+    b68 = f"ball bearing 6800, {B6800_ID:g} bore x {B6800_OD:g} OD x {B6800_W:g} wide"
+    press = [(f"disc {k}", f"6800 in disc {k}: {b68}") for k in (1, 2)] if ECC_BORE < B6800_OD else []
+    if press:
+        w(f"  (the 6800s press into the disc bores, D{ECC_BORE:g} on D{B6800_OD:g}: that fit is not counted)")
+    if TOP_JOURNAL > TOP_BRG_ID:
+        press.append(("eccentric", TOP_BRG_NAME))
+    if TOP_BRG_POCKET < TOP_BRG_OD:
+        press.append(("output flange", TOP_BRG_NAME))
+    w(f"  (the top bearing presses onto the eccentric's D{TOP_JOURNAL:g} journal: not counted)")
     for printed in (False, True):
         for th in (0.0, 47.0, 200.0):
             items = build(printed, th, parts)
-            ov = overlaps(items)
+            ov = overlaps(items, press)
             lab = "printed pins" if printed else "steel pins"
             w(f"  {lab:12s} input {th:5.1f} deg: " + ("none" if not ov else
               "; ".join(f"{a} x {b} {v:.3f}" for a, b, v in ov)))
@@ -803,10 +870,12 @@ def main():
     tot = sum(parts[k].Volume() for k in ("floor_s", "ring_s", "pin_ring", "lid", "hub", "ecc_sp", "flange", "sring_s", "clamp")
               + (("sp_out", "sp_in") if SPREAD else ())) + 2 * parts["disc"].Volume()
     w(f"  set with steel pins: {tot * NYLON:.0f} g printed + 46 dowels {46 * math.pi / 4 * PIN_D ** 2 * PIN_LEN * 7.85e-3:.0f} g "
-      f"+ 2 x 6808 + 2 x 6800 + screws (the 5:1 gearbox it replaces: {591 - 390:.0f} g without the motor)")
+      f"+ 2 x 6808 + 2 x 6800 + the top bearing + screws (the 5:1 gearbox it replaces: {591 - 390:.0f} g without the motor)")
 
     # ---- hardware
     w("\nHardware per joint: 46 dowels 3 x 20 (38 ring + 8 output) | 2 x 6800 10x19x5 | 2 x 6808 40x52x7 |")
+    w(f"  1 x flanged bearing {TOP_BRG_ID:g}x{TOP_BRG_OD:g}x{TOP_BRG_W:g}, {TOP_BRG_FL_D:g} x {TOP_BRG_FL_T:g} flange "
+      f"(MF148 / F678 size) on the eccentric's top, in the output flange |")
     w("  4 x M3 x 8 motor screws (from inside, 4.0 into the motor's 4.5 deep threads) |")
     tap_top = FLOOR_T - JOINT_CHAMFER                 # the floor's self-tap hole, under its joint chamfer
     fits = []
@@ -845,14 +914,17 @@ def main():
     w("  4  Press the 8 output pins into the support ring (flush underneath) and drop it in over the motor shaft.")
     w("  5  On the bench, the eccentric cartridge: press a 6800 into each disc, grease the lobes. Disc 1's bearing up")
     w("     onto cam 1 FROM BELOW (over the neck) to the middle collar, then the eccentric spacer up the neck under it;")
-    w("     disc 2's bearing down onto cam 2 from above, disc 2 turned 180 deg (the same part).")
+    w("     disc 2's bearing down onto cam 2 from above, disc 2 turned 180 deg (the same part). Then press the top")
+    w(f"     bearing (8 x 14 x 4, flange DOWN) onto the D{TOP_JOURNAL:g} journal on top, pushing on its inner ring only,")
+    w(f"     until it is {TOP_STEP_GAP:g} above the D{TOP_D:g} step (top of the journal flush with the bearing's top).")
     w("  6  Lower the cartridge onto the motor shaft, D to D, down to 0.3 above the floor, turning each disc on its")
     w("     bearing so its lobes fall between the ring pins and its 8 holes take the output pins.")
     w("  7  Both 6808s onto the flange journal; push them up into the lid from below (the lip stops the top race);"
       if not SPREAD else
       "  7  Onto the flange journal: a 6808, the inner race spacer, the other 6808; push the lot up into the lid from\n"
       "     below with the outer race spacer between the two outer races (the lip stops the top race);")
-    w("     pin ring under the lid; lower the three together so the flange sockets take the output pin tops.")
+    w("     pin ring under the lid; lower the three together so the flange sockets take the output pin tops and its")
+    w(f"     D{TOP_BRG_POCKET:g} pocket slides down over the top bearing (finger push) till the bearing's flange seats.")
     w("  8  6 lid screws through lid + pin ring + housing ring into the floor: they line the ring up on the floor and")
     w("     clamp the stack.  9  Clamp ring on the upper inner race, your disc")
     w("     on top, 3 x M3 into the flange inserts: this clamps both inner races to the flange.")

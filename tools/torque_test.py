@@ -5,6 +5,8 @@ And clamp ... the gearbox down, and then test the scale on the arm. See how much
 
     python torque_test.py            -> print/Torque test arm.step, print/Torque test stand.step (assembled in place
                                         on the gearbox, drive frame: axis z, housing bottom z 0, output face z 59.2)
+    python torque_test.py --rig-view -> viewer_session/torque_rig_adapter_upright.step (main studio: the rig as he
+                                        builds it - his printed stand + the adapter ring + today's gearbox)
 
 Two printed parts, both bolting on exactly as the real arm does (cycloid.py's shared bolt circles):
   - test arm: the arm link's cup (70.5 x 8, 3 x M3 on r 15 with 8 x 4 counterbores, the same 3 output screws) and a
@@ -94,8 +96,11 @@ def test_arm():
     return one(body.clean(), "test arm")
 
 
-def stand():
+def stand(angles=None, r=None):
     # plate under the housing (z -8..0); the foot is the bench, at y -(PLATE_HALF + FOOT_T); the motor hangs to -z
+    # angles / r: the 6 holes (default the arms' circle, ML.ARM_SCREW_*; the one Mike printed has C.LID_SCREW_*)
+    angles = ML.ARM_SCREW_ANGLES if angles is None else angles
+    r = ML.ARM_SCREW_R if r is None else r
     yb = -PLATE_HALF
     body = box(-PLATE_HALF, PLATE_HALF, yb, PLATE_HALF, -PLATE_T, 0)
     body = body.fuse(box(-FOOT_HALF, FOOT_HALF, yb - FOOT_T, yb, -PLATE_T - FOOT_DEPTH, 0))
@@ -106,13 +111,48 @@ def stand():
         body = body.fuse(g)
     cuts = [box(-MOTOR_CUT, MOTOR_CUT, -MOTOR_CUT, MOTOR_CUT, -PLATE_T - 1, 1)]
     k = (CSK_D - CLEAR_D) / 2 / math.tan(math.radians(45))
-    for a in ML.ARM_SCREW_ANGLES:                                 # 6 x M3 from behind into the housing, as the arms
-        x, y = C.polar(ML.ARM_SCREW_R, a)                         # (2026-11-15: 30 deg off the lid screws)
+    for a in angles:                                              # 6 x M3 from behind into the housing, as the arms
+        x, y = C.polar(r, a)                                      # (2026-11-15: 30 deg off the lid screws)
         cuts.append(cyl(CLEAR_D, -PLATE_T - 1, 1, x, y))
         cuts.append(cq.Solid.makeCone(CSK_D / 2, CLEAR_D / 2, k, V(x, y, -PLATE_T - 0.01), V(0, 0, 1)))
     for c in cuts:
         body = body.cut(c)
     return one(body.clean(), "test stand")
+
+
+RIG_VIEW = os.path.join(HERE, "viewer_session", "torque_rig_adapter_upright.step")
+ADAPTER = os.path.join(PRINT, "Gearbox stand adapter ring.step")
+ADAPTER_T = 10.0                 # the gearbox session's ring (gearbox_stand_adapter.py): z -10..0 under the housing
+
+
+def rig_view():
+    """--rig-view: the rig as Mike builds it (2026-11-15): the stand he printed (2026-11-13: holes on the LID angles),
+    the gearbox session's adapter ring under the housing (the stand drops ADAPTER_T), the print-4 gearbox as it is now,
+    the test arm and a 48 mm motor; checked for overlaps, then turned 180 about x so the stand's foot stands on the
+    robot scene's floor (main's scene.json places it at [600, 204, 0]). Re-run after any gearbox change."""
+    import nema17
+    old = stand(C.LID_SCREW_ANGLES, C.LID_SCREW_R).translate(V(0, 0, -ADAPTER_T))
+    bodies = [(n, s, (0.95, 0.55, 0.10)) for n, s, _ in read_step(ADAPTER)]
+    bodies.append(("Torque test stand (the one printed 2026-11-13)", old, (0.35, 0.55, 0.85)))
+    bodies += [(n, s, (0.72, 0.74, 0.78)) for n, s, _ in read_step(GEARBOX)]
+    bodies.append(("Torque test arm", test_arm(), (0.90, 0.55, 0.15)))
+    body, caps = nema17.build(48.0)
+    bodies += [("NEMA 17 48 mm", body, (0.12, 0.12, 0.13)), ("NEMA 17 end caps + shaft", caps, (0.78, 0.79, 0.81))]
+    bad = 0
+    for i, (n, s, _) in enumerate(bodies):
+        for m, t, _ in bodies[i + 1:]:
+            if "NEMA" in n + m and ("Gearbox" in n + m or ("NEMA" in n and "NEMA" in m)):
+                continue                                          # the motor's shaft runs in the gearbox
+            v = s.intersect(t).Volume()
+            if v > 0.01:
+                print(f"  OVERLAP {n} x {m}: {v:.2f} mm^3")
+                bad += 1
+    a = cq.Assembly(name="torque_rig_adapter")
+    for n, s, c in bodies:
+        a.add(s.rotate(V(0, 0, 0), V(1, 0, 0), 180), name=n, color=cq.Color(*c))
+    write_step(a, RIG_VIEW)
+    print(f"{len(bodies)} bodies, {'no overlaps' if not bad else f'{bad} OVERLAPS'}\nwrote {RIG_VIEW}")
+    return 1 if bad else 0
 
 
 def overlaps(part, what):
@@ -188,4 +228,4 @@ MS_RHO = 1.24                    # PLA g/cm^3
 C_RATIO = 37.0                   # the cycloid (cycloid.py N_PINS - 1 = 37)
 
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(rig_view() if "--rig-view" in sys.argv else main())

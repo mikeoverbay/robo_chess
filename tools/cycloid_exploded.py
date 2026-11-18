@@ -42,6 +42,7 @@ LEVELS = [
     (("eccentric",), GREEN),                       # the one-piece eccentric,
     (("6800 in disc 2",), STEEL),                  # disc 2 + bearing from above
     (("disc 2",), ORANGE2),
+    (("top bearing",), STEEL),                     # pressed onto the eccentric's top journal (2026-11-17)
     (("pin ring",), BLUE),
     (("output flange",), NAVY),
     (("insert",), BRASS),                          # heat-set into the flange face
