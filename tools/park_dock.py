@@ -26,7 +26,8 @@ Parts (all PETG):
                                      plus wood screws near the post.
 
 Where (design frame): J0 130 - behind the black tray's end, outside every game move's swing (J0 -95.4..94.5) and clear
-of the home pose's claw. Grip point 179.5 from the yaw axis, 20.5 above the board: there J4 sits level with J1, which
+of the home pose's claw. Grip point 197.5 from the yaw axis (179.5 until 2026-11-24: see RHO), 20.5 above the board:
+there J4 sits level with J1, which
 is what holds the parked arm. With the claw locked in the seat, links A-B-C still form a four-bar (J1 and J4 pinned)
 with one free fold; with J4 level with J1 the IK's pose (J2 = J3) is that fold's balance point - gravity's push along it
 ~0.1 N.m - so the gearboxes' own friction holds it (scratchpad dock_fourbar/dock_rest studies, 2026-11-09; an elbow
@@ -61,11 +62,22 @@ GRIP_OUT = os.path.join(ROOT, "gripper")
 SCENE = studio.scene_path()
 
 # ---------------------------------------------------------------- the parked pose
-PSI, RHO, H = 130.0, 179.5, 20.5        # J0; grip point's reach from the yaw axis; its height above the board
-BOARD_Y, WOOD_Y = 232.0, 257.0          # design y (down) of the board top and of the wood the base + board sit on
+PSI, RHO, H = 130.0, 197.5, 23.5        # J0; grip point's reach from the yaw axis; its height above the board
+# H was 20.5 with the board's top at y 232; with no pockets (2026-11-24, swivel_base.BOARD_T) the board's top is 3 lower
+# under the arm and the dock stands on the same wood as the base, so the seat stays at design y 211.5: H 23.5.
+# RHO was 179.5. 2026-11-24 Mike: "We have an issue with the park stand. It's colliding with the new base." - at 179.5
+# the station's foot and rib ran 8 into the chain swivel's base plate and cover (1050 + 967 mm^3), and the yoke's tail
+# plate swept through the cup's Hall end at J0 -72..-84 (390 mm^3), inside the game swing. Then: "Move the stand
+# wherever it will work." 18 straight out along J0 130 (OCC on the STEP solids, scratchpad dock_move_test.py): base
+# 7.4, cover 7.2, yoke 8.3 at its worst J0; the foot ends 3.6 in from the wood's edge (x 225), the #8 holes 26+ in.
+# J4 stays level with J1 (H unchanged), so the four-bar balance point holds; J2 = J3 -97.5 (was -100.1, limit -104).
+# The station itself is unchanged - dock_station_finish.DOCK_OUT puts it there.
+BOARD_Y, WOOD_Y = 235.0, 257.0          # design y (down) of the board top (232 until 2026-11-24, the pockets) and of
+                                        # the wood the base, the dock and the board's sheet sit on
 HUB_ABOVE_GRIP = 106.0                  # gripper.py: hub bottom 106 above the grip point (checked in Robot Studio)
 LIFT = 11.0                             # rim out of the recess and the flange's cone above the fork, to slide
-PARK_OUT = 262.0                        # reach to come down at, outside the fork (its edge 226.1 + fingers 26 + 10)
+PARK_OUT = RHO + 82.5                   # reach to come down at, outside the fork (its edge RHO + 46.6, fingers 26, 10
+                                        # more; 262 at RHO 179.5, 280 now)
 SAFE_ABOVE = 25.0                       # swinging over to the dock: the claw's lips this far above the fork's top
 
 # ---------------------------------------------------------------- flange (hub frame: z 0 hub bottom, z 50 hub top)
@@ -353,9 +365,11 @@ STARTUP = {
         "read the dock Hall (several reads, as homing does: 5 Hz sensor)",
         "MADE = parked: take 'pose' as the joint angles and run the plain home cycle (J1..J4, then J0) - no special "
         "moves (Mike 2026-11-09: 'just running a regular home cycle when the arm tilts back, it's going to clear the "
-        "dock'). Measured 2026-11-10 (dock_homing_check.py, J1 at 0.1 deg): nothing touches the station; closest "
-        "0.24 mm at J1 +0.6 deg as the claw flange rises past the pocket wall, 1.0 mm by +1 deg, 6 mm by +4 deg; "
-        "the J2, J3, J4, J0 stages and the move to home stay >= 20 mm off",
+        "dock'). Measured 2026-11-24 with the station 18 further out (dock_homing_check.py; J1 at 0.1 deg to +6, "
+        "then 1 deg to its overshoot): nothing touches the station; closest 0.26 mm at J1 +0.5 deg as the claw "
+        "flange rises past the pocket wall, 1.3 mm by +1 deg, then >= 5.3 mm (the claw hub at +11 deg) and 39 mm "
+        "by +39; the J2, J3, J4, J0 stages and the move to home stay >= 27 mm off (2026-11-10, at the old place: "
+        "0.24 mm at +0.6 deg)",
         "CLEAR = not in the dock: the angles are unknown, so no park moves and no blind homing; motors off, say so "
         "on the screen, wait for the player (push it into the dock by hand, or choose home-from-here) - to settle "
         "with Mike"],
@@ -374,6 +388,22 @@ def scene(t):
     for j in sc["joints"]:
         if j["name"] == "J4 wrist" and "claw flange (on wrist)" not in j["models"]:
             j["models"].append("claw flange (on wrist)")
+    ik_park(sc)
+    if any(m.get("name") == "dock station v2" for m in sc["models"]):    # his one-piece station is shown instead
+        sc["models"] = [m for m in sc["models"] if m.get("name") != "park dock"]
+    write_scene(sc)
+
+
+def write_scene(sc):
+    tmp = SCENE + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as f:                  # text mode on Windows: CRLF, as the file is
+        json.dump(sc, f, indent=1)
+    os.replace(tmp, SCENE)                                       # whole, so the studio never reads half a scene
+
+
+def ik_park(sc):
+    """scene ik.park: the parked pose and the grip points of the moves, from PSI / RHO / H (python park_dock.py --pose
+    writes only this, leaving the models and the STEPs alone)"""
     pose, wz = park_pose()
     c, s = math.cos(math.radians(PSI)), math.sin(math.radians(PSI))
     at = lambda rho, up: [round(-c * rho, 2), round(BOARD_Y - up, 2), round(30.6 - s * rho, 2)]  # noqa: E731
@@ -386,11 +416,9 @@ def scene(t):
         "keep_out": {"j0": [112.0, 160.0], "below_up": round(fork_top + SAFE_ABOVE, 1),
                      "note": "the fork, post and foot: no claw below 'below_up' (mm above the board) with J0 in this "
                              "range except the park moves themselves"},
-        "startup": STARTUP}
-    if any(m.get("name") == "dock station v2" for m in sc["models"]):    # his one-piece station is shown instead
-        sc["models"] = [m for m in sc["models"] if m.get("name") != "park dock"]
-    with open(SCENE, "w", encoding="utf-8") as f:
-        json.dump(sc, f, indent=1)
+        "startup": STARTUP,
+        "moved": "2026-11-24: grip point 18 further out (reach 197.5, was 179.5) - the station moved straight out to "
+                 "clear the new chain swivel's base, cover and yoke (park_dock.py RHO)"}
     print(f"scene: park pose {pose} (J4 {wz:+.2f} vs J1); seat {sc['ik']['park']['seat']}")
 
 
@@ -439,5 +467,9 @@ def export_assemblies():
 if __name__ == "__main__":
     if "--export" in sys.argv:
         export_assemblies()
+    elif "--pose" in sys.argv:
+        _sc = json.load(open(SCENE, encoding="utf-8"))
+        ik_park(_sc)
+        write_scene(_sc)
     else:
         main()

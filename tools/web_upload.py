@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-web_upload.py - put the exported Robot Studio (web_export.py -> tools/web_export/<studio>/: index.html, .htaccess) on
+web_upload.py - put the exported Robot Studio (web_export.py -> tools/web_export/<studio>/: scene_data.json, index.html,
+.htaccess) on
 the website by FTP over TLS (Mike 2026-11-10: InterServer, an FTP account made for this; "there is no reason to go
 anywhere else at my site").
 
@@ -16,7 +17,8 @@ import os
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-FILES = ["index.html", ".htaccess"]
+FILES = ["scene_data.json", "index.html", ".htaccess"]   # the data first (2026-11-24: the page loads it with a bar), so a
+#                                                          new page never points at data that isn't there yet
 
 
 def main():
@@ -26,6 +28,8 @@ def main():
     ap.add_argument("--studio", default="main", help="which export (tools/web_export/<studio>)")
     a = ap.parse_args()
     src = os.path.join(HERE, "web_export", a.studio)
+    if os.path.isfile(os.path.join(src, "preview.jpg")):    # the link preview's picture (web_export.py --play)
+        FILES.insert(0, "preview.jpg")
     missing = [f for f in FILES if not os.path.isfile(os.path.join(src, f))]
     if missing:
         sys.exit(f"not exported yet ({', '.join(missing)} missing in {src}): run  python web_export.py  first")

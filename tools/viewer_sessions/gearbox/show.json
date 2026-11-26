@@ -1,4 +1,8 @@
 {
- "view": {"view": "iso", "focus": 317, "zoom": 2},
- "view_seq": 1
+ "view": {
+  "view": "iso",
+  "focus": 405,
+  "zoom": 10
+ },
+ "view_seq": 40
 }

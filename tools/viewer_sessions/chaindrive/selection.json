@@ -1,0 +1,43 @@
+{
+ "joints": {
+  "J0 swivel": 90,
+  "J1 shoulder": 135,
+  "J2 elbow": -90,
+  "J3": -90,
+  "J4 wrist": 90
+ },
+ "items": [
+  {
+   "label": "P610",
+   "kind": "part",
+   "part": 610,
+   "face": null,
+   "edge": null,
+   "name": "link C frame (printed on its side, one piece): floor, top plate, motor mount and gussets, free-end wall",
+   "file": "chain_drive_J3_link_C.step",
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_sessions\\gearbox\\chain_drive_J3_link_C.step",
+   "solid": 71,
+   "shown_offset": null,
+   "picked_at": [
+    -518.0733023700985,
+    -47.99999999999997,
+    7.0582260990686905
+   ],
+   "volume": 136285.03,
+   "bbox": [
+    [
+     -568,
+     -97.48246765136719,
+     -6.400000095367432
+    ],
+    [
+     -412.5,
+     28.78414535522461,
+     67.5999984741211
+    ]
+   ]
+  }
+ ],
+ "text": "P610: link C frame (printed on its side, one piece): floor, top plate, motor mount and gussets, free-end wall \u2014 chain_drive_J3_link_C.step \u00b7 136.29 cm\u00b3 \u00b7 155.5 \u00d7 126.3 \u00d7 74.0 mm",
+ "time": "2026-11-24 02:25:56"
+}

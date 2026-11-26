@@ -126,7 +126,12 @@ SHAFT_D, SHAFT_L = 5.0, 24.0
 HUB_D = 16.0
 WOOD_SCREW_CLEAR, WOOD_CSK = 4.6, 9.2      # #8
 FOOT_PILOT = 3.5                          # #8 into plastic (the arm foot's corner screws)
-SQ, BORDER, BOARD_T = 60.0, 15.0, 25.0
+SQ, BORDER, BOARD_T = 60.0, 15.0, 22.0
+# BOARD_T (the squares' top over the robot's bottom face) was 25: the base and the dock stood 3 down in pockets in the
+# board's sheet. 2026-11-24 Mike: "If we don't put the pockets on the board, the recesses for the parking stand, will
+# it still work? I can't get this thing onto the machine to cut those pockets." / "Yeah, so let's do that." - no
+# pockets: the base and the dock stand on the sheet's top, which the cells stand on too (cell underside to its wood's
+# top: 22), so the squares are 22 over the robot's face; the arm's board_y is 235 (was 232), the shoulder 235 above.
 D_EDGE = 122.0                    # yaw axis -> playing edge: shoulder 232 above the board -> reach 152..640;
 #                                   nearest squares 154, far corners 609
 

@@ -1,0 +1,84 @@
+herringbone planetary (Mike's sketch, 2026-11-23) - tools/herringbone_planetary.py
+module 1.5 normal, 20 deg, herringbone 22 deg; transverse module 1.6178, transverse pressure angle 21.43 deg
+sun 8 / planets 3 x 13 / ring 34: ratio 5.25:1 (carrier out, ring fixed)
+planet circle r 16.987; sun shift +0.424, planet -0.424
+  sun   : pitch d 12.942  base d 12.047  tip d 17.199  root d 10.464  tip land 0.42
+  planet: pitch d 21.031  base d 19.577  tip d 22.760  root d 16.010  tip land 1.32
+  ring  : pitch d 55.005  base d 51.202  TIP d 52.800  root d 57.483  tip land 2.21
+  tip-interference limits: sun tip d <= 17.299, planet tip d <= 23.181, ring tip d >= 52.685
+  -> the ring's tips can't be 52.0: at 52.0 they would dig into the planet roots. They are 52.80; the 6808 seats are plain 52.0 bores beside the teeth, and the bearing still slides in through the teeth.
+  contact ratio: sun-planet 1.21, planet-ring 1.18, + helix overlap 0.44 per half
+  sun mesh clearance 0.060 at the pitch circle (6.1 arcmin at the output); ring mesh 0.000 (the blades seat the planets)
+  clearances: sun tip to planet root 0.383, planet tip to sun root 0.375, planet tip to ring root 0.375
+
+spider (PA12): bosses printed at r 17.587, seated at r 16.987 -> 8.0 N out per planet; blades 2.09 thick x 10 high, 10.5 free; bending 15.5 MPa held; wind-up 2.2 arcmin per N.m out
+
+checks
+  part volumes (cm3): motor_plate 22.85, ring_half_a 22.83, ring_half_b 45.34, retainer 11.94, input_shaft 11.98, planet_1 2.95, planet_2 2.95, planet_3 2.95, spider 24.76, output_disc 15.92
+  gear mesh (assembled, planets seated): worst overlap 0.0028 mm3
+    sun turned   0.0 deg, planet 1: overlap with sun 0.0000, ring 0.0000 mm3
+    sun turned   0.0 deg, planet 2: overlap with sun 0.0000, ring 0.0006 mm3
+    sun turned   0.0 deg, planet 3: overlap with sun 0.0000, ring 0.0000 mm3
+    sun turned  11.2 deg, planet 1: overlap with sun 0.0000, ring -0.0030 mm3
+    sun turned  11.2 deg, planet 2: overlap with sun 0.0000, ring 0.0000 mm3
+    sun turned  11.2 deg, planet 3: overlap with sun 0.0000, ring 0.0000 mm3
+    sun turned  22.5 deg, planet 1: overlap with sun 0.0000, ring 0.0000 mm3
+    sun turned  22.5 deg, planet 2: overlap with sun 0.0000, ring 0.0000 mm3
+    sun turned  22.5 deg, planet 3: overlap with sun 0.0000, ring 0.0028 mm3
+    sun turned  33.8 deg, planet 1: overlap with sun 0.0000, ring 0.0000 mm3
+    sun turned  33.8 deg, planet 2: overlap with sun 0.0000, ring 0.0000 mm3
+    sun turned  33.8 deg, planet 3: overlap with sun 0.0000, ring -0.0019 mm3
+  part overlaps > 0.01 mm3: 13
+    motor_17HE08 x screw_M3x8_motor_4: 27.340 mm3
+    motor_17HE08 x screw_M3x8_motor_3: 27.340 mm3
+    motor_17HE08 x screw_M3x8_motor_1: 27.340 mm3
+    motor_17HE08 x screw_M3x8_motor_2: 27.340 mm3
+    motor_plate x insert_M3x4x5_plate_1: 19.394 mm3
+    motor_plate x insert_M3x4x5_plate_3: 19.394 mm3
+    motor_plate x insert_M3x4x5_plate_2: 19.394 mm3
+    output_disc x insert_M3x4x5_3: 19.390 mm3
+    output_disc x insert_M3x4x5_1: 19.390 mm3
+    output_disc x insert_M3x4x5_2: 19.390 mm3
+    spider x screw_M3x10_disc_2: 13.676 mm3
+    spider x screw_M3x10_disc_3: 13.676 mm3
+    spider x screw_M3x10_disc_1: 13.676 mm3
+
+loads per N.m at the output (load share 1.3, dynamic 1.2; PLA E 3.5 GPa)
+  tooth force 12.8 N per mesh; bending sun 3.6, planet 4.2, ring 1.7 MPa; contact sun 25, ring 12 MPa (x sqrt of the torque)
+  planet dowel 26 N -> 13 N per 3x6x2 (static rating 74 N)
+  safe output: teeth 6.0 N.m at 25 MPa; bearings 5.8 N.m at their static rating
+  17HE08 pancake (0.115 N.m pull-out): 0.55 N.m out at ~91% -> bending 2.3 MPa, sun contact 18 MPa
+  17HS19 (0.40 N.m pull-out): 1.91 N.m out at ~91% -> bending 8.0 MPa, sun contact 34 MPa
+  17HS19 holding (0.59 N.m): 2.82 N.m out at ~91% -> bending 11.8 MPa, sun contact 41 MPa
+
+arm fit (drops in where the spread cycloid sits: claw_adapter.py / mockup_link.py frame, z 0 = top of link C's plate)
+  body 70.5 like the cycloid; output face z 59.2 (spread cycloid: 59.2); 3 x M3 on r 15 at 0/120/240 (same)
+  arm screws: 6 x #4 x 3/4" wood screws on r 32.4 at 33.16, 90.00, 146.84, 213.16, 270.00, 326.84 deg, D2.4 pilots up to z 16.0 (cycloid.py's ARM_SCREW_*): through the plate into half A
+  clamp bolt heads on the retainer: top 58.4, 0.8 under the claw cup
+  grooved OD (spline lug-nut look): 12 grooves 6 wide x 3 deep at 15 + 30k deg, lips rounded 1.0; every screw on a land
+    walls: arm pilots 1.65, clamp bolt holes 2.25, plate inserts to the OD 1.25; groove floor to the ring's tooth roots 3.51
+    the grooves take out 2.76 + 4.77 cm3
+
+hardware
+  2 x 6808 (40x52x7), 1 x 6800 (10x19x5), 6 x 3x6x2, 3 x 3x20 dowel (m6)
+  3 x M3 x 55 partly threaded, heads on the retainer, through half B and half A into 3 x M3 x 4 x 5
+    heat-set inserts in the plate's underside (the bolt pulls each insert up into the plate)
+  4 x M3 x 8 motor screws (from inside the plate, heads 0.2 under the input 6808), 3 x M3 x 10 output disc screws
+  3 x M3 x 4 x 5 heat-set inserts in the output disc (r 15, 0/120/240 deg: the old output circle)
+
+assembly
+  1 dowels into the spider bosses (bottom out, 8.5 deep)  -- or last, through the planets, see 4
+  2 spider into half B from the V end; output 6808 onto its collar from the far end; output disc screwed on
+    (clamps the inner race); retainer on the half B end
+  3 input 6808 pressed onto the input shaft's disc; the three planets (bearings pressed in) meshed round the sun
+  4 that cluster into half B, turning as it goes (helix); push each boss in 0.6 so its hole lines up and press the
+    dowel through the planet's bearings into it, on a 0.5 shim laid on the boss face; pull the shim
+  5 half A over the planets from the motor side (turning), the input 6808 into its seat
+  6 motor screwed to the plate (heads inside), plate on with the shaft into the input shaft's D bore; the 3 long
+    bolts down from the retainer into the plate's inserts. On the arm: link C's 6 wood screws up into the plate
+
+print
+  motor plate: motor side down. half A: motor end down. half B: V end down. retainer: flat. output disc: outer
+  face down (insert holes on the bed).
+  input shaft: disc down. planets: either face. spider: planet side down (the back disc bridges the 1.0 gap
+  over the bosses and blades). sun tests: either face.

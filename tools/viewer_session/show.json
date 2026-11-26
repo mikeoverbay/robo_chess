@@ -1,18 +1,15 @@
 {
  "view": {
-  "view": "iso",
-  "zoom": 5.5,
-  "at": [
-   675.0,
-   205.0,
-   10.0
-  ]
- },
- "view_seq": 75,
- "highlight": [
-  {
-   "part": 273,
-   "color": "#e0a030"
+  "view": "front",
+  "focus": 100,
+  "zoom": 1.1,
+  "joints": {
+   "J0 swivel": 90,
+   "J1 shoulder": 135,
+   "J2 elbow": -90,
+   "J3": -45
   }
- ]
+ },
+ "view_seq": 81,
+ "highlight": []
 }

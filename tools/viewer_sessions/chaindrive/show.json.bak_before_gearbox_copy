@@ -1,0 +1,17 @@
+{
+ "view": {
+  "view": "iso",
+  "hide": [
+   "wall +y"
+  ],
+  "focus": "J2 elbow",
+  "zoom": 0.9,
+  "joints": {
+   "J0 swivel": 0,
+   "J1 shoulder": 30,
+   "J2 elbow": -60,
+   "J3": -45
+  }
+ },
+ "view_seq": 1
+}

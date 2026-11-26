@@ -38,7 +38,12 @@ from view_step import read_step  # noqa: E402
 
 SRC = os.path.join(PD.OUT, "dock_station.step")
 WOOD_Z = -257.0
-CUP = (-115.38, 106.90)                 # the seat's axis (world x, y) = park_dock's parked claw
+CUP = (-115.38, 106.90)                 # the seat's axis (world x, y) in HIS file = park_dock's parked claw until 2026-11-24
+# Where it is screwed down: DOCK_OUT further out than in his file, straight out along J0 PSI (2026-11-24, Mike: "We
+# have an issue with the park stand. It's colliding with the new base." / "Move the stand wherever it will work." -
+# park_dock.py RHO has the numbers). The station's shape and the print file are unchanged; only where it stands moves.
+DOCK_OUT = PD.RHO - 179.5
+DOCK_SHIFT = (DOCK_OUT * math.cos(math.radians(PD.PSI)), DOCK_OUT * math.sin(math.radians(PD.PSI)), 0.0)   # world
 CUP_R, CUP_Z = 42.5, -77.0              # a face entirely inside r 42.5 of it, above z -77, is the cup's
 POST = (-159.8, 69.6)
 R = 2.0
@@ -280,7 +285,7 @@ def main():
         if v > 1e-3:
             print(f"   OVERLAP with {n} ({s.Volume():.0f} mm^3 body): {v:.2f} mm^3")
     # the parked claw against it, and the moves in and out (park_dock's checks, in the hub frame)
-    sh = PD.placed(st_f, world_to_hub())
+    sh = PD.placed(st_f.translate(V(*DOCK_SHIFT)), world_to_hub())          # where it stands (DOCK_OUT)
     claw = [(n, s) for n, s in PD.claw_parts_hub_frame() if n != "hub"] + [("flanged hub", PD.hub_flanged()),
                                                                            ("magnet", PD.magnet())]
     worst = {}
@@ -318,13 +323,16 @@ def to_scene():
     w = gp_Trsf()
     w.SetValues(-1, 0, 0, 0, 0, 0, -1, 0, 0, -1, 0, 0)          # Robot Studio <-> design: its own inverse
     out = os.path.join(os.path.dirname(PD.SCENE), "dock_station_v2_scene.step")
-    write_flat([("dock station v2", PD.placed(s, w), cq.Color(*c) if c else None)], out)
+    write_flat([("dock station v2", PD.placed(s.translate(V(*DOCK_SHIFT)), w), cq.Color(*c) if c else None)], out)
     sc = json.load(open(PD.SCENE, encoding="utf-8"))
-    sc["models"] = [m for m in sc["models"] if m.get("name") not in ("park dock", "dock station v2")]
-    sc["models"].append({"path": out, "name": "dock station v2", "by": "dock_station_finish.py --scene"})
-    with open(PD.SCENE, "w", encoding="utf-8") as f:
-        json.dump(sc, f, indent=1)
-    print(f"scene: 'dock station v2' in place of 'park dock' ({out})")
+    entry = {"path": out, "name": "dock station v2", "by": "dock_station_finish.py --scene"}
+    names = [m.get("name") for m in sc["models"]]
+    if "dock station v2" in names:                               # in its place (the parts after it keep their numbers)
+        sc["models"][names.index("dock station v2")] = entry
+    else:
+        sc["models"] = [m for m in sc["models"] if m.get("name") != "park dock"] + [entry]
+    PD.write_scene(sc)
+    print(f"scene: 'dock station v2' {DOCK_OUT:g} out from his file's place ({out})")
 
 
 if __name__ == "__main__":

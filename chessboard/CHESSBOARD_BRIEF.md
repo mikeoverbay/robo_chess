@@ -455,7 +455,8 @@ Y = x − 210 (rank 8 nearest the robot at X 152, the a-file on the player's lef
     Y ±265..385.
   - Between the arms, behind X 107, it is open for the robot.
 - **His asks:** front margin = side width = 160; room at the back for the robot's base.
-- **Robot base** X −126..65, Y ±65; turntable Ø154 at 0,0. **Dock** X −210..−69, Y 50..184.
+- **Robot base** X −126..65, Y ±65; turntable Ø154 at 0,0. **Dock** X −210..−69, Y 50..184. SUPERSEDED 2026-11-24 by
+  the chain swivel and the moved dock: see "Fitted to the chain swivel" below.
 - **Our wiring fits the borders:**
   - The causeway is Y −258.75..−240.45, leaving 6.3 to white's tray buckets at −265.
   - The back way is X 111.55..121.55, leaving 4.5 to the layer's back edge at 107.
@@ -476,7 +477,42 @@ Y = x − 210 (rank 8 nearest the robot at X 152, the a-file on the player's lef
     - The top layer is Z 3..27 over the robot's face, 24 thick, with its face flush with the rims. It covers X 107..762,
       and the tray arms X 47..107 at |Y| 250..400.
     - One 3-deep pocket for the robot and dock together, 0.5 clearance all round: robot base X −126.5..65.5, Y ±65.5;
-      dock X −210.5..−68.5, Y 49.5..184.5.
+      dock X −210.5..−68.5, Y 49.5..184.5. SUPERSEDED 2026-11-24 (next item).
+    - **NO POCKETS, 2026-11-24 later** (his words, relayed by Robot arm control and kinematics: "I can't get this
+      thing onto the machine to cut those pockets", then "Yeah, so let's do that"). Option A is replaced:
+      - swivel_base.BOARD_T 25 → 22 (that session), so the sheet's top IS the robot's face. The base, the dock and
+        the cells all stand on the flat sheet, and the whole board is 3 lower in the design frame. The squares' top is
+        at design y 235; the sheet is at y 257..269 and the top pieces at y 233..257. one_piece_board.py asserts
+        BOARD_T == CELL_WOOD.
+      - Drilled by hand: 10 pilots (1/8" × 7, blind), the base's 6 #8 screws and the dock's 4. Plus one 1/2" cable
+        hole THROUGH at X −70, Y 0, under the swivel's open Y ±6 wire slot, hidden under its plate (checked open above).
+      - `tools\drill_template.py` writes `chessboard\drill_template_base_dock.pdf`: an overview page plus 4 Letter
+        tiles at 1:1, with a 10 mm grid. It shows the base and dock outlines, the holes numbered, and three reference
+        lines: the sheet's back edge, the main board's back edge (332 in front of it) and the centre line (400 from
+        either side edge). Drawn from above, standing at the back edge: the dock is on the LEFT. The 100 mm bar and the
+        grid were measured from the PDF.
+      - The pocket items below are history.
+    - **Fitted to the chain swivel and the moved dock** (the Professor, relayed by Robot arm control and kinematics,
+      2026-11-24: "fix the chessboard to match the new base and the new position of the parking stand"). Robo
+      chessboard design changed `tools\one_piece_board.py`: the pockets are traced from the scene's own models
+      ("swivel chain (fixed)", "dock station v2") where they meet the sheet, so re-running it follows any later move.
+      - Swivel base footprint, a D shape with four screw lugs (±30°, ±75°; Robo Chess gearbox added them 2026-11-24 on
+        his "need to have screws to hold it down"): X −117.8..99.7, Y −110.3..127.1. 7.3 from the main board, 145.7
+        from a tray piece. 6 × #8 × 1/2" flat heads, 6.7 into the wood, get the same 1/8" × 7 pilots: lugs at (27.4,
+        −102.3) (91.7, −53.0) (91.7, 53.0) (27.5, 102.5), back (−104.0, 28.0) (−104.0, −18.0). A lug at 0° hit the
+        main board (X 107..114, Z 3..6), so the gearbox session moved them.
+      - The pocket is traced from the swivel's plate (its lugs) and cover (which fills the plate's own cable slot
+        and spindle bore), as 0.5 mm polygons. Screws modelled in a part (anything under the robot's face) become
+        pilots and are left out of the collision checks.
+      - Dock foot, about Ø100: X −221.4..−121.5, Y 63.9..164.2. Its #8 holes at (−198.7, 94.8) (−143.4, 95.8)
+        (−193.7, 136.0) (−150.4, 137.0) get 1/8" (3.2) pilots, 7 deep under the pocket floor.
+      - Pockets 3 deep, 0.5 clear all round, measured from the written sheet. Two pockets with a 6.4 strip of wood
+        between them (the parts are 7.4 apart). The dock's pocket runs out through the back edge (it would have left a
+        3.1 sliver).
+      - The arm's cables: the swivel's own 12 slot under its plate (Y ±6) carries on in the sheet, 13 wide, 3 deep, out
+        the back edge.
+      - Checked: every swivel chain part and the dock clear of the sheet and all three top pieces; the turntable and
+        yoke clear of the top layer all the way round J0.
     - The sheet is 12 thick, a guess until he measures it.
   - **Top layer in 3 pieces** (relayed 2026-11-10; his CNC's window is 24 in). All pieces are 24 thick.
     - Main board: X 107..617, Y ±255, 510 × 510. The front is cut 15 past rank 1, his ask.

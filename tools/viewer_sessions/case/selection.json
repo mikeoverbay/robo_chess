@@ -1,0 +1,67 @@
+{
+ "joints": {},
+ "items": [
+  {
+   "label": "P1.F7",
+   "kind": "face",
+   "part": 1,
+   "face": 7,
+   "edge": null,
+   "name": "case: hood (v1 concept)",
+   "file": "case_hood_v1.step",
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\electronics_case\\case_hood_v1.step",
+   "solid": 0,
+   "shown_offset": null,
+   "picked_at": [
+    -66.44196286310245,
+    228.0233612060547,
+    77.0883648467682
+   ],
+   "face_info": {
+    "type": "plane",
+    "area": 42543.436,
+    "c": [
+     -1.5241,
+     228.0234,
+     107.2958
+    ],
+    "n": [
+     0,
+     1,
+     0
+    ],
+    "f": 7,
+    "v0": 493,
+    "vn": 188,
+    "t0": 509,
+    "tn": 192,
+    "edges": [
+     6,
+     9,
+     11,
+     13,
+     16,
+     23,
+     61,
+     66,
+     68,
+     69,
+     70,
+     71,
+     72,
+     73,
+     74,
+     75,
+     76,
+     77,
+     78,
+     79,
+     80,
+     81
+    ]
+   }
+  }
+ ],
+ "text": "P1.F7: plane, normal +Y \u2014 case: hood (v1 concept) \u00b7 42543.4 mm\u00b2 \u00b7 centre (-1.52, 228.02, 107.30) at Y 228.02",
+ "time": "2026-11-24 02:27:54"
+}

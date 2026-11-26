@@ -86,10 +86,29 @@ The turntable (J0) is NOT a cycloid. It is a printed bevel pair, m1.5 18:72 = 4:
   everything in" - the profile is drawn for pins on 55.95 (`DISC_PIN_R`); output holes +0.1 in the model only
   (`OUT_HOLE_PRINT`, 3.94); bore 18.98 ("just a little tighter"). Print the discs at Cura 0/0. Also written as
   `print\Revised lobe disk.step`. (Robo Chess gearbox)
+- 2026-11-17, second fit: the 55.95 disc still pushed the housing round once the lid was tightened (drive pin holes
+  measured right). Mike: "Let's do one at 27.95. Don't worry about backlash" - `DISC_PIN_R` 27.95, the profile drawn on
+  his real pins (55.9 circle): across the peaks 53.345, over a D3 pin in a root 55.70. `print\Revised lobe disk.step`
+  updated in place (body "Revised lobe disk 27.95"). Gap to his pins 0.10 (report's 0.143 is against the 56 circle);
+  backlash 1.13 deg on his pins (report 1.50). (Robo Chess gearbox)
 
 **Output and discs**
 - 8 output pins, 3 mm, on a 41 mm circle, in 3.84 mm holes. A support ring holds the pins at both ends; with one
   end only they hit ~490 MPa.
+- 2026-11-19, bearings on the output pins. Mike: "I have some 3 millimeter ID, 6 millimeter OD, 2 millimeter thick
+  bearings. Can we put those on the dry pins and open the holes up in the lobe disc?" Two per pin per disc, 32 in all.
+  Each disc hole is now a pocket Ø6.84 as printed (6.94 in the model) 4 deep from the top, over a 2 mm floor that keeps
+  the Ø3.84 pin hole. Disc 2's floor keeps disc 1's bearings off disc 2's; the flange face 0.5 above keeps disc 2's in.
+  The floor rubs the bearing faces lightly as the disc orbits (their weight only). Pocket to lobe roots 2.1 mm (was 3.6).
+  Each bearing 57 N at the design torque, 87 at stall. The output pins' sliding (μ × 0.87 below) becomes rolling:
+  about 65 → 72 % at the same μ.
+  Then Mike: "We kicked that assembly off as a separate assembly" - it is a VARIANT. The main design keeps the plain pin
+  holes (cycloid_spread\, print 4, `print\Revised lobe disk.step`, the studio files: all as before).
+  `python cycloid.py --spread 14 --out-bearings` writes `cycloid_spread_bearings\` (`OUT_BRG_*`, `set_out_bearings`);
+  `print\Lobe disk bearing pockets.step` and `print\Gearbox assembly (pin bearings).step` are its disc and its full
+  assembly. Assembly keeps the bench cartridge: bearings dropped into each disc's pockets as it goes on the eccentric,
+  the support ring in empty, the cartridge lowered in, then the 8 steel output pins pushed down from the top through
+  their bearings into the support ring. The bearings must slide on the pins. (Robo Chess gearbox)
 - Two discs 6 mm thick (the same part), printed solid. The tested printed drive cracked at its eccentric bearing first.
 - Pull holes (Mike 2026-11-14, from his `print\lobe.step`): 2 × Ø2.5 through (M3 self-tap) on r 17.17 at 90°/270°
   about the disc's own centre, between output holes, with a 0.8 × 45° lead-in on the top face. Fit the lead-in face up.

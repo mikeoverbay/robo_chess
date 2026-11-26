@@ -22,5 +22,11 @@
   "dir": "viewer_sessions/twin",
   "who": "Robot arm control and kinematics",
   "what": "TEST: two 48 mm shoulder motors belted 1:1 (twin_motor.py)"
+ },
+ "chaindrive": {
+  "port": 8770,
+  "dir": "viewer_sessions/chaindrive",
+  "who": "Robo Chess gearbox",
+  "what": "the arm's chain drives only (chain_drive_arm.py), animated from the joints"
  }
 }

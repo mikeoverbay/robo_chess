@@ -1,0 +1,47 @@
+{
+ "view": {
+  "view": "iso",
+  "only": [
+   "(link a ",
+   "(link a,",
+   "(link a:",
+   "(link a;",
+   "caps (link a)",
+   "washers 1/2 (link a)",
+   "washers 2/2 (link a)",
+   "16 x 3 (link a)",
+   "(link b",
+   "(link c",
+   "link a ",
+   "link b ",
+   "link c ",
+   "cheek",
+   "shoulder boss",
+   "nut carrier",
+   "'s joint",
+   "claw ",
+   "j4 home magnet",
+   "(swivel chain"
+  ],
+  "hide": [
+   "wall +y",
+   "cheek +y",
+   "black zinc (link a +y",
+   "black zinc (link b +y",
+   "black zinc (link c +y",
+   "swivel cover",
+   "(stand-in for the base cheek",
+   "sprocket screws m3 +y (link a's joint)",
+   "sprocket screws m3 -y (link a's joint)"
+  ],
+  "focus": "J2 elbow",
+  "zoom": 0.9,
+  "joints": {
+   "J0 swivel": 0,
+   "J1 shoulder": 30,
+   "J2 elbow": -60,
+   "J3": -45
+  }
+ },
+ "view_seq": 32
+}

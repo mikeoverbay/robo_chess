@@ -500,7 +500,13 @@ class App:
                                  json.dumps(sc.get("homing"), sort_keys=True),
                                  json.dumps(sc.get("gears"), sort_keys=True),
                                  json.dumps(sc.get("rigs"), sort_keys=True),
-                                 json.dumps(sc.get("drawings"), sort_keys=True)]).encode()).hexdigest()[:12]
+                                 json.dumps(sc.get("drawings"), sort_keys=True),
+                                 json.dumps(sc.get("paths"), sort_keys=True),
+                                 json.dumps(sc.get("sweep"), sort_keys=True),
+                                 json.dumps(sc.get("lighting"), sort_keys=True),
+                                 json.dumps(sc.get("props"), sort_keys=True),
+                                 json.dumps(sc.get("board_cells"), sort_keys=True),
+                                 json.dumps(sc.get("sequence"), sort_keys=True)]).encode()).hexdigest()[:12]
 
     def scene(self):
         with self.lock:
@@ -525,6 +531,12 @@ class App:
                     sc["gears"] = self.read_json("scene.json", {}).get("gears")       # models geared to a joint (pinion)
                     sc["rigs"] = self.read_json("scene.json", {}).get("rigs")         # test rigs (gearbox_anim.py)
                     sc["drawings"] = self.read_json("scene.json", {}).get("drawings")  # SVGs as pen strokes (svg_draw.py)
+                    sc["paths"] = self.read_json("scene.json", {}).get("paths")       # parts riding a path (chain links)
+                    sc["sweep"] = self.read_json("scene.json", {}).get("sweep")       # Play: joints back and forth
+                    sc["lighting"] = self.read_json("scene.json", {}).get("lighting")  # a studio's lights, shadows, looks
+                    sc["sequence"] = self.read_json("scene.json", {}).get("sequence")  # the sequencer: P / Sequence
+                    sc["props"] = self.read_json("scene.json", {}).get("props")       # things for scale (cig pack)
+                    sc["board_cells"] = self.read_json("scene.json", {}).get("board_cells")   # the lit buckets' centres
                     try:                                       # Mike's wood pictures for the board (woods.py)
                         import woods as WD
                         sc["woods"] = WD.wood_data(embed=False, quiet=True)

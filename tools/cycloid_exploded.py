@@ -4,7 +4,10 @@ cycloid_exploded.py - the spread cycloid gearbox (cycloid.py --spread 14) as an 
 me a step file of the new gearbox in an exploded view ... something similar to this [a hand-drawn exploded tape measure].
 All pushed up along the axis.")
 
-    python cycloid_exploded.py [--gap 12]
+    python cycloid_exploded.py [--gap 12] [--bearings]
+
+--bearings: the cycloid.py --spread 14 --out-bearings variant (bearings on M3 output bolts, no support ring), from and
+to cycloid_spread_bearings/step/.
 
 Reads cycloid_spread/step/assembly_steel_pins.step (run cycloid.py --spread 14 first) and writes
 cycloid_spread/step/assembly_exploded.step: every part slid straight up the motor axis from where it sits assembled,
@@ -37,13 +40,19 @@ LEVELS = [
     (("output support ring",), NAVY),
     (("output pin",), STEEL),                      # pressed into the support ring
     (("eccentric spacer",), GREEN2),               # the cartridge: spacer, disc 1 + bearing from below,
+    (("output spacer under disc 1",), STEEL),     # the bolts' pinched stacks (2026-11-22): steel spacers between the pairs
     (("disc 1",), ORANGE),
     (("6800 in disc 1",), STEEL),
+    (("output pin bearing, disc 1",), STEEL),     # 3 x 6 x 2s down the output pins into disc 1's pockets (2026-11-19)
+    (("output spacer between the discs",), STEEL),
     (("eccentric",), GREEN),                       # the one-piece eccentric,
     (("6800 in disc 2",), STEEL),                  # disc 2 + bearing from above
     (("disc 2",), ORANGE2),
+    (("output pin bearing, disc 2",), STEEL),     # ... and disc 2's
+    (("output spacer over disc 2",), STEEL),
     (("top bearing",), STEEL),                     # pressed onto the eccentric's top journal (2026-11-17)
     (("pin ring",), BLUE),
+    (("output bolt",), BLACK),                     # the bearings variant: M3s up into the flange (2026-11-21)
     (("output flange",), NAVY),
     (("insert",), BRASS),                          # heat-set into the flange face
     (("6808 1",), STEEL),
@@ -79,8 +88,21 @@ def level_of(name):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--gap", type=float, default=12.0, help="mm between one level's top and the next one's bottom")
+    ap.add_argument("--bearings", action="store_true", help="the --out-bearings variant (cycloid_spread_bearings)")
+    ap.add_argument("--tubes", action="store_true", help="the --tube-pins variant (cycloid_spread_tubes)")
     a = ap.parse_args()
-    parts = read_step(SRC)
+    src, dst = SRC, DST
+    if a.bearings:
+        src, dst = (f.replace(os.sep + "cycloid_spread" + os.sep, os.sep + "cycloid_spread_bearings" + os.sep) for f in (SRC, DST))
+    if a.tubes:
+        src, dst = (f.replace(os.sep + "cycloid_spread" + os.sep, os.sep + "cycloid_spread_tubes" + os.sep) for f in (SRC, DST))
+    # levels that only one build has: the main one has no pin bearings or bolts; the variant no support ring or pins
+    variant = {"output pin bearing, disc 1", "output pin bearing, disc 2", "output bolt", "output spacer under disc 1",
+               "output spacer between the discs", "output spacer over disc 2"}
+    optional = ({"output support ring", "output pin"} if a.bearings else variant | {"output support ring"} if a.tubes else
+                {"output pin bearing, disc 1", "output pin bearing, disc 2", "output bolt", "output spacer under disc 1",
+                 "output spacer between the discs", "output spacer over disc 2"})
+    parts = read_step(src)
     by_level = [[] for _ in LEVELS]
     for name, s, _ in parts:
         by_level[level_of(name)].append((name, s))
@@ -88,6 +110,8 @@ def main():
     top = None
     for i, items in enumerate(by_level):
         if not items:
+            if LEVELS[i][0][0] in optional:
+                continue
             raise ValueError(f"level {LEVELS[i][0]} is empty: a part was renamed in cycloid.py?")
         z0 = min(s.BoundingBox().zmin for _, s in items)
         z1 = max(s.BoundingBox().zmax for _, s in items)
@@ -95,10 +119,11 @@ def main():
         top = z1 + dz
         col = cq.Color(*LEVELS[i][1])
         for name, s in items:
-            out.append((label(name, s), s.translate(V(0, 0, dz)) if dz else s, col))
+            c = cq.Color(*BRASS) if "brass tube" in name else col      # the --tube-pins output pins
+            out.append((label(name, s), s.translate(V(0, 0, dz)) if dz else s, c))
         print(f"{' / '.join(LEVELS[i][0]):40s} x{len(items):<3d} up {dz:6.1f}  ->  z {z0 + dz:6.1f} .. {top:6.1f}")
-    write_flat(out, DST)
-    print(f"{len(out)} bodies, {top - min(s.BoundingBox().zmin for _, s, _ in out):.0f} mm tall -> {DST}")
+    write_flat(out, dst)
+    print(f"{len(out)} bodies, {top - min(s.BoundingBox().zmin for _, s, _ in out):.0f} mm tall -> {dst}")
 
 
 if __name__ == "__main__":

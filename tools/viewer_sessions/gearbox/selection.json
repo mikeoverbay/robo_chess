@@ -1,93 +1,43 @@
 {
  "joints": {
   "J0 swivel": 0,
-  "J1 shoulder": 0,
+  "J1 shoulder": 2.5,
   "J2 elbow": 0,
   "J3": 0,
   "J4 wrist": 9
  },
  "items": [
   {
-   "label": "P3.F99",
-   "kind": "face",
-   "part": 3,
-   "face": 99,
+   "label": "P211",
+   "kind": "part",
+   "part": 211,
+   "face": null,
    "edge": null,
-   "name": "base body",
-   "file": "arm_base_tube.step",
-   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\complete assembly\\arm_base_tube.step",
-   "solid": 0,
+   "name": "bucket file 7 rank 7",
+   "file": "board_bus_preview_cells.step",
+   "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\tools\\viewer_session\\board_bus_preview_cells.step",
+   "solid": 30,
    "shown_offset": null,
    "picked_at": [
-    24.686573286507212,
-    -29.74543884163765,
-    0
+    -705.5491914774286,
+    237.5019929837888,
+    -198.1587171687172
    ],
-   "face_info": {
-    "type": "plane",
-    "area": 3848.746,
-    "c": [
-     0,
-     -2.4109,
-     0
+   "volume": 18206.17,
+   "bbox": [
+    [
+     -741.9000244140625,
+     232,
+     -209.3000030517578
     ],
-    "n": [
-     0,
-     0,
-     1
-    ],
-    "f": 99,
-    "v0": 13401,
-    "vn": 622,
-    "t0": 18824,
-    "tn": 634,
-    "edges": [
-     53,
-     78,
-     85,
-     88,
-     97,
-     101,
-     105,
-     109,
-     113,
-     117,
-     121,
-     152,
-     156,
-     159,
-     160,
-     164,
-     167,
-     168,
-     172,
-     175,
-     176,
-     180,
-     183,
-     184,
-     188,
-     191,
-     192,
-     196,
-     199,
-     209,
-     261,
-     263,
-     265,
-     267,
-     269,
-     271,
-     274,
-     276,
-     278,
-     279,
-     281,
-     282
+    [
+     -682.0999755859375,
+     256,
+     -149.5
     ]
-   }
+   ]
   }
  ],
- "text": "P3.F99: plane, normal +Z \u2014 base body \u00b7 3848.7 mm\u00b2 \u00b7 centre (0.00, -2.41, 0.00) at Z 0.00",
- "time": "2026-11-15 02:34:48"
+ "text": "P211: bucket file 7 rank 7 \u2014 board_bus_preview_cells.step \u00b7 18.21 cm\u00b3 \u00b7 59.8 \u00d7 24.0 \u00d7 59.8 mm",
+ "time": "2026-11-24 02:26:51"
 }

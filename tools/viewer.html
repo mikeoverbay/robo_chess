@@ -92,6 +92,15 @@
   #drop { position:absolute; inset:0; display:none; align-items:center; justify-content:center; font-size:18px;
     background:rgba(76,141,255,.15); border:2px dashed var(--accent); pointer-events:none; }
   #err { position:absolute; inset:0; display:none; align-items:center; justify-content:center; }
+  /* Mike 2026-11-24: "Add a loading indicator that the thing is loading data." The web copy downloads its robot (a
+     file of its own beside the page, web_export.py) with a bar, then unpacks and builds it; the studio hides this */
+  #load { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; z-index:5;
+    background:var(--bg); }
+  #load .box { width:min(380px, 80%); text-align:center; }
+  #load .t { font-size:22px; font-weight:600; color:#cc5500; margin-bottom:12px; }
+  #load .bar { height:8px; background:#33353c; border-radius:4px; overflow:hidden; margin:12px 0 8px; }
+  #load .bar > div { height:100%; width:0; background:#cc5500; transition:width .15s; }
+  #load .s { color:var(--muted); font-size:13px; min-height:1.4em; }
   /* Mike 2026-11-06: "make the buttons in the render window smaller" (were 15 px type, 9 x 16 padding, 20 px icons) */
   #tools { position:absolute; top:8px; left:8px; display:flex; gap:5px; z-index:3; }
   #tools button { display:flex; align-items:center; gap:5px; padding:4px 9px; font-size:12px; font-weight:600;
@@ -166,6 +175,8 @@
   .meters .bar { height:6px; background:#33353c; border-radius:3px; overflow:hidden; }
   .meters .bar i { display:block; height:100%; width:0; background:var(--accent); }
   .meters .bar i.hot { background:#ffc24a; }
+  /* F11: the 3D view alone, no buttons (Mike 2026-11-20) */
+  #view:fullscreen #tools, #view:fullscreen #hint, #view:fullscreen #caption, #view:fullscreen #legend { display:none !important; }
 </style>
 <script type="importmap">
 { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
@@ -227,7 +238,7 @@
     </div>
   </div>
   <div class="sec" id="jointsSec" style="display:none">
-    <h3>Joints <span class="grow"></span><button id="home" title="Homing cycle, as a CNC does it: the joints without a switch yet straight to their home angle, then each home switch: seek, back off, creep back on (click again to stop). Without switches: all joints to the home pose.">Home</button>
+    <h3>Joints <span class="grow"></span><button id="chaseBtn" style="margin-right:4px" title="Chase camera: the view follows the claw, trailing it, within 400 mm (C does the same)">&#9678; Chase</button><button id="seqBtn" style="display:none;margin-right:4px" title="Build the model up stage by stage (scene.json sequence); P does the same; again to stop">&#9654; Sequence</button><button id="sweepBtn" style="display:none;margin-right:4px" title="Run the joints back and forth through their travel (scene.json sweep), the sliders following; click again to stop">&#9654; Play</button><button id="home" title="Homing cycle, as a CNC does it: the joints without a switch yet straight to their home angle, then each home switch: seek, back off, creep back on (click again to stop). Without switches: all joints to the home pose.">Home</button>
       <button id="park" disabled style="margin-left:4px" title="Park in the dock (park_dock.py): over it, down beside the fork, slide in, set down in the pocket. Only after Home - the arm's angles are known only once it has homed.">Park</button></h3>
     <div id="homeRow" class="row" style="display:none;margin-bottom:6px;flex-wrap:nowrap;align-items:flex-start">
       <label style="flex:none" title="The home switches' trip zones (scene.json homing, tools/hall_homing.py): a sphere on each Hall (amber) and one on its magnet (blue), each half the distance at which the Hall switches - green while they touch (made)"><input type="checkbox" id="homeZones"> Home switches</label>
@@ -236,6 +247,7 @@
     <div id="poses" class="row" style="margin-bottom:6px"></div>
     <div id="ikRow" class="row" style="display:none;margin-bottom:6px">
       <label title="Drag the piece or the claw to move the arm (always on; a click without moving still selects). Shift + drag = straight up / down. This box shows the grab point at the piece's base."><input type="checkbox" id="ikOn"> Show grab point</label>
+      <label id="propLbl" style="display:none;margin-left:10px" title="Things in the scene for scale (scene.json &quot;props&quot;): a 100s cigarette pack, about 102 x 55 x 22 mm"><input type="checkbox" id="propOn" checked> Show cig pack</label>
       <span class="grow"></span><span id="ikMsg" class="muted"></span>
     </div>
     <div id="moveRow" class="row" style="display:none;margin-bottom:6px;flex-wrap:wrap;gap:4px">
@@ -303,7 +315,8 @@
   </div>
   <div class="sec" id="aboutSec" style="display:none">
     <div class="muted" style="font-size:12px;line-height:1.45">Robo Chess is a 3D-printed robot arm that plays chess on a
-      real board: NEMA 17 steppers, printed 37:1 cycloidal gearboxes and a servo claw. This page is its simulator,
+      real board: NEMA 17 steppers driving ball screws and #25 roller chains, a printed 5.25:1 herringbone gearbox at the
+      wrist and a servo claw. This page is its simulator,
       running in your browser; Stockfish picks the robot's moves.</div>
     <a id="aboutLink" target="_blank" rel="noopener" style="display:none;margin-top:5px;font-size:12px;color:#cc5500">The project on GitHub &rarr;</a>
   </div>
@@ -335,6 +348,8 @@
     <div class="ticks" id="legTicks"></div><div class="s" id="legS"></div></div>
   <div id="drop">Drop STEP files to open</div>
   <div id="err">three.js could not load (no internet?)</div>
+  <div id="load"><div class="box"><div class="t">Robo Chess</div><div id="loadMsg">Loading&hellip;</div>
+    <div class="bar"><div id="loadBar"></div></div><div class="s" id="loadSub"></div></div></div>
 </main>
 <aside id="right" class="collapsed">
   <button id="rightFold" title="Show the parts list">&#9664;</button>
@@ -366,7 +381,57 @@ import { LineSegmentsGeometry } from 'three/addons/lines/LineSegmentsGeometry.js
 import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
 import { toCreasedNormals, mergeVertices, mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 
-const STATIC = /*STATIC*/null;          // a static page carries its scene; the live app gets it from view_step.py
+// a static page carries its scene - or (web_export.py, 2026-11-24) names the file beside it that holds it, fetched here
+// with the loading bar; the live app gets it from view_step.py
+const STATIC = await staticLoad(/*STATIC*/null);
+function loadMsg(t, u = '') { document.getElementById('loadMsg').textContent = t; document.getElementById('loadSub').textContent = u; }
+function loadDone() { requestAnimationFrame(() => { document.getElementById('load').style.display = 'none'; window.__loading = false; }); }
+function loadPaint() { return new Promise(res => requestAnimationFrame(() => setTimeout(res, 0))); }   // a function
+// declaration, not a const: staticLoad runs (awaits) on the line above, before a const here would exist
+// a JSON file with the bar moving as it arrives (total: its size if known; else the server's Content-Length)
+async function loadJSON(url, total, what, opts) {
+  const el = id => document.getElementById(id), MB = n => (n / 1e6).toFixed(0);
+  loadMsg(`Downloading ${what}…`, total ? `${MB(total)} MB` : '');
+  const r = await fetch(url, opts);
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+  total = total || +r.headers.get('content-length') || 0;
+  const rd = r.body.getReader(), chunks = [];
+  let got = 0;
+  for (;;) {
+    const { done, value } = await rd.read();
+    if (done) break;
+    chunks.push(value); got += value.length;
+    const f = total ? Math.min(1, got / total) : 0;
+    el('loadBar').style.width = (f * 100).toFixed(1) + '%';
+    el('loadSub').textContent = total ? `${Math.round(f * 100)}%  ·  ${MB(got)} of ${MB(total)} MB` : `${MB(got)} MB`;
+  }
+  el('loadBar').style.width = '100%';
+  loadMsg(`Unpacking ${what}…`);
+  await loadPaint();
+  const out = JSON.parse(await new Blob(chunks).text());
+  chunks.length = 0;
+  loadMsg(`Building ${what}…`, `${((out.scene || out).parts || []).length} parts`);
+  await loadPaint();
+  return out;
+}
+async function staticLoad(s) {
+  window.__loading = true;
+  if (!s) {                                                          // the live studio: poll() loads it
+    document.querySelector('#load .t').textContent = 'Robot Studio';
+    loadMsg('Loading the studio…', 'waiting for its server');
+    return s;
+  }
+  if (!s.data) return s;                                             // the scene inside the page itself
+  if (s.ui === 'play') document.body.classList.add('play');          // the panel as it will be, while it downloads
+  if (s.title) document.querySelector('#load .t').textContent = s.title;
+  try {
+    return await loadJSON(s.data, s.bytes, 'the robot');
+  } catch (e) {
+    window.__loading = false; window.__loadFailed = true;
+    loadMsg('The robot could not load', `${s.data.split('?')[0]}: ${e.message || e} - reload the page to try again`);
+    throw e;
+  }
+}
 const LIVE = !STATIC;
 const PLAY = !!(STATIC && STATIC.play), PLAYDATA = PLAY ? STATIC.play : null;   // the play version (web_export.py --play)
 if (PLAY) document.body.classList.add('play');
@@ -417,11 +482,17 @@ scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnviron
 // rust:    patches of rust over steel - layered value noise in the part's own coordinates picks where; rust is
 //          rough, dull and bumped, bare steel stays metallic;  flat: the plain look the viewer started with
 // Selected / highlighted faces and faces coloured in the model (e.g. black bearing seals) show their colour on top.
-const LOOKS = ['printed', 'steel', 'polished', 'rust', 'flat'];
+const LOOKS = ['printed', 'steel', 'polished', 'rust', 'oxide', 'zinc', 'blackzinc', 'flat'];
 const LOOK_GLSL = `
 varying vec3 vObj;
 varying vec3 vZdir;
 uniform vec3 uBase;
+uniform float uPrRough, uFuzz;
+uniform vec4 uPin;                                   // per part: axis (1 x, 2 y, 3 z; 0 off), chain mid, planes' offset, half width
+varying vec3 vObjN;
+uniform sampler2D uTexC, uTexR;
+uniform vec4 uTexP;                                  // on, mm per tile, colour gain, roughness gain ("lighting".textures)
+vec4 triTex(sampler2D t, vec3 p, vec3 w, float s) { return texture(t, p.yz / s) * w.x + texture(t, p.xz / s) * w.y + texture(t, p.xy / s) * w.z; }
 float hash13(vec3 p) { p = fract(p * 0.1031); p += dot(p, p.zyx + 31.32); return fract((p.x + p.y) * p.z); }
 float vnoise(vec3 x) {
   vec3 i = floor(x), f = fract(x); f = f * f * (3.0 - 2.0 * f);
@@ -449,6 +520,13 @@ vec3 lc = vColor; float lookRough = 0.62, lookMetal = 0.05, lookH = 0.0, lookK =
   float lw = fwidth(vObj.z) / 0.2;                       // layers per pixel
   lookStripe = 1.0 - smoothstep(0.125, 0.25, lw);       // 1 while a layer is 8+ px, 0 once it's under 4 px
   lookRough = 0.48 + 0.16 * fbm(vObj * 0.15); lookMetal = 0.0;
+  // a studio's "lighting" can make the print matte with a fine fuzz (Mike 2026-11-20: textured gray, "prints with a
+  // slight, real slight fuzz"): rougher, and a 0.25 mm grain bump that is on only while a grain covers 3+ px (no sparkle)
+  if (uPrRough >= 0.0) lookRough = uPrRough + 0.06 * fbm(vObj * 0.15);
+  if (uFuzz > 0.0) {
+    float fz = 1.0 - smoothstep(0.18, 0.34, length(fwidth(vObj)) / 0.25);
+    if (fz > 0.0) { lookH = fbm(vObj * 4.0) * uFuzz * fz; lookK = 1.0; lc *= 0.97 + 0.06 * fbm(vObj * 4.0 + 5.3); }
+  }
 #elif defined(LOOK_STEEL)
   float b = fbm(vec3(vObj.x * 0.04, vObj.y * 2.5, vObj.z * 2.5));
   lc = vec3(0.60, 0.61, 0.63) * (0.9 + 0.15 * b);
@@ -463,19 +541,68 @@ vec3 lc = vColor; float lookRough = 0.62, lookMetal = 0.05, lookH = 0.0, lookK =
   lc = mix(vec3(0.50, 0.51, 0.52) * (0.85 + 0.2 * fine), rustC, m);
   lookRough = mix(0.32 + 0.15 * fine, 0.92, m); lookMetal = mix(0.85, 0.05, m);
   lookH = m * 0.35 + m * fine * 0.3; lookK = 1.0;
+#elif defined(LOOK_OXIDE)
+  // heat-treated / black-oxide steel, as a bicycle chain (Mike 2026-11-20: "dark heat-treated metal with a rough finish
+  // because it has a very slight amount of crust on it from the heat treat"): near black, still metal, dull and
+  // mottled; no fine bump (it would sparkle at a distance)
+  float ox = fbm(vObj * 2.2), oxf = fbm(vObj * 7.0 + 4.4);
+  lc = vec3(0.066, 0.076, 0.098) * (0.8 + 0.35 * ox + 0.15 * oxf);   // "stamped out of plate, heat treated ... bluish black"
+  lookRough = 0.34 + 0.12 * oxf; lookMetal = 0.92;      // blued: satin, not paint (Mike: "spray painted flat black")
+  // the pins' ends past the side plates, bright ("make the pins on the chains shiny, like they're silver"): "lighting".chain_pins
+  // = [{match, axis, mid, off, half}]: past half from either chain plane (mid +- off, along axis) is a pin's end
+  if (uPin.x > 0.5) {
+    float pc = uPin.x < 1.5 ? vObj.x : (uPin.x < 2.5 ? vObj.y : vObj.z);
+    if (abs(abs(pc - uPin.y) - uPin.z) > uPin.w) { lc = vec3(0.80, 0.81, 0.83); lookRough = 0.12; lookMetal = 1.0; }
+  }
+#elif defined(LOOK_ZINC)
+  // clear (blue) zinc plating on the screws (Mike 2026-11-20: "make the top of the screws look more like they're just
+  // plated"): bright bluish silver, satin, a soft mottle and the passivation's faint straw-to-violet sheen
+  float zn = fbm(vObj * 1.3), zf = fbm(vObj * 5.0 + 2.7);
+  vec3 tint = mix(vec3(0.74, 0.78, 0.86), vec3(0.83, 0.81, 0.74), smoothstep(0.35, 0.75, zn));
+  tint = mix(tint, vec3(0.79, 0.75, 0.85), 0.35 * smoothstep(0.55, 0.85, zf));
+  lc = tint * (0.92 + 0.12 * zf);
+  lookRough = 0.2 + 0.12 * zf; lookMetal = 1.0;
+#elif defined(LOOK_BLACKZINC)
+  // electroplated black zinc (his M3 shoulder screws, Mike 2026-11-20): deep black, a satin metallic sheen, a faint mottle
+  float bz = fbm(vObj * 3.0);
+  lc = vec3(0.030, 0.031, 0.034) * (0.85 + 0.3 * bz);
+  lookRough = 0.3 + 0.1 * bz; lookMetal = 0.85;
 #endif
+// a photo texture's grain over the look (CC0 maps from ambientCG in robo_chess\textures, Mike 2026-11-20: "go steal
+// textures"): projected from x, y and z in the part's own coordinates (no UVs), as detail - brightness and shine vary
+// round the map's own average, the look's colour stays
+if (uTexP.x > 0.5) {
+  vec3 tw = pow(abs(normalize(vObjN)), vec3(4.0)); tw /= (tw.x + tw.y + tw.z);
+  vec3 tc = triTex(uTexC, vObj, tw, uTexP.y).rgb, tm = textureLod(uTexC, vec2(0.5), 12.0).rgb;
+  lc *= 1.0 + uTexP.z * dot(tc - tm, vec3(0.3333)) / max(dot(tm, vec3(0.3333)), 0.02);
+  float tr = triTex(uTexR, vObj, tw, uTexP.y).r, trm = textureLod(uTexR, vec2(0.5), 12.0).r;
+  lookRough = clamp(lookRough + uTexP.w * (tr - trm), 0.04, 1.0);
+}
 diffuseColor.rgb = mix(lc, vColor, hl);
 lookMetal = mix(lookMetal, 0.0, hl); lookRough = mix(lookRough, 0.55, hl);`;
-const ENV = { printed: 0.55, steel: 1.0, polished: 1.25, rust: 0.6, flat: 0.0 };
+const ENV = { printed: 0.55, steel: 1.0, polished: 1.25, rust: 0.6, oxide: 0.95, zinc: 0.9, blackzinc: 0.8, flat: 0.0 };
+const ENV0 = { ...ENV };
+const LOOKU = { prRough: { value: -1 }, fuzz: { value: 0 } };   // shared by every look material ("lighting" sets them)
+let LOOK_RULES = [], PIN_RULES = [];
+function pinFor(p) {                          // the chain pins' rule for this part (2026-11-21: the arm's chains moved
+  const r = PIN_RULES.find(q => q.re.test(p.name));   // to z 30.6, the swivel's lie flat - each its own plane)
+  return new THREE.Vector4(r ? r.axis : 0, r ? r.mid : 0, r ? r.off : 0, r ? r.half : 0);
+}
+const LOOK_TEX = {}, TEX_BLANK = new THREE.DataTexture(new Uint8Array([255, 255, 255, 255]), 1, 1);
+TEX_BLANK.needsUpdate = true;
+function lookTex(look) {                                       // a look's texture slot (shared by its materials)
+  return LOOK_TEX[look] || (LOOK_TEX[look] = { c: { value: TEX_BLANK }, r: { value: TEX_BLANK }, p: { value: new THREE.Vector4(0, 20, 0, 0) }, key: '' });
+}                                            // "lighting".looks: [{match (regex on the part name), look}]
 function lookMaterial(p, look) {
   const m = new THREE.MeshStandardMaterial({ color: 0xffffff, vertexColors: true, side: THREE.DoubleSide,
     roughness: 0.62, metalness: 0.05, envMapIntensity: ENV[look] ?? 0, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 });
   m.defines = { ['LOOK_' + look.toUpperCase()]: '' };
   m.customProgramCacheKey = () => 'look-' + look;
   m.onBeforeCompile = (sh) => {
-    sh.uniforms.uBase = { value: p.col };
-    sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vObj;\nvarying vec3 vZdir;')
-      .replace('#include <begin_vertex>', '#include <begin_vertex>\nvObj = position; vZdir = normalize((modelViewMatrix * vec4(0.0, 0.0, 1.0, 0.0)).xyz);');
+    sh.uniforms.uBase = { value: p.col }; sh.uniforms.uPrRough = LOOKU.prRough; sh.uniforms.uFuzz = LOOKU.fuzz; sh.uniforms.uPin = { value: pinFor(p) };
+    const T = lookTex(look); sh.uniforms.uTexC = T.c; sh.uniforms.uTexR = T.r; sh.uniforms.uTexP = T.p;
+    sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vObj;\nvarying vec3 vZdir;\nvarying vec3 vObjN;')
+      .replace('#include <begin_vertex>', '#include <begin_vertex>\nvObj = position; vObjN = normal; vZdir = normalize((modelViewMatrix * vec4(0.0, 0.0, 1.0, 0.0)).xyz);');
     sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\n' + LOOK_GLSL)
       .replace('#include <color_fragment>', LOOK_COLOR)
       .replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\nroughnessFactor = lookRough;')
@@ -488,6 +615,7 @@ function lookMaterial(p, look) {
 function defaultLook(p) {
   const m = models[p.model] || {};
   if (m.material && LOOKS.includes(m.material)) return m.material;
+  const rule = LOOK_RULES.find(r => r.re.test(p.name)); if (rule) return rule.look;
   const n = (p.name + ' ' + (m.name || '')).toLowerCase();
   if (/6808|6800|bearing/.test(n)) return 'polished';
   if (/screw|bolt|nut|insert|dowel|\bpin\b(?! ring)/.test(n)) return 'steel';   // (the gearbox's printed "pin ring" isn't)
@@ -636,12 +764,68 @@ function buildJoints(defs, start = null) {   // start: the angles a joint takes 
   joints.forEach(applyJoint);
   buildJointList();
 }
+// ---------------------------------------------------------------- props: things in the scene for scale ("props")
+// scene.json "props": [{kind: "cig_pack", name, size: [width, depth, height] mm, center: [x, y, z], long: [..] (toward
+// the lid end), face: [..] (the front face's outward normal), model: "<model it rides with>"}], all in the design frame.
+// A plain box with its faces drawn here (no image files); "Show cig pack" hides it. Not in the play version.
+// Mike 2026-11-22: a 100s pack on the back of the 60 mm motor "so I have a sense of scale".
+let PROPS = [];
+function packFace(w, h, which, dims) {      // a w x h mm face of the pack -> a canvas texture (lid end at the top)
+  const k = 8, c = document.createElement('canvas');
+  c.width = Math.round(w * k); c.height = Math.round(h * k);
+  const g = c.getContext('2d'), W = c.width, H = c.height, RED = '#b8122b', GOLD = '#c9a54a', lid = H * 0.3;
+  g.fillStyle = which === 'top' ? RED : '#f6f4ef'; g.fillRect(0, 0, W, H);
+  if (which === 'front' || which === 'side') {
+    g.fillStyle = RED; g.fillRect(0, 0, W, lid);                       // the flip-top lid
+    g.fillStyle = GOLD; g.fillRect(0, lid, W, Math.max(2, H * 0.006));   // its cut line
+    g.textAlign = 'center'; g.textBaseline = 'middle';
+    if (which === 'front') {
+      g.fillStyle = '#fff'; g.font = `bold ${W * 0.24}px Georgia, serif`; g.fillText("100's", W / 2, lid * 0.55);
+      g.fillStyle = '#2a2a2a'; g.font = `bold ${W * 0.085}px Arial, sans-serif`; g.fillText('20 CIGARETTES', W / 2, H * 0.55);
+      g.fillStyle = '#777'; g.font = `${W * 0.07}px Arial, sans-serif`; g.fillText(dims, W / 2, H * 0.9);
+    } else {
+      g.save(); g.translate(W / 2, (lid + H) / 2); g.rotate(-Math.PI / 2);
+      g.fillStyle = '#2a2a2a'; g.font = `bold ${W * 0.4}px Arial, sans-serif`; g.fillText("100's", 0, 0); g.restore();
+    }
+  }
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8;
+  return t;
+}
+function propsBuild(defs) {
+  PROPS.forEach(m => { if (m.parent) m.parent.remove(m); m.geometry.dispose(); m.material.forEach(x => { if (x.map) x.map.dispose(); x.dispose(); }); });
+  PROPS = [];
+  (PLAY ? [] : defs || []).forEach(d => {
+    if (d.kind !== 'cig_pack') return;
+    const [w, dp, h] = d.size || [55, 22, 102], dims = `${w} x ${dp} x ${h} mm`;
+    const mat = which => new THREE.MeshStandardMaterial({ map: packFace(...(which === 'side' ? [dp, h] : which === 'front' ? [w, h] : [w, dp]), which, dims),
+      roughness: 0.45, metalness: 0 });
+    const side = mat('side'), front = mat('front');
+    // BoxGeometry faces: +x, -x, +y, -y, +z, -z = side, side, lid end, bottom end, front, back
+    const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, dp), [side, side, mat('top'), mat('bottom'), front, front]);
+    const Y = new THREE.Vector3(...(d.long || [0, 0, 1])).normalize(), Z = new THREE.Vector3(...(d.face || [0, -1, 0])).normalize();
+    const X = new THREE.Vector3().crossVectors(Y, Z).normalize();
+    m.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(X, Y, Z));
+    m.position.set(...(d.center || [0, 0, 0]));
+    m.castShadow = m.receiveShadow = true; m.name = d.name || 'cigarette pack';
+    const j = joints.find(q => (q.models || []).includes(d.model));
+    (j ? j.inner : root).add(m);
+    m.visible = $('propOn').checked;
+    PROPS.push(m);
+  });
+  $('propLbl').style.display = PROPS.length ? '' : 'none';
+}
+try { $('propOn').checked = localStorage.getItem('robotstudio.props') !== '0'; } catch (e) {}
+$('propOn').onchange = () => {
+  PROPS.forEach(m => { m.visible = $('propOn').checked; });
+  try { localStorage.setItem('robotstudio.props', $('propOn').checked ? '1' : '0'); } catch (e) {}
+};
 function applyJoint(j) {
   j.pivot.quaternion.setFromAxisAngle(j.ax, THREE.MathUtils.degToRad(jointAngles[j.name] || 0));
   j.pivot.updateMatrixWorld(true);
   if (typeof GEARS !== 'undefined' && GEARS.some(g => g.follows === j.name)) {   // a gear it drives turns with it
     gearsUpdate(); GEARS.forEach(g => { if (g.follows === j.name) g.pivot.updateMatrixWorld(true); });
   }
+  if (typeof PATHS !== 'undefined' && PATHS.some(P => P.follows === j.name)) pathsUpdate();   // chain links too
 }
 function setJoint(name, deg) {
   const j = joints.find(q => q.name === name);
@@ -746,9 +930,17 @@ function gearsBuild(defs) {
     const inner = new THREE.Group(); inner.position.copy(c0).negate(); pivot.add(inner);
     (ps[0].group.parent || root).add(pivot);                // where the model hangs: the root or a joint it rides on
     ps.forEach(p => inner.add(p.group));
-    GEARS.push({ ...g, pivot });
+    GEARS.push({ ...g, pivot, c0: c0.clone() });
   });
   gearsUpdate();
+}
+// The gearbox session 2026-11-20 (Mike: the chain drives' "screw and the nut and the motor and the pulleys"): "zero" is
+// the angle at which the model sits as built (default 0), "range": [lo, hi] holds the angle inside the drive's travel,
+// and "slide" (mm per degree) runs the model along its axis instead (with ratio 0: the ball nut on its screw).
+function gearDeg(g) {
+  let deg = driverAngle(g.follows);
+  if (g.range) deg = Math.min(g.range[1], Math.max(g.range[0], deg));
+  return deg - (g.zero || 0);
 }
 // "follows" may also name a test rig's motor (scene.json "rigs", below). "orbit": {r, phase, u, ratio} - the model's
 // own centre runs round a circle of radius r about at / axis, at ratio (default 1) x the angle, starting phase degrees
@@ -761,11 +953,169 @@ function orbitAt(g, deg) {
 }
 function gearsUpdate() {
   GEARS.forEach(g => {
-    const deg = driverAngle(g.follows);
+    const deg = gearDeg(g);
     g.pivot.quaternion.setFromAxisAngle(g.ax, (g.ratio ?? 1) * deg * D2R);
     if (g.orbit) g.pivot.position.copy(orbitAt(g, deg));
+    else if (g.slide) g.pivot.position.copy(g.c0).addScaledVector(g.ax, g.slide * deg);
   });
 }
+
+// ---------------------------------------------------------------- parts that ride a path (scene.json "paths")
+// The gearbox session 2026-11-20 (Mike: "How would we go about animating these chain links ..." / "I'd rather you
+// went ahead and did this"): [{model, follows, zero, range, mm_per_deg, o, u, v, pts: [[a, b], ...], closed, parts:
+// [[s0, ds], ...]}] - the polyline lies in the plane o + a u + b v (design frame, unposed). Each part of the model (by
+// its solid number) is a chain link: its first pin sits at arc length s0, its second ds further on. It runs along the
+// path by mm_per_deg x (angle - zero), turned so its pin-to-pin chord follows the path.
+let PATHS = [];
+function pathsBuild(defs) {
+  PATHS.forEach(P => P.ps.forEach(p => { p.group.position.set(0, 0, 0); p.group.quaternion.identity(); }));
+  PATHS = [];
+  (defs || []).forEach(d => {
+    const ps = parts.filter(p => (models[p.model] || {}).name === d.model); if (!ps.length || !d.pts || d.pts.length < 2) return;
+    const cum = [0], m = d.pts.length;
+    for (let i = 1; i <= (d.closed ? m : m - 1); i++) {
+      const a = d.pts[i - 1], b = d.pts[i % m];
+      cum.push(cum[i - 1] + Math.hypot(b[0] - a[0], b[1] - a[1]));
+    }
+    const u = new THREE.Vector3(...d.u), v = new THREE.Vector3(...d.v);
+    PATHS.push({ ...d, ps, cum, len: cum[cum.length - 1], o: new THREE.Vector3(...d.o), u, v,
+                 n: new THREE.Vector3().crossVectors(u, v).normalize(), last: null });
+  });
+  pathsUpdate(true);
+}
+function railAt(P, s) {                     // the point [a, b] at arc length s
+  const pts = P.pts, cum = P.cum, m = pts.length;
+  s = P.closed ? ((s % P.len) + P.len) % P.len : Math.max(0, Math.min(P.len, s));
+  let lo = 0, hi = cum.length - 1;
+  while (hi - lo > 1) { const mid = (lo + hi) >> 1; if (cum[mid] <= s) lo = mid; else hi = mid; }
+  const a = pts[lo], b = pts[hi % m], f = (s - cum[lo]) / ((cum[hi] - cum[lo]) || 1);
+  return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f];
+}
+const _pq = new THREE.Quaternion(), _pp0 = new THREE.Vector3(), _pp1 = new THREE.Vector3();
+function pathsUpdate(force) {
+  PATHS.forEach(P => {
+    const deg = gearDeg(P);
+    if (!force && deg === P.last) return;
+    P.last = deg;
+    const d = P.mm_per_deg * deg;
+    P.ps.forEach(p => {
+      const sd = P.parts && P.parts[p.solid]; if (!sd) return;
+      const a0 = railAt(P, sd[0]), b0 = railAt(P, sd[0] + sd[1]), a1 = railAt(P, sd[0] + d), b1 = railAt(P, sd[0] + d + sd[1]);
+      _pq.setFromAxisAngle(P.n, Math.atan2(b1[1] - a1[1], b1[0] - a1[0]) - Math.atan2(b0[1] - a0[1], b0[0] - a0[0]));
+      _pp0.copy(P.o).addScaledVector(P.u, a0[0]).addScaledVector(P.v, a0[1]).applyQuaternion(_pq);
+      _pp1.copy(P.o).addScaledVector(P.u, a1[0]).addScaledVector(P.v, a1[1]);
+      p.group.quaternion.copy(_pq); p.group.position.copy(_pp1).sub(_pp0);    // x -> R (x - p0) + p1
+    });
+  });
+}
+
+// ---------------------------------------------------------------- joint sweep (scene.json "sweep")
+// The gearbox session 2026-11-20 (Mike, for a demo of the chain drives: "Yes, add Play"): {joints: {name: [lo, hi]},
+// period: seconds per round trip, phase: {name: degrees}} - Play runs each joint back and forth between lo and hi (a
+// cosine, so it eases at the ends), starting from where it is, the sliders following; click again to stop.
+let SWEEP = null, sweepOn = false, sweepT0 = 0, sweepOff = {};
+function sweepBuild(d) {
+  SWEEP = d && d.joints ? d : null; sweepOn = false;
+  const b = $('sweepBtn'); b.style.display = SWEEP ? '' : 'none'; b.innerHTML = '&#9654; Play';
+  b.onclick = () => {
+    sweepOn = !sweepOn; b.innerHTML = sweepOn ? '&#9632; Stop' : '&#9654; Play';
+    if (!sweepOn) { postSelection(true); return; }
+    sweepT0 = performance.now(); sweepOff = {};
+    Object.entries(SWEEP.joints).forEach(([n, [lo, hi]]) => {      // start each joint where it stands
+      const u = Math.min(1, Math.max(0, ((+jointAngles[n] || 0) - lo) / ((hi - lo) || 1)));
+      sweepOff[n] = Math.acos(1 - 2 * u) - ((SWEEP.phase || {})[n] || 0) * D2R;
+    });
+  };
+}
+function sweepStep(now) {
+  if (!sweepOn || !SWEEP) return;
+  const w = 2 * Math.PI / (SWEEP.period || 20), t = (now - sweepT0) / 1000;
+  Object.entries(SWEEP.joints).forEach(([n, [lo, hi]]) => {
+    const a = w * t + ((SWEEP.phase || {})[n] || 0) * D2R + (sweepOff[n] || 0);
+    setJoint(n, lo + (hi - lo) * (1 - Math.cos(a)) / 2);
+  });
+}
+
+// ---------------------------------------------------------------- the build-up (scene.json "sequence")
+// The gearbox session 2026-11-20 (Mike: "I want to have an event creator. During each event that fires at whatever
+// point in time, something will become visible on the model. So over the course of time, you see the model build ...
+// I want a play button. I want the P key to trigger the animation. I don't want to start right from the beginning
+// because I want to position the camera"): {speed, events: [{t (seconds), show: [regex on the part name], say (a
+// caption), sweep (true: start Play's joint sweep)}]}. Build (or P) hides what is showing now and gives it back event
+// by event - only what was showing, so the studio's own show list decides the cast; anything no event names comes
+// back at the end. Build (or P) again stops and puts everything back.
+let SEQ = null, seqRun = null;
+function seqBuild(d) {
+  SEQ = d && d.events && d.events.length ? d : null; seqRun = null;
+  const b = $('seqBtn'); b.style.display = SEQ ? '' : 'none'; b.innerHTML = '&#9654; Sequence'; b.onclick = seqToggle;
+  $('chaseBtn').onclick = () => chaseSet(!CHASE.on);
+}
+function seqToggle() {
+  if (!SEQ) return;
+  const b = $('seqBtn');
+  if (seqRun) { seqRun.cast.forEach(p => setVis(p, true)); seqRun = null; b.innerHTML = '&#9654; Sequence'; return; }
+  const rx = s => { try { return new RegExp(s, 'i'); } catch (err) { console.warn('sequence: bad pattern', s, err); return null; } };
+  const inc = (SEQ.include || []).map(rx).filter(Boolean);                  // "include": hidden parts that join in
+  const ev = SEQ.events.map(e => ({ ...e, re: (e.show || []).map(rx).filter(Boolean) })).sort((a, c) => a.t - c.t);
+  const cast = parts.filter(p => p.group.visible || inc.some(r => r.test(p.name)));   // (a bad pattern is skipped: it
+  cast.forEach(p => setVis(p, false));                                      // must never leave everything hidden)
+  seqRun = { t0: performance.now(), cast, ev, i: 0, done: new Set() };
+  b.innerHTML = '&#9632; Stop';
+}
+function seqStep(now) {
+  if (!seqRun) return;
+  const t = (now - seqRun.t0) / 1000 * (SEQ.speed || 1);
+  while (seqRun.i < seqRun.ev.length && seqRun.ev[seqRun.i].t <= t) {
+    const e = seqRun.ev[seqRun.i++];
+    seqRun.cast.forEach(p => { if (!seqRun.done.has(p) && e.re.some(r => r.test(p.name))) { setVis(p, true); seqRun.done.add(p); } });
+    if (e.say) toast(e.say);
+    if (e.sweep && SWEEP && !sweepOn) $('sweepBtn').click();
+    if (e.chase !== undefined) chaseSet(e.chase);
+    if (e.draw && !anim) $('drawBtn').click();               // the arm draws (Mike: "to draw instead of making a big ... flex")
+  }
+  if (seqRun.i >= seqRun.ev.length) {                       // the end: anything no event named comes back too
+    seqRun.cast.forEach(p => { if (!seqRun.done.has(p)) setVis(p, true); });   // only what no event showed: Draw may have
+    seqRun = null; $('seqBtn').innerHTML = '&#9654; Sequence';                    // hidden the squares under its paper
+  }
+}
+
+// ---------------------------------------------------------------- the chase camera (C, the Chase button, or a sequence
+// event {chase: true / false}). The gearbox session 2026-11-20 (Mike: "a camera orbiting animation thing like you do in
+// Blender where you can fly the camera around. It would be kind of cool to keep the camera, say, within, I don't know,
+// 400 millimeter of the claw. Lag behind it a little bit"): the view's aim eases onto the claw's grip point (aim_lag s),
+// the camera follows it more slowly (lag s) so it trails the claw, never further than dist mm or nearer than min, and
+// turns orb deg/s round it. The mouse still works: drag to swing round the claw, wheel to come in (out to dist).
+// Settings: "sequence".chase {dist, min, lag, aim_lag, orbit}. Without the IK (a studio with no claw), it follows the
+// last joint.
+const CHASE = { on: false, last: null, tgt: null };
+function chaseCfg() { return Object.assign({ dist: 400, min: 120, lag: 0.6, aim_lag: 0.25, orbit: 0 }, (SEQ && SEQ.chase) || {}); }
+function chaseTarget() {
+  root.updateMatrixWorld(true);
+  if (IK) return root.localToWorld(ikClaw());
+  const j = joints[joints.length - 1];
+  return j ? j.pivot.getWorldPosition(new THREE.Vector3()) : center.clone();
+}
+function chaseSet(on) {
+  CHASE.on = !!on; CHASE.last = null; CHASE.tgt = null;
+  const b = $('chaseBtn'); if (b) b.innerHTML = CHASE.on ? '&#9673; Chasing' : '&#9678; Chase';
+  toast(CHASE.on ? 'Chase camera on (C to stop)' : 'Chase camera off');
+}
+function chaseStep(now) {
+  if (!CHASE.on) return;
+  const c = chaseCfg(), dt = CHASE.last === null ? 0 : Math.min(0.1, (now - CHASE.last) / 1000);
+  CHASE.last = now;
+  const goal = chaseTarget();
+  if (!CHASE.tgt) CHASE.tgt = controls.target.clone();
+  CHASE.tgt.lerp(goal, 1 - Math.exp(-dt / Math.max(0.01, c.aim_lag)));
+  const off = camera.position.clone().sub(controls.target);           // the angle you left it at (or dragged to)
+  if (c.orbit) off.applyAxisAngle(new THREE.Vector3(0, 0, 1), c.orbit * D2R * dt);
+  off.setLength(Math.min(c.dist, Math.max(c.min, off.length())));
+  camera.position.lerp(CHASE.tgt.clone().add(off), 1 - Math.exp(-dt / Math.max(0.01, c.lag)));
+  controls.target.copy(CHASE.tgt);
+}
+// the mouse wins: a drag or the wheel lets the chase go (Mike 2026-11-20: "when I try to move around to look at it, it
+// snaps to chase camera"); C (or the button) takes it up again
+controls.addEventListener('start', () => { if (CHASE.on) chaseSet(false); });
 
 // ---------------------------------------------------------------- test rigs (scene.json "rigs")
 // Mike 2026-11-06: "the whole purpose of this app is to be able to animate and test our robotic arm ... Every tool we
@@ -1040,6 +1390,7 @@ function buildScene(data, keepView) {
   $('title').textContent = data.title || 'no models open';
   { const n = (data.models || []).length;
     $('titleSum').textContent = n ? `${n} model${n === 1 ? '' : 's'} (${(data.parts || []).length} parts)` : 'no models open'; }
+  lightingConfig(data.lighting);                           // a studio's own lighting and looks (scene.json "lighting")
   parts = (data.parts || []).map(makePart);
   parts.forEach((p, i) => { p.sb.renderOrder = p.sf.renderOrder = 1 + 2 * i; p.cap.renderOrder = 2 + 2 * i; });
   parts.forEach(p => setLook(p, initialLook(p)));
@@ -1083,15 +1434,27 @@ function buildScene(data, keepView) {
   parkUI();                                                // Park shows when the scene has a dock (ik.park)
   rigsBuild(data.rigs);                                    // test rigs: motors that aren't arm joints (scene.json "rigs")
   gearsBuild(data.gears);                                  // models geared to a joint or a rig (scene.json "gears")
+  pathsBuild(data.paths);                                  // parts riding a path: the chain drives' links ("paths")
+  propsBuild(data.props);                                  // things for scale: the cigarette pack ("props")
+  sweepBuild(data.sweep);
+  seqBuild(data.sequence);                                 // the build-up: P / Build ("sequence")                                  // Play: the joints back and forth ("sweep")
   root.updateMatrixWorld(true);
   box.makeEmpty();
   parts.forEach(p => box.union(new THREE.Box3().setFromObject(p.mesh)));      // in the world, as posed
   if (box.isEmpty()) box.set(new THREE.Vector3(-50, -50, -50), new THREE.Vector3(50, 50, 50));
   box.getCenter(center);
   diag = box.getSize(new THREE.Vector3()).length() || 100;
+  lightingBuild();
   parts.forEach(p => { p.cap.scale.setScalar(diag * 4); if (hidden.has(p.key)) p.group.visible = false; });
+  // a show.json "only" / "hide" outlives a scene reload (2026-11-21, Mike: "You're showing the whole model again" - any
+  // scene.json write rebuilt the studio with every part showing)
+  if (keepView && SHOW_FILTER) {
+    if (SHOW_FILTER.only) parts.forEach(p => setVis(p, matches(p, SHOW_FILTER.only)));
+    if (SHOW_FILTER.hide) parts.forEach(p => { if (matches(p, SHOW_FILTER.hide)) setVis(p, false); });
+  }
   woodApply(data.woods);                                   // his wood on the board (woods.py), before the section cut is set
   TRAYS = data.trays || (PLAYDATA && PLAYDATA.trays) || TRAYS;   // every tray spot (board_pieces.py): Draw's pen stands
+  if (!PLAY) { boardClear(); CELLS = data.board_cells || null; if (CELLS) boardBuild(); }   // the studio's light buckets
   // keep the selection on parts that are still here (same file, same solid)
   const byKey = new Map(parts.map(p => [p.key, p]));
   selection = selection.map(s => { const p = byKey.get(oldKeys.get(s.pid)); return p ? { ...s, pid: p.pid } : null; }).filter(Boolean);
@@ -1196,6 +1559,10 @@ $('fit').onclick = fit;
 // ~650 mm back from the centre - and stands back as far as it takes to show everything (fov 35: a real seat is too close).
 const SEAT_EL = 35;                                // deg
 function seatFrame() {                // the squares' centre (on top) and the player's side: from the turntable through it
+  if ((!IK || !PIECE_HOME.length) && LIGHTING) {      // no board: the model's box, lit from its +x side (a studio's "lighting")
+    const c = center.clone(), b = box.clone().expandByScalar(0.6 * diag);   // room for the arm to swing (Play)
+    return { c, away: new THREE.Vector3(...(LIGHTING.lamp_from || [1, -0.4, 0])).setZ(0).normalize(), board: b };
+  }
   if (!IK || !PIECE_HOME.length) return null;
   root.updateMatrixWorld(true);
   const sq = boardCentre().c, half = 4 * 60 + 15, board = new THREE.Box3();   // the 64 squares and their 15 border
@@ -1297,10 +1664,7 @@ function shadowSet(size, note) {      // 0 = off (the light as it was); else the
   key.intensity = on ? LAMP.key : 1.7; hemi.intensity = on ? LAMP.hemi : 1.5;
   if (on) {
     lamp.shadow.mapSize.set(size, size);
-    const B = new THREE.Box3(), over = SHADOW.F.board.clone();
-    parts.forEach(p => { if (p.group.visible) B.union(new THREE.Box3().setFromObject(p.mesh)); });
-    over.max.z += 520; B.union(over);                // and over the board, as high as the arm works
-    SHADOW.B = B; SHADOW.L = Math.max(1, B.max.z - SHADOW.F.c.z) / Math.tan(SHADOW.el);   // the longest shadow, mm
+    shadowBounds();
     SHADOW.drawnAz = null;
     const gl = renderer.getContext(); for (let i = 0; i < 16 && gl.getError() !== gl.NO_ERROR; i++);   // a clean slate
     SHADOW.check = true;
@@ -1308,6 +1672,17 @@ function shadowSet(size, note) {      // 0 = off (the light as it was); else the
   SHADOW.key = ''; shadowCasters();
   SHADOW.note = note || '';
   shadowInfo();
+}
+// What the lamp's map covers: every part that shows, the Draw pens and their stands, and over the board as high as the
+// arm works. Worked out again whenever something is shown or hidden (the gearbox session 2026-11-20, Mike: "we need
+// the shadowing on the pens" - the box was fixed when the shadows came on, so the pens in the trays and anything shown
+// later fell outside the map and cast nothing).
+function shadowBounds() {
+  const B = new THREE.Box3(), b = new THREE.Box3(), over = SHADOW.F.board.clone();
+  parts.forEach(p => { if (p.group.visible) B.union(b.setFromObject(p.mesh)); });
+  DRAW.pens.forEach(P => [P.g, P.stand].forEach(g => { if (g && g.visible) B.union(b.setFromObject(g)); }));
+  over.max.z += 520; B.union(over);
+  SHADOW.B = B; SHADOW.L = Math.max(1, B.max.z - SHADOW.F.c.z) / Math.tan(SHADOW.el);   // the longest shadow, mm
 }
 function shadowInfo() {
   const s = SHADOW.size, mb = s * s * 8 / 1e6;      // 4 bytes of packed depth + a 4-byte depth buffer per texel
@@ -1318,14 +1693,15 @@ function shadowTick(now) {            // each frame, before drawing: redraw the 
   if (!SHADOW.on) return;
   shadowCasters();
   root.updateMatrixWorld();
-  const s = SHADOW.sig; let k = 0, moved = false;
+  const s = SHADOW.sig; let k = 0, moved = false, shown = false;
   for (const o of SHADOW.casters) {
     const e = o.matrixWorld.elements;
     for (let i = 0; i < 16; i++, k++) if (s[k] !== e[i]) { s[k] = e[i]; moved = true; }
     let vis = 1; for (let q = o; q; q = q.parent) if (!q.visible) { vis = 0; break; }
-    if (s[k] !== vis) { s[k] = vis; moved = true; }
+    if (s[k] !== vis) { s[k] = vis; moved = true; shown = true; }
     k++;
   }
+  if (shown) { shadowBounds(); SHADOW.drawnAz = null; }   // shown or hidden: the map covers what shows now
   const az = SHADOW.az0 + (SHADOW.orbit ? 2 * Math.PI * (now - SHADOW.t0) / (LAMP.hour * 1000) : 0);
   const turned = SHADOW.drawnAz === null || Math.abs(az - SHADOW.drawnAz) > 0.5 * SHADOW.mm / SHADOW.L;
   if (turned) { lampAim(az); SHADOW.drawnAz = az; }
@@ -1369,6 +1745,67 @@ function shadowInit() {               // the play version's View section: Shadow
     setTimeout(() => location.reload(), 300);
   });
   shadowSet(want, note);
+}
+
+// ---------------------------------------------------------------- a studio's lighting (scene.json "lighting")
+// The gearbox session 2026-11-20 (Mike: "I want to see shadows on this. And I want to see some colored lighting. Give
+// me like 3 lights, omni lights. Very green and blue. I don't want the specular to be too horribly high, but I want it
+// to be enough for metal to look like metal" / "We have a shadow map already. We just need to apply it to this new
+// model" / "anything made out of metal should be silver ... motor housing ... flat, barely reflective"):
+// {lights: [{color, intensity, from: [x, y, z] (world direction from the model's centre), dist (x its size), decay}],
+//  lamp: {...LAMP overrides: the shadow lamp, its power, the key / hemi lights and the reflections under it},
+//  lamp_from: [x, y, z] (where the lamp stands, round the model), env: {look: reflection strength},
+//  printed: {rough, fuzz}, looks: [{match: regex on the part name, look}]}. A scene without it is lit as before.
+let LIGHTING = null, OMNI = [];
+const LAMP0 = { ...LAMP };
+function lightingConfig(d) {          // before the parts are made: their looks
+  LIGHTING = d || null;
+  Object.assign(ENV, ENV0, (d && d.env) || {});
+  LOOKU.prRough.value = d && d.printed && d.printed.rough != null ? d.printed.rough : -1;
+  LOOKU.fuzz.value = (d && d.printed && d.printed.fuzz) || 0;
+  const cp = (d && d.chain_pins) || [];               // [{match, axis: 'x'|'y'|'z', mid, off, half}] or the old [off, half] (z, mid 0)
+  PIN_RULES = (typeof cp[0] === 'number' ? [{ match: '.', axis: 'z', mid: 0, off: cp[0], half: cp[1] }] : cp)
+    .map(r => ({ re: new RegExp(r.match, 'i'), axis: { x: 1, y: 2, z: 3 }[r.axis || 'z'], mid: r.mid || 0, off: r.off || 0, half: r.half || 0 }));
+  const TX = (d && d.textures) || {};                // {look: {color, rough (files in robo_chess\textures), mm, color_gain, rough_gain}}
+  LOOKS.forEach(l => {
+    const T = lookTex(l), t = TX[l];
+    if (!t || !LIVE) { T.p.value.x = 0; T.key = ''; return; }
+    T.p.value.set(1, t.mm || 20, t.color_gain ?? 1, t.rough_gain ?? 1);
+    const key = t.color + '|' + t.rough; if (T.key === key) return; T.key = key;
+    const ld = (f, srgb) => { const x = new THREE.TextureLoader().load('/textures/' + encodeURIComponent(f));
+      x.wrapS = x.wrapT = THREE.RepeatWrapping; x.anisotropy = 8; if (srgb) x.colorSpace = THREE.SRGBColorSpace; return x; };
+    T.c.value = t.color ? ld(t.color, true) : TEX_BLANK; T.r.value = t.rough ? ld(t.rough, false) : TEX_BLANK;
+  });
+  LOOK_RULES = ((d && d.looks) || []).map(r => ({ re: new RegExp(r.match, 'i'), look: r.look })).filter(r => LOOKS.includes(r.look));
+  Object.assign(LAMP, LAMP0, (d && d.lamp) || {});
+  scene.background = new THREE.Color((d && d.background) || 0x1c1d21);   // Mike: "Make the background solid black"
+  // filmic tone mapping: bright light rolls off instead of clipping, so a shadow still shows on white paper (Mike: "It is
+  // not drawing the shadow on the paper" - lit and shadowed paper were both past white)
+  renderer.toneMapping = d && d.tone ? THREE.ACESFilmicToneMapping : THREE.NoToneMapping;
+  renderer.toneMappingExposure = (d && d.exposure) || 1;
+}
+function lightingBuild() {            // after the scene's box: the coloured lights round the model, the shadow lamp on
+  OMNI.forEach(l => { scene.remove(l); l.dispose(); }); OMNI = [];   // dispose: each 2048 cube shadow is ~270 MB of video memory (main session)
+  if (!LIGHTING) { if (SHADOW.on && !PLAY) shadowSet(0); return; }
+  (LIGHTING.lights || []).forEach(L => {
+    // intensity = the light reaching the model's centre; with decay (2: as real light) it pools - brighter near the lamp
+    // "range" (x the model's size): the fade distance - the light is gone that far from its lamp (Mike: "a level and a fade
+    // distance")
+    const dist = (L.dist ?? 0.8) * diag, dec = L.decay ?? 0, range = L.range ? L.range * diag : 0;
+    const l = new THREE.PointLight(new THREE.Color(L.color || '#ffffff'), (L.intensity ?? 1) * Math.pow(dist, dec), range, dec);
+    l.position.copy(center).addScaledVector(new THREE.Vector3(...(L.from || [1, 1, 1])).normalize(), dist);
+    // each omni light casts its own shadow (a cube map), drawn with the lamp's whenever something moves (Mike: "We have
+    // three different shadow light sources, three different shadow maps")
+    if (L.shadow !== false) {
+      l.castShadow = true; l.shadow.mapSize.set(L.shadow_size || 2048, L.shadow_size || 2048);
+      l.shadow.camera.near = 1; l.shadow.camera.far = dist + 1.5 * diag;
+      l.shadow.bias = -0.0005; l.shadow.normalBias = 0.6;
+    }
+    scene.add(l); OMNI.push(l);
+  });
+  SHADOW.dirty = true;
+  if (LIGHTING.lamp_color) lamp.color.set(LIGHTING.lamp_color);
+  if (!SHADOW.sizes.length) shadowInit(); else shadowSet(SHADOW.size);
 }
 
 // ---------------------------------------------------------------- the play version's board: wood and light buckets
@@ -1452,15 +1889,30 @@ function woodApply(woods) {
     woodUV(g, w, g.boundingBox.min.toArray(), 0, true); put(p, woodMaterial(w));
   }));
 }
+// The studio builds the same buckets from its scene's "board_cells" (2026-11-24, Mike via the chessboard session: "get
+// those chessboard cells lit up correctly during chess moves. They used to show to from as red green or green red" -
+// only the website had them); it rebuilds them with every scene reload (boardClear first).
+let CELLS = null;                     // {squares, half, trays, trays_unused}: the play data, or the studio's board_cells
+function boardClear() {
+  if (!BOARD.lights) return;
+  root.remove(BOARD.lights);
+  const shared = new Set();
+  BOARD.meshes.forEach(m => { if (m.parent) m.parent.remove(m); shared.add(m.geometry); if (m.material !== BOARD.off) shared.add(m.material); });
+  Object.values(BOARD.cells).forEach(c => shared.add(c.halo.geometry));
+  Object.values(BOARD.mats).concat(Object.values(BOARD.halos), [BOARD.off]).forEach(m => m && shared.add(m));
+  shared.forEach(o => o && o.dispose && o.dispose());
+  Object.assign(BOARD, { on: false, cells: {}, meshes: [], lit: {}, blink: {}, mats: {}, halos: {}, off: null, lights: null });
+  SHADOW.key = '';                    // the shadow casters again (the board's meshes changed)
+}
 function boardBuild() {                     // (the board's own wood: woodApply, from buildScene)
-  const W = WOODS; if (!W || !IK) return;
+  const W = WOODS, C = PLAYDATA || CELLS; if (!W || !IK || !C) return;
   const byModel = n => parts.filter(p => (models[p.model] || {}).name === n);
   ['board light squares', 'board dark squares'].forEach(n => byModel(n).forEach(p => { p.group.visible = false; }));
   // the wood squares (one mesh per wood) and the buckets' rims + glows
   const geos = { light: [], dark: [] }, place = [];
-  Object.entries(PLAYDATA.squares).forEach(([k, c]) => place.push([k, c, isDarkSq(k) ? 'dark' : 'light']));
-  ['white', 'black'].forEach(side => PLAYDATA.trays[side].forEach((c, i) => place.push([side + ':' + i, c, 'light'])));
-  ['white', 'black'].forEach(side => ((PLAYDATA.trays_unused || {})[side] || []).forEach((c, i) =>   // the trays' front
+  Object.entries(C.squares).forEach(([k, c]) => place.push([k, c, isDarkSq(k) ? 'dark' : 'light']));
+  ['white', 'black'].forEach(side => C.trays[side].forEach((c, i) => place.push([side + ':' + i, c, 'light'])));
+  ['white', 'black'].forEach(side => ((C.trays_unused || {})[side] || []).forEach((c, i) =>   // the trays' front
     place.push([side + ':x' + i, c, 'light'])));             // outer buckets: out of the arm's reach, never lit (2026-11-12)
   const o = CELL.outer / 2, h = CELL.pocket / 2, sh = new THREE.Shape(), hole = new THREE.Path();
   sh.moveTo(-o, -o); sh.lineTo(o, -o); sh.lineTo(o, o); sh.lineTo(-o, o); sh.closePath();
@@ -1526,6 +1978,13 @@ function boardMoveLights() {          // a picked piece (green) and where it may
   else if (VS.active && VS.lastFT) { L[VS.lastFT[0]] = 'from'; L[VS.lastFT[1]] = 'to'; }
   boardShow(L);
 }
+// the robot's own game (Play game) and the demo light their move on the rims too: from green, to red (Mike 2026-11-24:
+// "show the to from in red and green"); they lit only for the visitor's game (boardMoveLights), so Play game showed none
+function boardHud(f, t) {
+  if (!BOARD.on || VS.active) return;
+  const L = f && t ? { [f]: 'from', [t]: 'to' } : {};
+  if (JSON.stringify(L) !== JSON.stringify(BOARD.lit)) boardShow(L);
+}
 
 // ---------------------------------------------------------------- section
 const slider = $('pos'), posv = $('posv'), autoCb = $('auto'), flipBtn = $('flip');
@@ -1568,7 +2027,13 @@ function updatePlane() {
   });
 }
 const edgesCb = $('edges');
-edgesCb.onchange = () => parts.forEach(p => { p.edgeObj.visible = edgesCb.checked; if (p.hull) p.hull.visible = edgesCb.checked; });
+// a studio's "lighting".no_edges (regex on the part name): those parts without their black outline - the chain's links
+// read as the same metal as the sprockets, not as a black line drawing (Mike 2026-11-20: "the same material that the
+// cogwheels are")
+edgesCb.onchange = () => parts.forEach(p => {
+  const plain = LIGHTING && LIGHTING.no_edges && new RegExp(LIGHTING.no_edges, 'i').test(p.name);
+  p.edgeObj.visible = edgesCb.checked && !plain; if (p.hull) p.hull.visible = edgesCb.checked;
+});
 
 // ---------------------------------------------------------------- colours: part, selection, hover, Claude's highlights
 function recolor(p) {
@@ -1750,6 +2215,14 @@ function setHover(h) {
   cvs.style.cursor = h ? (ikGrabbable(h.p) ? 'grab' : 'pointer') : '';
 }
 addEventListener('keydown', e => {
+  // F11: the 3D view alone, full screen, no buttons; F11 again (or Esc) back to the default (Mike 2026-11-20: "make the
+  // viewer window full screen, no buttons on it ... F11 brings us back to our default")
+  if (e.key === 'F11') {
+    e.preventDefault();
+    if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+    else view.requestFullscreen().catch(() => {});
+    return;
+  }
   if (e.target.tagName === 'INPUT') return;
   if ((e.ctrlKey || e.metaKey) && (e.key === 'c' || e.key === 'C')) {
     if (String(window.getSelection())) return;              // text selected in the panel: normal copy
@@ -1758,6 +2231,8 @@ addEventListener('keydown', e => {
   if (e.ctrlKey || e.metaKey || e.altKey) return;
   if (e.key === 'Escape') setSelection([]);
   if (e.key === 'f' || e.key === 'F') fit();
+  if (e.key === 'p' || e.key === 'P') seqToggle();          // the build-up (scene.json sequence)
+  if (e.key === 'c' || e.key === 'C') chaseSet(!CHASE.on);   // the chase camera
 });
 
 // ---------------------------------------------------------------- selection panel, labels, reporting
@@ -1947,8 +2422,10 @@ function parseHash() {
   }
   return st;
 }
+let SHOW_FILTER = null;                        // the last only / hide applied: put back after a scene reload
 function applyState(st) {
   if (typeof st.cut === 'string') { const [ax, p] = st.cut.split(/[:=]/); st = { ...st, cut: { axis: ax, pos: p === undefined || p === '' ? null : +p } }; }
+  if (st.only || st.hide) SHOW_FILTER = { only: st.only || null, hide: st.hide || null };
   if (st.only) parts.forEach(p => setVis(p, matches(p, st.only)));
   if (st.hide) parts.forEach(p => { if (matches(p, st.hide)) setVis(p, false); });
   if ('edges' in st) { edgesCb.checked = st.edges; edgesCb.onchange(); }
@@ -2057,10 +2534,11 @@ async function poll() {
     if (s.scene !== sceneV) {
       const first = sceneV === null;
       $('status').textContent = 'loading…';
-      const d = await (await fetch('/api/scene', { cache: 'no-store' })).json();
+      const d = first ? await loadJSON('/api/scene', 0, 'the models', { cache: 'no-store' })   // the loading bar
+                      : await (await fetch('/api/scene', { cache: 'no-store' })).json();
       sceneV = s.scene;
       buildScene(d, !first && parts.length > 0);
-      if (first) applyState(parseHash());
+      if (first) { applyState(parseHash()); loadDone(); }
       feaAttach();
     }
     if (s.notes_v !== notesV) { notesV = s.notes_v; renderNotes(s.notes || '', s.notes_time || ''); }
@@ -2073,6 +2551,7 @@ async function poll() {
   } catch (e) {
     if (!(e instanceof TypeError && /fetch/i.test(e.message))) console.error('poll:', e);   // not just the server away
     $('status').textContent = '○ server off'; $('status').className = 'off';
+    if (sceneV === null) loadMsg('Loading the studio…', 'its server is not answering yet - trying again every second');
   }
   polling = false;
 }
@@ -3142,9 +3621,20 @@ function dynMasses(ang) {     // the arm's point masses at joint angles (deg): [
   const at = (u, v, f) => [u[0] + (v[0] - u[0]) * f, u[1] + (v[1] - u[1]) * f], f1 = 0.5 - 0.5 / Math.sqrt(3), f2 = 1 - f1;
   const pts = [];                                  // [kg, point, the last chain joint that moves it (1 = J1 ... 4 = J4)]
   const add = (m, p, b) => { if (m > 0) pts.push([m, p, b]); };
+  const B = dynModel().dynamics.bodies;
+  if (B) {                                         // the chain-drive arm (tools/arm_mass.py --write, 2026-11-22): every
+    const cum = [0, q[1], q[1] + q[2], q[1] + q[2] + q[3], q[1] + q[2] + q[3] + q[4]];   // part weighed, one body per
+    B.forEach(b => {                               // moving group in its link's frame (u out, v up, mm), two points
+      const k = b.joint, c = Math.cos(cum[k]), s = Math.sin(cum[k]), P = J[k - 1];   // +-r along it (its own spread)
+      [-b.r, b.r].forEach(du => { const u = (b.at[0] + du) / 1000, v = b.at[1] / 1000;
+        add(b.m / 2, [P[0] + u * c - v * s, P[1] + u * s + v * c], k); });
+    });
+    add(M.king, [J[3][0] + tx, J[3][1] + tz], 4);
+  } else {
   for (let k = 0; k < 3; k++) { add(M.link / 2, at(J[k], J[k + 1], f1), k + 1); add(M.link / 2, at(J[k], J[k + 1], f2), k + 1); }
   add(M.drive, J[1], 1); add(M.servo_on_b || 0, at(J[1], J[2], 0.45), 2); add(M.drive, J[2], 2); add(M.wrist_drive, J[3], 3);
   add(M.claw, [J[3][0] + tx / 2, J[3][1] + tz / 2], 4); add(M.king, [J[3][0] + tx, J[3][1] + tz], 4);
+  }
   return pts.map(([m, [x, z], b]) => {
     const d = [[-x * s, x * c, 0]];                // the swivel swings it round the yaw axis
     for (let k = 1; k <= 4; k++) {
@@ -3964,7 +4454,7 @@ function hudUpdate(now) {
       + `<div class="sub">${(s && s.say) || ''}</div>`);
     return;
   }
-  if (!mv || !(gameOn || demoLoop)) { show(''); sqFlash.forEach(m => { m.visible = false; }); hudPly = null; return; }
+  if (!mv || !(gameOn || demoLoop)) { show(''); sqFlash.forEach(m => { m.visible = false; }); hudPly = null; if (!(gameOn || demoLoop)) boardHud(); return; }
   const side = mv.side || mv.part.split(' ')[0], kind = mv.part.split(' ')[1];
   const thinking = !!(s && s.think);
   let html, sq = null;
@@ -3982,6 +4472,7 @@ function hudUpdate(now) {
         + `<div class="mv">${san} &nbsp;<span class="f">${f}</span> → <span class="t">${t}</span></div>`
         + `<div class="sub">${how}</div><div class="sub">arm: ${mv.what || ''}${/\(\d+\/\d+\)$/.test(mv.name) ? ' ' + mv.name.match(/\(\d+\/\d+\)$/)[0] : ''}</div>`;
       sq = mv.msq_at ? [[mv.msq_at[0], f], [mv.msq_at[1], t]] : null;
+      boardHud(f, t);                         // (thinking: the last move stays lit)
     }
   } else {                                    // the demo
     const step = mv.name.split(' · ').slice(0, 2).join(' · ');
@@ -3989,6 +4480,7 @@ function hudUpdate(now) {
       + `<div class="mv">${cap(side)} ${kind} &nbsp;<span class="f">${mv.fromSq}</span> → <span class="t">${mv.toSq}</span></div>`
       + `<div class="sub">${step}</div>`;
     if (SQ_RE.test(mv.fromSq || '') && SQ_RE.test(mv.toSq || '')) sq = [[mv.from, mv.fromSq], [mv.to, mv.toSq]];
+    boardHud(mv.fromSq, mv.toSq);
   }
   show(html);
   const ph = Math.cos(2 * Math.PI * SQ_FLASH_HZ * now / 1000);
@@ -4577,6 +5069,7 @@ $('titleBox').addEventListener('toggle', () => { try { localStorage.setItem('ste
 
 renderer.setAnimationLoop(() => {
   bowdenUpdate();
+  chaseStep(performance.now());
   controls.update();
   key.position.copy(camera.position).add(new THREE.Vector3(0, 0, diag * 0.3));
   key.target.position.copy(controls.target);
@@ -4588,7 +5081,10 @@ renderer.setAnimationLoop(() => {
   hudUpdate(performance.now());
   homingStep(performance.now());
   rigStep(performance.now());
+  sweepStep(performance.now());
+  seqStep(performance.now());
   gearsUpdate();
+  pathsUpdate();
   homeShow();
   soundTick(performance.now());
   ikShow();
@@ -4607,6 +5103,7 @@ if (STATIC) {
   applyState(STATIC.init || {});
   applyState(parseHash());
   if (PLAY) playerView();                    // the play version opens in the player's seat
+  loadDone();                                // built: the loading bar goes
 } else {
   poll();
   setInterval(poll, 1000);
@@ -4620,6 +5117,11 @@ window.__viewer = { camera, controls, get parts() { return parts; }, get selecti
                     get SHADOW() { return SHADOW; }, lamp, get WOODS() { return WOODS; }, get models() { return models; }, woodApply };
 </script>
 <script>
-  setTimeout(() => { if (!window.__viewer) document.getElementById('err').style.display = 'flex'; }, 10000);
+  setTimeout(function check() {              // still downloading the robot: not a failure yet, look again later
+    if (window.__viewer || window.__loadFailed) return;
+    if (window.__loading) return setTimeout(check, 2000);
+    document.getElementById('load').style.display = 'none';
+    document.getElementById('err').style.display = 'flex';
+  }, 10000);
 </script>
 </body></html>
