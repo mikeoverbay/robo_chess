@@ -11,10 +11,10 @@ planet circle r 16.987; sun shift +0.424, planet -0.424
   sun mesh clearance 0.060 at the pitch circle (6.1 arcmin at the output); ring mesh 0.000 (the blades seat the planets)
   clearances: sun tip to planet root 0.383, planet tip to sun root 0.375, planet tip to ring root 0.375
 
-spider (PA12): bosses printed at r 17.587, seated at r 16.987 -> 8.0 N out per planet; blades 2.09 thick x 10 high, 10.5 free; bending 15.5 MPa held; wind-up 2.2 arcmin per N.m out
+spider (PLA): bosses printed at r 17.587, seated at r 16.987 -> 8.0 N out per planet; blades 1.60 thick x 10 high, 9.5 free; bending 26.4 MPa held; wind-up 1.3 arcmin per N.m out
 
 checks
-  part volumes (cm3): motor_plate 22.85, ring_half_a 22.83, ring_half_b 45.34, retainer 11.94, input_shaft 11.98, planet_1 2.95, planet_2 2.95, planet_3 2.95, spider 24.76, output_disc 15.92
+  part volumes (cm3): motor_plate 20.73, ring_half_a 22.57, ring_half_b 45.34, retainer 11.94, input_shaft 10.32, planet_1 2.21, planet_2 2.21, planet_3 2.21, spider 24.93, output_disc 15.92, motor_hub 6.85, dog_bone 1.56, standoff_1 0.96
   gear mesh (assembled, planets seated): worst overlap 0.0028 mm3
     sun turned   0.0 deg, planet 1: overlap with sun 0.0000, ring 0.0000 mm3
     sun turned   0.0 deg, planet 2: overlap with sun 0.0000, ring 0.0006 mm3
@@ -28,57 +28,83 @@ checks
     sun turned  33.8 deg, planet 1: overlap with sun 0.0000, ring 0.0000 mm3
     sun turned  33.8 deg, planet 2: overlap with sun 0.0000, ring 0.0000 mm3
     sun turned  33.8 deg, planet 3: overlap with sun 0.0000, ring -0.0019 mm3
-  part overlaps > 0.01 mm3: 13
-    motor_17HE08 x screw_M3x8_motor_4: 27.340 mm3
-    motor_17HE08 x screw_M3x8_motor_3: 27.340 mm3
-    motor_17HE08 x screw_M3x8_motor_1: 27.340 mm3
-    motor_17HE08 x screw_M3x8_motor_2: 27.340 mm3
+  part overlaps > 0.01 mm3: 17
+    spider x screw_M4x20_planet_1: 27.162 mm3
+    spider x screw_M4x20_planet_2: 27.162 mm3
+    spider x screw_M4x20_planet_3: 27.162 mm3
+    motor_17HE08 x screw_M3x30_motor_2: 25.973 mm3
+    motor_17HE08 x screw_M3x30_motor_1: 25.973 mm3
+    motor_17HE08 x screw_M3x30_motor_4: 25.973 mm3
+    motor_17HE08 x screw_M3x30_motor_3: 25.973 mm3
     motor_plate x insert_M3x4x5_plate_1: 19.394 mm3
     motor_plate x insert_M3x4x5_plate_3: 19.394 mm3
     motor_plate x insert_M3x4x5_plate_2: 19.394 mm3
     output_disc x insert_M3x4x5_3: 19.390 mm3
     output_disc x insert_M3x4x5_1: 19.390 mm3
     output_disc x insert_M3x4x5_2: 19.390 mm3
+    motor_hub x insert_M3x4x5_hub: 19.354 mm3
     spider x screw_M3x10_disc_2: 13.676 mm3
     spider x screw_M3x10_disc_3: 13.676 mm3
     spider x screw_M3x10_disc_1: 13.676 mm3
+  dog bone: joint centres 7.9 apart; runs free with the motor off-centre up to 0.6 (toward a flat) / 0.6 (toward a corner), tilt 4.3 deg
+    free turn in a socket as drawn: +-1.15 deg per end -> +-26 arcmin at the output (both ends; printed sockets come out smaller, so less)
 
 loads per N.m at the output (load share 1.3, dynamic 1.2; PLA E 3.5 GPa)
   tooth force 12.8 N per mesh; bending sun 3.6, planet 4.2, ring 1.7 MPa; contact sun 25, ring 12 MPa (x sqrt of the torque)
-  planet dowel 26 N -> 13 N per 3x6x2 (static rating 74 N)
-  safe output: teeth 6.0 N.m at 25 MPa; bearings 5.8 N.m at their static rating
-  17HE08 pancake (0.115 N.m pull-out): 0.55 N.m out at ~91% -> bending 2.3 MPa, sun contact 18 MPa
-  17HS19 (0.40 N.m pull-out): 1.91 N.m out at ~91% -> bending 8.0 MPa, sun contact 34 MPa
-  17HS19 holding (0.59 N.m): 2.82 N.m out at ~91% -> bending 11.8 MPa, sun contact 41 MPa
+  planet screw 26 N on its one 624 (static rating ~490 N)
+  planet rim: motor-side teeth on 4.00 over the 8.0 head pocket (ring bending 1.0 MPa on top of the tooth bending); spider-side teeth on 1.50 pressed on the steel 624
+  safe output: teeth 4.8 N.m at 25 MPa (planet rim included); bearings 19.2 N.m at their static rating
+  17HE08 pancake (0.115 N.m pull-out): 0.55 N.m out at ~91% -> bending 2.8 MPa, sun contact 18 MPa
+  17HS19 (0.40 N.m pull-out): 1.91 N.m out at ~91% -> bending 9.9 MPa, sun contact 34 MPa
+  17HS19 holding (0.59 N.m): 2.82 N.m out at ~91% -> bending 14.6 MPa, sun contact 41 MPa
+  dog bone (PLA, hex 12 across flats, flats crowned R 15; 3 of the 6 flats carrying, 2 mm of contact each):
+    17HE08 pull-out 0.115 N.m: 17 N per flat -> contact 19 MPa, neck twist 0.8 MPa (PLA yields ~60)
+    17HS19 holding 0.59 N.m: 89 N per flat -> contact 43 MPa, neck twist 4.1 MPa (PLA yields ~60)
+  standoff tubes: snug the M3 x 30s (~300 N -> 7 MPa in a tube); full M3 torque (~1 kN, 24 MPa) would creep the PLA
 
 arm fit (drops in where the spread cycloid sits: claw_adapter.py / mockup_link.py frame, z 0 = top of link C's plate)
   body 70.5 like the cycloid; output face z 59.2 (spread cycloid: 59.2); 3 x M3 on r 15 at 0/120/240 (same)
   arm screws: 6 x #4 x 3/4" wood screws on r 32.4 at 33.16, 90.00, 146.84, 213.16, 270.00, 326.84 deg, D2.4 pilots up to z 16.0 (cycloid.py's ARM_SCREW_*): through the plate into half A
+  motor: face z -22.2 on four 8 mm standoff tubes, bottom z -45.2 (was -23.0): through link C's 44 square opening in its 8 plate; the hub's grub at z -10.7, 2.7 under link C's plate
   clamp bolt heads on the retainer: top 58.4, 0.8 under the claw cup
   grooved OD (spline lug-nut look): 12 grooves 6 wide x 3 deep at 15 + 30k deg, lips rounded 1.0; every screw on a land
     walls: arm pilots 1.65, clamp bolt holes 2.25, plate inserts to the OD 1.25; groove floor to the ring's tooth roots 3.51
     the grooves take out 2.76 + 4.77 cm3
 
 hardware
-  2 x 6808 (40x52x7), 1 x 6800 (10x19x5), 6 x 3x6x2, 3 x 3x20 dowel (m6)
+  2 x 6808 (40x52x7), 1 x 6800 (10x19x5), 3 x 624 (4x13x5), 3 x M4 x 20 cap screws (the planet axles, heads
+    inside the planets; they cut their own thread in the 3.5 boss holes, 9.5 deep); printed per planet: a 1.5 head spacer (4.3 x 6.0, through the lip); on the
+    other side the spider's 6.0 boss nose. Both sit on the 624's inner ring only
   3 x M3 x 55 partly threaded, heads on the retainer, through half B and half A into 3 x M3 x 4 x 5
     heat-set inserts in the plate's underside (the bolt pulls each insert up into the plate)
-  4 x M3 x 8 motor screws (from inside the plate, heads 0.2 under the input 6808), 3 x M3 x 10 output disc screws
+  4 x M3 x 30 motor screws (from inside the plate, heads 0.2 under the input 6808, down through the
+    standoff tubes, 3.8 into the motor), 3 x M3 x 10 output disc screws
+  1 x M3 x 6 grub + 1 x M3 x 4 x 5 heat-set insert in the motor hub (on the shaft's flat)
   3 x M3 x 4 x 5 heat-set inserts in the output disc (r 15, 0/120/240 deg: the old output circle)
 
 assembly
-  1 dowels into the spider bosses (bottom out, 8.5 deep)  -- or last, through the planets, see 4
+  1 a 624 pressed into each planet from the spider side, down onto its lip
   2 spider into half B from the V end; output 6808 onto its collar from the far end; output disc screwed on
     (clamps the inner race); retainer on the half B end
-  3 input 6808 pressed onto the input shaft's disc; the three planets (bearings pressed in) meshed round the sun
-  4 that cluster into half B, turning as it goes (helix); push each boss in 0.6 so its hole lines up and press the
-    dowel through the planet's bearings into it, on a 0.5 shim laid on the boss face; pull the shim
-  5 half A over the planets from the motor side (turning), the input 6808 into its seat
-  6 motor screwed to the plate (heads inside), plate on with the shaft into the input shaft's D bore; the 3 long
-    bolts down from the retainer into the plate's inserts. On the arm: link C's 6 wood screws up into the plate
+  3 the three planets meshed round the input shaft's sun (its 6808 NOT on yet)
+  4 that cluster straight into half B (the planets spin as they go in), each planet over its boss nose; turn
+    the input shaft so its 3 slots sit under the planets; through each slot a head spacer and an M4 x 20 up through
+    the planet's 624 into the nose: its tip pulls the boss in the 0.6 as it starts its thread; snug, 3 mm key
+  5 input 6808 pressed onto the input shaft's disc (it closes the slots); half A over the planets from the motor
+    side (turning), the 6808 into its seat
+  6 insert into the motor hub, hub onto the motor shaft, grub on the flat; motor screwed to the plate through the
+    4 standoff tubes (heads inside the plate; snug: PLA tubes); dog bone into the hub; plate on, turning the output a
+    little until the bone's top hex drops into the input shaft's socket; the 3 long bolts down from the retainer
+    into the plate's inserts. On the arm: link C's 6 wood screws up into the plate
+  service (hub or bone): off the arm (6 wood screws), out with the 3 long bolts, lift the gearbox off the plate:
+    the bone pulls out; loosen the grub (from the side, between the standoffs) and the hub lifts off the shaft
+    through the plate's 24 hole. The motor stays on the plate.
 
 print
   motor plate: motor side down. half A: motor end down. half B: V end down. retainer: flat. output disc: outer
   face down (insert holes on the bed).
-  input shaft: disc down. planets: either face. spider: planet side down (the back disc bridges the 1.0 gap
-  over the bosses and blades). sun tests: either face.
+  input shaft: disc down. planets: motor face down (624 pocket up). sun tests: either face.
+  spider: output face (collar end) down, boss noses up (Mike, 2026-11-26). Support under the back disc's rim and in
+  the 1.0 gap under the blades and bosses: clear ALL of it out of that gap, or the blades can't flex.
+  motor hub: bore end down (socket up). dog bone: standing on end. standoff: print 4, standing.
+  head spacer: print 3, flat.

@@ -1,8 +1,8 @@
 {
  "view": {
-  "view": "front",
-  "focus": 100,
-  "zoom": 1.1,
+  "view": "iso",
+  "focus": "J4 wrist",
+  "zoom": 4.5,
   "joints": {
    "J0 swivel": 90,
    "J1 shoulder": 135,
@@ -10,6 +10,6 @@
    "J3": -45
   }
  },
- "view_seq": 81,
+ "view_seq": 82,
  "highlight": []
 }

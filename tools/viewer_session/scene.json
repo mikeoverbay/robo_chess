@@ -325,9 +325,17 @@
     32,
     33,
     34,
-    35
+    35,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46
    ],
-   "note": "tools/herringbone_planetary.py (2026-11-23): sun 8 / 3 planets 13 / ring 34 = 5.25:1, carrier out; same frame as the spread cycloid (z 0 = top of link C's plate), so the same x -600. 'solids' are the file's order (0 motor_plate .. 38 insert_M3x4x5_3): re-check them if the file is rebuilt with other parts; this one: housing, sun, motor, bearings and bolts (ride link C)"
+   "note": "tools/herringbone_planetary.py (2026-11-23): sun 8 / 3 planets 13 / ring 34 = 5.25:1, carrier out; same frame as the spread cycloid (z 0 = top of link C's plate), so the same x -600. 'solids' are the file's order (0 motor_plate .. 46 insert_M3x4x5_hub): re-check them if the file is rebuilt with other parts; this one: housing, sun, motor, bearings and bolts (ride link C); 2026-11-25 (gearbox session, Mike's change: motor on standoffs, dog-bone coupling): 39 motor_hub, 40 dog_bone, 41-44 standoffs, 45 grub screw, 46 hub insert added here (ride link C, like 4 input_shaft); 10 the motor block stays out (j4_motor_scene.py's NEMA 17 stands in for it)"
   },
   {
    "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\herringbone\\step\\assembly.step",
@@ -359,7 +367,7 @@
     37,
     38
    ],
-   "note": "the carrier side: spider, output disc, planets + their bearings and dowels, disc screws and inserts (turn with the claw)"
+   "note": "the carrier side: spider, output disc, planets + their bearings and dowels, disc screws and inserts (turn with the claw); 2026-11-25 (gearbox session): planets now 624 bearing + M4x20 screw + M4 head spacer (14-22, same slots), the boss spacers part of the spider (8)"
   },
   {
    "path": "E:\\Ender Pro Upgrade Files\\Mikes_creations\\robo_chess\\gripper\\claw_on_wrist_spread.step",

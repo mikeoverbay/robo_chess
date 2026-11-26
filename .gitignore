@@ -25,3 +25,4 @@ tools/viewer_sessions/*/fea/*
 # viewer and each board placed in the case (45-64 MB each)
 electronics_case/view/
 electronics_case/boards/
+tools/web_export/play/scene_data.json
