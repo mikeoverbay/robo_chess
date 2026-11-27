@@ -3,7 +3,8 @@
 nema17.py - Mike's NEMA 17 (from his "NEMA 17 with T5 Pulley.STP"), pulley and pulley screw removed, as the motor
 for every drive in the arm (2026-11-04: "replace the dummy motors").
 
-    python nema17.py            # writes robo_chess/cycloid/nema17.step from the desktop file
+    python nema17.py            # writes robo_chess/motors/nema17.step from the desktop file
+                                  (2026-11-27: moved from robo_chess/cycloid/ when the old cycloid design was removed)
     python nema17.py --length 60    # Mike's J1 motor (2026-11-05: 42 x 60 body, 2 A, 73 N.cm) -> nema17_60.step
     python nema17.py --length 23    # his pancakes (42 x 23, 15.5 N.cm) for J3 and J4; also --length 40
 
@@ -25,7 +26,7 @@ from regroup_assembly import write_step  # noqa: E402
 
 ROOT = os.path.dirname(HERE)
 SRC = r"C:\Users\theco\OneDrive\Desktop\STEP files\NEMA 17 with T5 Pulley.STP"
-OUT = os.path.join(ROOT, "cycloid", "nema17.step")
+OUT = os.path.join(ROOT, "motors", "nema17.step")
 DROP = ("T5 Pulley", "socket button head cap screw")     # the pulley and its set screw
 BODY_L = 48.0            # Mike's motors (17HS19 family): 48 long; the downloaded model is 46 - its body stack is
 #                          stretched and the rear cap moved back to match
@@ -42,7 +43,7 @@ def stretch_z(shape, z_fixed, factor):
 
 
 def out_path(length=BODY_L):
-    return OUT if abs(length - BODY_L) < 1e-6 else os.path.join(ROOT, "cycloid", f"nema17_{length:g}.step")
+    return OUT if abs(length - BODY_L) < 1e-6 else os.path.join(ROOT, "motors", f"nema17_{length:g}.step")
 
 
 def build(body_l=BODY_L):
@@ -116,7 +117,7 @@ def build(body_l=BODY_L):
 
 
 def load(length=BODY_L):
-    """(body, caps) from robo_chess/cycloid/nema17.step (or nema17_<length>.step)."""
+    """(body, caps) from robo_chess/motors/nema17.step (or nema17_<length>.step)."""
     d = {n: s for n, s, _ in read_step(out_path(length))}
     return d["NEMA 17"], d["NEMA 17 end caps"]
 
